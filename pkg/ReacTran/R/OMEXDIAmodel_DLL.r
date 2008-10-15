@@ -29,7 +29,7 @@ OC   <- rep(10,6*N)
 DIA  <- steady.band(y=OC,fun="omexdiamod",initfun="initomexdia",
                    initpar=c(pars,grid$dx,grid$dx.int,
                    porgrid$mid,porgrid$int,Db),nspec=6,
-                   dllname="reacT",nout=8,positive=TRUE)
+                   dllname="ReacTran",nout=8,positive=TRUE)
 steady <-DIA$y
 
 # state variables rearranged from ordering per slice -> per spec
@@ -44,7 +44,7 @@ out   <- ode.band (y=DIA$y, times=times, fun="omexdiamod",
                    initfun="initomexdia",method="lsode",
                    parms=c(pars,grid$dx,grid$dx.int,
                    porgrid$mid,porgrid$int,Db),
-                   nspec=6,nout=8,dllname="reacT")
+                   nspec=6,nout=8,dllname="ReacTran")
 
 # final simulation
 CONC  <- out[nrow(out),2:(1+6*N)]
@@ -52,7 +52,7 @@ out   <- ode.band (y=CONC, times=times, fun="omexdiamod",
                    initfun="initomexdia",method="lsode",
                    parms=c(pars,grid$dx,grid$dx.int,
                    porgrid$mid,porgrid$int,Db),
-                   nspec=6,nout=8,dllname="reacT")
+                   nspec=6,nout=8,dllname="ReacTran")
 # remove time
 out      <- out [,-1]
 

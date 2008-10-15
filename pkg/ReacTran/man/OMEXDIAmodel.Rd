@@ -10,7 +10,7 @@
 \item Oxygen demand unit (ODU), dissolved substance, as lump sum of all reduced substances other than ammonium
 
 See Soetaert et al., 1996 for further details of the model.}
-\usage{OMEXDIAmodel(pars, grid, porgrid, Db)}
+\usage{OMEXDIAmodel(pars, grid, porgrid, Db, Dyna=TRUE)}
 \arguments{
   \item{pars }{ The model parameters, a vector such as \code{\link{OMEXDIAparms}}}
   \item{grid }{ The discretisation grid, e.g. generated with \code{\link{setup.grid}}; should contain 100 boxes}
