@@ -107,7 +107,8 @@ legend ("topleft",lty=c(1,NA),pch=c(NA,1),
         c("analytical solution","numerical approximation"))
 legend ("bottomright",pch=c(1,18),lty=1,col=c("black","red"),
         c("cylinder","sphere"))}
-\references{Soetaert and Herman, a guide to ecological modelling, Book in preparation}
+\references{Soetaert and Herman, a guide to ecological modelling - using R as
+a simulation platform, 2008. Springer}
 \details{The \bold {boundary conditions} are either
   \item (1) zero-gradient (default)
   \item (2) concentration boundary 

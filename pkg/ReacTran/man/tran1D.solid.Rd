@@ -305,7 +305,7 @@ mtext(outer=TRUE,side=3,line=-2,cex=1.5,"OMEXDIAmodel")
 \references{Berner R.A., 1980. Early Diagenesis- A Theoretical Approach. Princeton Univ. Press
   \cr Boudreau, B.P., 1997. Diagenetic Models and their Implementation. 
   Modelling transport and Reactions in Aquatic Sediments. Springer, Berlin, 414p.
-  \cr Soetaert and Herman, a guide to ecological modelling, Book in preparation.
+  \cr Soetaert and Herman, a guide to ecological modelling - using R as a simulation platform, 2008. Springer.
   
   Reference for the OMEXDIA model (example 2):
   \cr Soetaert K, PMJ Herman and JJ Middelburg, 1996a. 

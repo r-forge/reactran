@@ -92,7 +92,7 @@ type="l",sub="reactive transport in estuary")
 legend ("top",c("rate=0/d","rate=0.025/d","rate=0.025/d",
                  "rate=0.025/d, 0-gradient downstream"),
          title="Boundaries",lty=1:5,col=1:5,lwd=2)}
-\references{Soetaert and Herman, a guide to ecological modelling, Book in preparation}
+\references{Soetaert and Herman, a guide to ecological modelling - using R as a simulation platform, 2008. Springer.}
 \details{The \bold{boundary conditions} are either of type
   \item 1. zero-gradient (default)
   \item 2. concentration boundary 
