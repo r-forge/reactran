@@ -1,4 +1,4 @@
 useDynLib(ReacTran)
 
-export(fiadeiro, OMEXDIAmodel, setup.grid, setup.prop, tran1D, tran1D.solid, tran1D.solute, tran1D.volume)
+export(fiadeiro, setup.1D.advection, setup.1D.grid, setup.1D.prop, setup.2D.grid, setup.2D.prop, tran.1D, tran.1D.river, tran.2D)
 
