@@ -13,8 +13,8 @@ See Soetaert et al., 1996 for further details of the model.}
 \usage{OMEXDIAmodel(pars, grid, porgrid, Db, Dyna=TRUE)}
 \arguments{
   \item{pars }{ The model parameters, a vector such as \code{\link{OMEXDIAparms}}}
-  \item{grid }{ The discretisation grid, e.g. generated with \code{\link{setup.grid}}; should contain 100 boxes}
-  \item{porgrid }{ The porosity grid, e.g. generated with \code{\link{setup.prop}}; should contain 100 boxes and be consistent with \code{grid}}
+  \item{grid }{ The discretisation grid, e.g. generated with \code{\link{setup.1D.grid}}; should contain 100 boxes}
+  \item{porgrid }{ The porosity grid, e.g. generated with \code{\link{setup.1D.prop}}; should contain 100 boxes and be consistent with \code{grid}}
   \item{Db }{The bioturbation profile, defined on box interfaces, e.g. containing 101 values}
   \item{Dyna }{logical; if TRUE: also runs the model dynamically}
 }
@@ -39,16 +39,19 @@ FDET(0-100), SDET(101-200), O2 (201-300), NO3 (301-400), NH3 (401-500) and ODU (
 \author{Karline Soetaert <k.soetaert@nioo.knaw.nl>}
 \examples{# 100 layers; total length=50 cm, first box=0.01 cm
 N     <- 100
-Grid  <- setup.grid(N=N,dx.1=0.01,len=50,type="exp")
-Depth <- Grid$x                  # depth of each box
+Grid  <- setup.1D.grid(x.up=0,N=N,L=50)
+Depth <- Grid$x.mid                  # depth of each box
 
 # porosity gradients
-porGrid <- setup.prop(y.0=0.9,y.INF=0.7,y.coeff=2,grid=Grid)
+exp.profile <- function(x,y.0=NULL,y.inf=NULL,x.att=NULL)
+{return(y.inf + (y.0-y.inf)*exp(-x/x.att))}
+
+porGrid <- setup.1D.prop(func=exp.profile,grid=Grid,y.0=0.9,y.inf=0.5,x.att=3)
 
 # Bioturbation profile (at box interfaces)
 biot <- 1/365          # cm2/d      - bioturbation coefficient
 mixL <- 5              # cm         - depth of mixed layer
-Db   <- setup.prop(y.0=biot,y.INF=0,y.coeff=1,L=mixL,grid=Grid)$int
+Db   <- rep(biot,N+1)
 
 #-------------------------------------------
 # Three dynamic runs, with different flux
@@ -158,7 +161,6 @@ in package deSolve (we use \code{\link[deSolve]{ode.band}}) are used. The routin
 
 The execution speed of this version of the model is similar to the original application where all code was in Fortran; it is 
 almost two orders of magnitude faster than the implementation in \R.
-
-An implementation of the same model, in \R can be found as one of the examples of \code{\link{tran1D.solid}}}
+}
 \keyword{misc}
 
