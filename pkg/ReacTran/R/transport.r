@@ -109,13 +109,26 @@ x.int  <- x.up + diffinv(dx)
 x.mid  <- colMeans(rbind(x.int[-1],x.int[-(length(dx)+1)]))
 dx.aux <- c(dx[1]/2,diff(x.mid),dx[length(dx)]/2)
 
-return(list(x.up = x.up,
+
+Res <- list(x.up = x.up,
 				    x.down = x.down[length(x.down)],
 				    x.mid = x.mid,   # position of centre of the grid cells, vector of length N
             x.int  = x.int,  # position of the grid cell interfaces , vector of length N+1
             dx = dx  ,       # thickness of the grid cells , vector length N
             dx.aux = dx.aux, # auxiliary vector with distances between centre of adjacent cells, first and last: half of cell size, vector of length N+1
-            N = length(dx))) # total number of grid cells 
+            N = length(dx))  # total number of grid cells
+class(Res) <- "grid.1D"
+return(Res)
+}
+
+plot.grid.1D <- function(x,...)
+{
+    mf <- par(mfrow=c(2,1))
+    on.exit(par(mf))
+    
+   plot(x$x.mid,main="position of cells",ylab="x.mid",xlab="index",...)
+   plot(x$dx,main="box thickness",ylab="dx",xlab="index",...)
+
 }
 
 ###############################################################################

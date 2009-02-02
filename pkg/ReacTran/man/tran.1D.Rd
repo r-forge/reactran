@@ -200,7 +200,6 @@ O2.sphere <- steady.1D (runif(N),func=Sphere.Model,nspec=1,atol=1e-10)$y
 # Plotting output    #
 #====================#
 
-windows()
 par(mfrow=c(1,1))
 
 plot(x.mid,O2.cyl,xlab="distance from centre, cm",ylab="mmol/m3",
@@ -274,7 +273,6 @@ O2.agg <- steady.1D (runif(N),func=Aggregate.Model,nspec=1,atol=1e-10)$y
 # Plotting output    #
 #====================#
 
-windows()
 par(mfrow=c(1,1))
 
 plot(grid$x.mid,O2.agg,xlab="distance from centre, cm",ylab="mmol/m3",
