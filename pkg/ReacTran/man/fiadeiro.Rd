@@ -138,11 +138,12 @@ col=c(1:3),lty=c(1:3),pch=c(16,16,16))
 Tellus v 29, pp 512-522}
 \details{The Fiadeiro and Veronis (1977) weighing scheme reduces numerical diffusion, due to advection. 
   It is based on the following rationale:
+  \itemize{
 \item When weighing is by backward differences (weighing coefficient of the upstream box = 1) state variables remain positive, 
 but this scheme has the highest numerical (= artificial) diffusion.
 \item When weighing is by centered differences (weighing coefficient = 0.5), the numerical diffusion is lower, 
 but state variables may become negative.
-
+}
 In the Fiadeiro and Veronis (1977) weighing scheme, the weighing coefficients of the upstream boxes depend on 
 the magnitude of the additional true diffusion (D): 
 \cr the higher the true diffusion, the closer the weighing coefficients are to centered weighing...

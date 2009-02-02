@@ -105,10 +105,11 @@ legend ("topright",lty=1,col=c("black","red"),
 }
 \references{Soetaert and Herman, a guide to ecological modelling - using R as a simulation platform, 2008. Springer.}
 \details{The \bold{boundary conditions} are of type
+\itemize{
   \item 1. zero-gradient (default)
   \item 2. fixed concentration 
   \item 3. fixed input 
-
+}
   The \emph{bulk dispersion coefficient} (Disp), and \emph{flow rate} (flow) can be either one value or a vector of length N+1, defined at all grid cell interfaces, including upstream and downstream boundary.
   
   The spatial discretisation is given by the volume of each box (V), which can be one value or a vector of length N+1, defined at the centre of each grid cell.}

@@ -44,9 +44,11 @@ lines(grid$x.int,P.spline$int,lty="dashed")
 lines(grid$x.int,P.linear$int,lty="dotdash")
 }
 \details{
-To interpolate, there are two options: 
+To interpolate, there are two options:
+\itemize{
  \item "spline" gives a smooth profile, but sometimes generates strange profiles - always check the result!
  \item "linear" gives a segmented profile
+}
 }
 \keyword{utilities}
 
