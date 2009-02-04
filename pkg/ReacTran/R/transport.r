@@ -2,7 +2,7 @@
 # Creation of a one-dimensional finite difference grid
 ###############################################################################
 
-setup.1D.grid <- function(x.up=0,					# position of the upstream interface	
+setup.grid.1D <- function(x.up=0,					# position of the upstream interface	
 												  x.down=NULL,    # position of zonation endpoints, one value (position of downstream interface) or a vector of length N
 												  L=NULL,         # thickness of zones, one value (model domain = one zone) or a vector of length N
                           N=NULL,         # desired number of grid cells in a zone, one value or a vector of length N 
@@ -13,6 +13,8 @@ setup.1D.grid <- function(x.up=0,					# position of the upstream interface
 												  p.dx.N = rep(1,length(L)), # grid cell size growth factor in lower half of the zone, one value or a vector of length N  
 												  max.dx.N = 10*dx.N) # maximum grid cell size in lower half of the zone, one value or a vector of length N
 {
+
+# Check on the input
 
 if (is.null(x.down[1]) && is.null(L[1]))  stop ("Cannot create grid: the length or end point is not specified") 
 if (is.null(x.down[1]))
@@ -109,6 +111,7 @@ x.int  <- x.up + diffinv(dx)
 x.mid  <- colMeans(rbind(x.int[-1],x.int[-(length(dx)+1)]))
 dx.aux <- c(dx[1]/2,diff(x.mid),dx[length(dx)]/2)
 
+# Packaging of results 
 
 Res <- list(x.up = x.up,
 				    x.down = x.down[length(x.down)],
@@ -121,21 +124,24 @@ class(Res) <- "grid.1D"
 return(Res)
 }
 
+###############################################################################
+# Plotting of a one-dimensional finite difference grid
+###############################################################################
+
 plot.grid.1D <- function(x,...)
 {
-    mf <- par(mfrow=c(2,1))
-    on.exit(par(mf))
+   mf <- par(mfrow=c(2,1))
+   on.exit(par(mf))
     
    plot(x$x.mid,main="position of cells",ylab="x.mid",xlab="index",...)
    plot(x$dx,main="box thickness",ylab="dx",xlab="index",...)
-
 }
 
 ###############################################################################
 # Creation of a two-dimensional finite difference grid
 ###############################################################################
 
-setup.2D.grid <- function(x.grid=NULL,		# one-dimensional grid - horizontal 
+setup.grid.2D <- function(x.grid=NULL,		# one-dimensional grid - horizontal 
 												  y.grid=NULL)    # one-dimensional grid - vertical 
 {
 
@@ -158,31 +164,35 @@ if (! "dx"     %in% gn) stop("error in setup.2Dgrid: y.grid  should be a list th
 if (! "dx.aux" %in% gn) stop("error in setup.2Dgrid: y.grid  should be a list that contains dx.aux")
 if (! "N"      %in% gn) stop("error in setup.2Dgrid: y.grid  should be a list that contains N")
 
-return(list(x.up = x.grid$x.up,
+# Packaging of results 
+
+Res <- list(x.up = x.grid$x.up,
 				    x.down = x.grid$x.down,
 				    x.mid = x.grid$x.mid,   # position of centre of the grid cells, vector of length N
             x.int  = x.grid$x.int,  # position grid cell interfaces , vector of length N+1
-            dx = x.grid$dx,       # thickness of grid cells , vector length N
+            dx = x.grid$dx,         # thickness of grid cells , vector length N
             dx.aux = x.grid$dx.aux, # auxiliary vector with distances between centre of adjacent cells, first and last: half of cell size, vector of length N+1
-            x.N = x.grid$N,       # number of vertical grid layers
+            x.N = x.grid$N,         # number of vertical grid layers
             y.left = y.grid$x.up,
 				    y.right = y.grid$x.up,
 				    y.mid = y.grid$x.mid,   # position of centre of the grid cells, vector of length N
             y.int  = y.grid$x.int,  # position grid cell interfaces , vector of length N+1
-            dy = y.grid$dx,       # thickness of grid cells , vector length N
+            dy = y.grid$dx,         # thickness of grid cells , vector length N
             dy.aux = y.grid$dx.aux, # auxiliary vector with distances between centre of adjacent cells, first and last: half of cell size, vector of length N+1
-            y.N = y.grid$N))      # number of horizontal grid layers
-}
+            y.N = y.grid$N)         # number of horizontal grid layers
 
+class(Res) <- "grid.2D"
+return(Res)
+}
 
 ###############################################################################
 # Attaches a property to a 1D grid
 ###############################################################################
 
-setup.1D.prop <- function(func = (F <- function(x) return(rep(value,times=length(x)))), # function 
-												  value = NULL,
+setup.prop.1D <- function(func = NULL,     # function 
+												  value = NULL,    # constant value
                           xy = NULL,       # 2-column matrix with x-y values
-												  type = "spline", # one of "spline", "linear"
+												  interpolate = "spline", # one of "spline", "linear"
 												  grid,...)        # grid 
 {
 # check input
@@ -195,15 +205,30 @@ if (! "dx"     %in% gn) stop("error in setup.1Dprop: grid should be a list that 
 if (! "dx.aux" %in% gn) stop("error in setup.1Dprop: grid should be a list that contains dx.aux")
 if (! "N"      %in% gn) stop("error in setup.1Dprop: grid should be a list that contains N")
 
-if (is.null(xy) && is.null(func)) stop("error in setup.prop: either function or a a 2-columned matrix xy should be specified")
 
-# profile speficication via data series input 
+if (is.null(xy) && is.null(value) && is.null(func)) stop("error in setup.prop: function, value and xy cannot be NULL together")
+
+if (! is.null(func))
+# profile specification via function 
+{
+	y.int <- func(grid$x.int,...)
+	y.mid <- func(grid$x.mid,...)
+}
+
+if (! is.null(value))
+# profile specification via value
+{
+	y.int <- rep(value,times=length(grid$x.int))
+	y.mid <- rep(value,times=length(grid$x.mid))
+}
+
 if (! is.null(xy))
+# profile speficication via data series input 
 {
   if (! is.matrix(xy)) stop("error in setup.prop: xy should be a 2-columned matrix or NULL")
-	if (!(type %in% c("linear","spline"))) stop("error in setup.prop: type not properly specified, should be <linear> or <spline>")
+	if (!(interpolate %in% c("linear","spline"))) stop("error in setup.prop: <interpolate> not properly specified, should be <linear> or <spline>")
 		
-  if (type=="linear")
+  if (interpolate=="linear")
   {
   # check the range of input data-series (inr))
   # this range should span the range of grid$x.int (outr)
@@ -222,22 +247,19 @@ if (! is.null(xy))
   y.int <- f(grid$x.int)
   y.mid <- f(grid$x.mid)
   }  
-	
-} else  
-# profile specification via function 
-{
-	y.int <- func(grid$x.int,...)
-	y.mid <- func(grid$x.mid,...)
-}
-return(list(mid  = y.mid,
-            int  = y.int)) 
+}  
+
+Res <- list(mid  = y.mid,
+            int  = y.int) 
+class(Res) <- "prop.1D"
+return(Res)
 }
 
 ###############################################################################
 # Attaches a property to a 2D grid
 ###############################################################################
 
-setup.2D.prop <- function(func = (F <- function(x) return(rep(value,times=length(x)))),     # function 
+setup.prop.2D <- function(func = NULL,     # function 
 												  value = NULL,
                           grid,...)        # 2D grid 
 {
@@ -248,21 +270,33 @@ if (! "x.int"  %in% gn) stop("error in setup.2Dprop: grid should be a list that 
 if (! "y.mid"  %in% gn) stop("error in setup.2Dprop: grid should be a list that contains x.mid")
 if (! "y.int"  %in% gn) stop("error in setup.2Dprop: grid should be a list that contains x.int")
 
-if (is.null(func)) stop("error in setup.prop: function should be specified")
-
-# profile specification via function 
+if (is.null(func) && is.null(value)) stop("error in setup.prop: function and value should not be both NULL")
 
 x.int <- matrix(nrow=length(grid$x.int),ncol=length(grid$y.mid))
 y.int <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.int))
 mid <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.mid))
 
+if (!is.null(value))
+# profile specification via value
+{
+x.int <- value
+y.int <- value 
+mid <- value
+}
+
+if (!is.null(func))
+# profile specification via function 
+{
 for (i in 1:length(grid$x.int)) x.int[i,] <- func(grid$x.int[i],grid$y.mid,...)
 for (i in 1:length(grid$x.mid)) y.int[i,] <- func(grid$x.mid[i],grid$y.int,...)
 for (i in 1:length(grid$x.mid)) mid[i,] <- func(grid$x.mid[i],grid$y.mid,...)
+}
 
-return(list(mid  = mid,
+Res <- list(mid  = mid,
             x.int  = x.int,
-            y.int =  y.int)) 
+            y.int =  y.int) 
+class(Res) <- "prop.2D"
+return(Res)
 }
 
 ###############################################################################
@@ -287,7 +321,7 @@ return(sigma)
 # Calculates the advective velocities assuming steady state compaction
 ###############################################################################
 
-setup.1D.advection <-  function(v.0 = NULL,   # advective velocity at the sediment-water interface
+setup.compaction.1D <- function(v.0 = NULL,   # advective velocity at the sediment-water interface
 		                   v.inf = NULL, # addvective velocity at infinite depth 
 											 por.0,    # porosity at the sediment-water interface 
 											 por.inf,  # porosity at infinite depth 
@@ -321,7 +355,9 @@ v.int <- v.factor/(1-por.grid$int)
 u.mid <- u.factor/por.grid$mid
 u.int <- u.factor/por.grid$int
 
-return(list(u=list(mid=u.mid,int=u.int),v=list(mid=v.mid,int=v.int)))
+Res <- list(u=list(mid=u.mid,int=u.int),v=list(mid=v.mid,int=v.int))
+class(Res) <- "compaction.1D"
+return(Res)
 }
 ###############################################################################
 # Transport in a one-dimensional finite difference grid 
@@ -337,24 +373,36 @@ tran.1D <- function(C,                   # Concentration in solid phase of porou
 									  a.bl.down=NULL,      # transfer coefficient across the downstream boundary layer; Flux = a.bl.down*(C[N]-C.bl.down)
 									  C.bl.down=NULL,      # concentration at the top of the downstream boundary layer 
                     D=NULL,              # Diffusion coefficient (positive), defined on the grid cell interfaces, one value or a vector of length N+1 
-			              D.grid=list(int=D),  # Diffusion coefficient D defined as grid property
+			              D.grid=NULL,         # Diffusion coefficient D defined as grid property
 									  v=0,                 # Advective velocity (positive or negative), defined on the grid cell interfaces, one value or a vector of length N+1
-									  v.grid=list(int=v),  # Advective velocity v defined as grid property
+									  v.grid=NULL,         # Advective velocity v defined as grid property
   	                AFDW=1,              # Advective Finite Difference Weight, weighing coefficient in finite difference scheme for advection (1:backward, 0:forward, 0.5:centred) 
-									  AFDW.grid=list(int=AFDW),# Advective Finite Difference Weight, defined as grid property
-                    VF=1,                 # Interface area defined at grid cell interfaces, one value or a vector of length N+1
-                    VF.grid=list(int=rep(VF,length.out=(length(C)+1)),mid=0.5*(rep(VF,length.out=(length(C)+1))[1:(length(C))]+rep(A,length.out=(length(C)+1))[2:(length(C)+1)])), # volume fraction VF defined as a grid property
+									  AFDW.grid=NULL,      # Advective Finite Difference Weight, defined as grid property
+                    VF=1,                # Interface area defined at grid cell interfaces, one value or a vector of length N+1
+                    VF.grid=NULL,        # volume fraction VF defined as a grid property
                     A=1,                 # Interface area defined at grid cell interfaces, one value or a vector of length N+1
-                    A.grid=list(int=rep(A,length.out=(length(C)+1)),mid=0.5*(rep(A,length.out=(length(C)+1))[1:(length(C))]+rep(A,length.out=(length(C)+1))[2:(length(C)+1)])), # surface area A defined as a grid property
+                    A.grid=NULL,         # surface area A defined as a grid property
                     dx=NULL,             # thickness of grid cells, one value or a vector of length N 
-                    grid=list(dx=rep(dx,length.out=length(C)),dx.aux=0.5*(c(0,rep(dx,length.out=length(C)))+c(rep(dx,length.out=length(C)),0))), # grid definition
-									  full.check = FALSE,   # logical flag enabling a full check of the consistency of the arguments (FALSE speeds up execution by 50%)
+                    grid=NULL,           # grid definition
+									  full.check = FALSE,  # logical flag enabling a full check of the consistency of the arguments (FALSE speeds up execution by 50%)
 									  full.output = FALSE) # logical flag enabling a full return of the output (FALSE speeds up execution by 20%)
 											
 {
 #==============================================================================
 # INPUT CHECKS  
 #==============================================================================
+
+
+#==============================================================================
+# DEFAULT INFILLING OF GRID PARAMETERS 
+#==============================================================================
+
+if (is.null(AFDW.grid)) AFDW.grid <- list(int=AFDW)
+if (is.null(D.grid)) D.grid <- list(int=D)
+if (is.null(v.grid)) v.grid <- list(int=v)
+if (is.null(VF.grid)) VF.grid <- list(int=rep(VF,length.out=(length(C)+1)),mid=0.5*(rep(VF,length.out=(length(C)+1))[1:(length(C))]+rep(VF,length.out=(length(C)+1))[2:(length(C)+1)]))
+if (is.null(A.grid)) A.grid <- list(int=rep(A,length.out=(length(C)+1)),mid=0.5*(rep(A,length.out=(length(C)+1))[1:(length(C))]+rep(A,length.out=(length(C)+1))[2:(length(C)+1)]))
+if (is.null(grid)) grid <- list(dx=rep(dx,length.out=length(C)),dx.aux=0.5*(c(0,rep(dx,length.out=length(C)))+c(rep(dx,length.out=length(C)),0)))
 
 # check dimensions of input arguments
 
@@ -653,7 +701,7 @@ return (list (dC = dC))                    # Rate of change due to advective-dif
 # Advective-diffusive transport in a river
 ###############################################################################
 
-tran.1D.river <- function(C,                   # Tracer concentration 
+tran.volume.1D <- function(C,                   # Tracer concentration 
                           C.up=C[1],           # Tracer concentration at the upstream interface, one value 
                           C.down=C[length(C)], # Tracer concentration at downstream interface, one value 
 													C.lat=0,             # Tracer concentration of lateral input, one value or a vector of length N 
@@ -795,26 +843,38 @@ tran.2D <- function(C,                   # Concentration in solid phase of porou
 									  C.bl.right=NULL,     # concentration at the top of the right boundary layer 
                     D.x=NULL,            # Diffusion coefficient (positive), defined on the grid cell interfaces, one value or a vector of length N+1 
                     D.y=D.x,             # Diffusion coefficient (positive), defined on the grid cell interfaces, one value or a vector of length N+1 
-									  D.grid=list(x.int=matrix(data=D.x,nrow=(nrow(C)+1),ncol=ncol(C)),y.int=matrix(data=D.y,nrow=nrow(C),ncol=(ncol(C)+1))),  # Diffusion coefficient D defined as grid property
+									  D.grid=NULL,         # Diffusion coefficient D defined as grid property
 									  v.x=0,               # Advective velocity (positive or negative), defined on the grid cell interfaces, one value or a vector of length N+1
 									  v.y=v.x,             # Advective velocity (positive or negative), defined on the grid cell interfaces, one value or a vector of length N+1
-									  v.grid=list(x.int=matrix(data=v.x,nrow=(nrow(C)+1),ncol=ncol(C)),y.int=matrix(data=v.y,nrow=nrow(C),ncol=(ncol(C))+1)),  # Advective velocity v defined as grid property
+									  v.grid=NULL,         # Advective velocity v defined as grid property
 									  AFDW.x=1,            # Advective Finite Difference Weight, weighing coefficient in finite difference scheme for advection (1:backward, 0:forward, 0.5:centred) 
 									  AFDW.y=AFDW.x,       # Advective Finite Difference Weight, weighing coefficient in finite difference scheme for advection (1:backward, 0:forward, 0.5:centred) 
-									  AFDW.grid=list(x.int=matrix(data=AFDW.x,nrow=(nrow(C)+1),ncol=ncol(C)),y.int=matrix(data=AFDW.y,nrow=nrow(C),ncol=(ncol(C)+1))),        # Weighing coefficient in finite difference scheme for advection (1:backward, 0:forward, 0.5:centred) 
+									  AFDW.grid=NULL,      # Weighing coefficient in finite difference scheme for advection (1:backward, 0:forward, 0.5:centred) 
                     VF.x=1,              # Volume fraction at the interface of the grid cells, one value 
                     VF.y=VF.x,           # Volume fraction at the interface of the grid cells, one value 
-                    VF.grid=list(x.int=matrix(data=VF.x,nrow=(nrow(C)+1),ncol=ncol(C)),y.int=matrix(data=VF.y,nrow=nrow(C),ncol=(ncol(C)+1)),x.mid=matrix(data=VF.x,nrow=nrow(C),ncol=ncol(C)),y.mid=matrix(data=VF.y,nrow=nrow(C),ncol=ncol(C))), # 0.5*(VF.x[1:nrow(C),]+VF.x[2:(nrow(C)+1),]) 0.5*(VF.y[,1:ncol(C)]+VF.y[,2:(ncol(C)+1)]) defined as a grid property
+                    VF.grid=NULL,        # Volume fraction defined as a grid property
 									  dx=NULL,             # thickness of grid cells 
 									  dy=NULL,             # thickness of grid cells 
-                    grid=list(dx=rep(dx,length.out=nrow(C)),dx.aux=0.5*(c(0,rep(dx,length.out=nrow(C)))+c(rep(dx,length.out=nrow(C)),0)),dy=rep(dy,length.out=ncol(C)),dy.aux=0.5*(c(0,rep(dy,length.out=ncol(C)))+c(rep(dy,length.out=ncol(C)),0))), # grid definition
+                    grid=NULL,           # grid definition
 									  full.check = FALSE,  # logical flag enabling a full check of the consistency of the arguments (FALSE speeds up execution by 50%)
 									  full.output = FALSE) # logical flag enabling a full return of the output (FALSE speeds up execution by 20%)
 											
 {
+
+#==============================================================================
+# DEFAULT INFILLING OF GRID PARAMETERS 
+#==============================================================================
+
+if (is.null(grid)) grid <- list(dx=rep(dx,length.out=nrow(C)),dx.aux=0.5*(c(0,rep(dx,length.out=nrow(C)))+c(rep(dx,length.out=nrow(C)),0)),dy=rep(dy,length.out=ncol(C)),dy.aux=0.5*(c(0,rep(dy,length.out=ncol(C)))+c(rep(dy,length.out=ncol(C)),0)))
+if (is.null(AFDW.grid)) AFDW.grid <- list(x.int=matrix(data=AFDW.x,nrow=(nrow(C)+1),ncol=ncol(C)),y.int=matrix(data=AFDW.y,nrow=nrow(C),ncol=(ncol(C)+1)))
+if (is.null(D.grid)) D.grid <- list(x.int=matrix(data=D.x,nrow=(nrow(C)+1),ncol=ncol(C)),y.int=matrix(data=D.y,nrow=nrow(C),ncol=(ncol(C)+1)))
+if (is.null(v.grid)) v.grid <- list(x.int=matrix(data=v.x,nrow=(nrow(C)+1),ncol=ncol(C)),y.int=matrix(data=v.y,nrow=nrow(C),ncol=(ncol(C))+1))
+if (is.null(VF.grid)) VF.grid <- list(x.int=matrix(data=VF.x,nrow=(nrow(C)+1),ncol=ncol(C)),y.int=matrix(data=VF.y,nrow=nrow(C),ncol=(ncol(C)+1)),x.mid=matrix(data=VF.x,nrow=nrow(C),ncol=ncol(C)),y.mid=matrix(data=VF.y,nrow=nrow(C),ncol=ncol(C)))
+
 #==============================================================================
 # INPUT CHECKS  
 #==============================================================================
+
 
 if (full.check)
 {
@@ -892,6 +952,9 @@ if (!is.null(flux.right))
 
 # check input of grid
 
+if (is.null(dx) && is.null(dy) && is.null(grid))
+stop("error: dx, dy, and grid cannot be NULL at the same time")
+
 gn <- names(grid)
 if (! "dx" %in% gn) 
   stop("error: grid should be a list that contains 'dx' ")
@@ -912,6 +975,9 @@ if (any(grid$dy <= 0) || any(grid$dy.aux <= 0) )
 
 # check input of AFDW.grid
 
+if (is.null(AFDW.x) && is.null(AFDW.y) && is.null(AFDW.grid))
+stop("error: AFDW.x, AFDW.y, and AFDW.grid cannot be NULL at the same time")
+
 gn <- names(AFDW.grid)
 if (! "x.int" %in% gn) 
   stop("error: AFDW.grid should be a list that contains 'x.int', the AFDW values at the vertical interfaces of the grid cells")
@@ -928,6 +994,9 @@ if (any (AFDW.grid$y.int < 0)||any (AFDW.grid$y.int > 1))
 
 # check input of D.grid
 
+if (is.null(D.x) && is.null(D.y) && is.null(D.grid))
+stop("error: D.x, D.y, and D.grid cannot be NULL at the same time")
+
 gn <- names(D.grid)
 if (! "x.int" %in% gn) 
   stop("error: D.grid should be a list that contains 'x.int', the D values at the vertical interfaces of the grid cells")
@@ -942,6 +1011,9 @@ if (any (D.grid$x.int < 0)||any (D.grid$y.int < 0))
 
 # check input of v.grid
 
+if (is.null(v.x) && is.null(v.y) && is.null(v.grid))
+stop("error: v.x, v.y, and v.grid cannot be NULL at the same time")
+
 gn <- names(v.grid)
 if (! "x.int" %in% gn) 
   stop("error: v.grid should be a list that contains 'x.int', the velocity values at the vertical interfaces of the grid cells")
@@ -953,6 +1025,9 @@ if (is.null(v.grid$y.int))
   stop("error: the advective velocity v.grid$y.int should be a list with (numeric) values") 
 
 # check input of VF.grid
+
+if (is.null(VF.x) && is.null(VF.y) && is.null(VF.grid))
+stop("error: VF.x, VF.y, and VF.grid cannot be NULL at the same time")
 
 gn <- names(VF.grid)
 if (! "x.int" %in% gn) 

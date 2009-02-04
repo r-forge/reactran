@@ -1,0 +1,226 @@
+<html><head><title>1-D volumetric advective-diffusive transport in an aquatic system</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="Rchm.css">
+</head>
+<body>
+
+<table width="100%"><tr><td>tran.volume.1D(ReacTran)</td><td align="right">R Documentation</td></tr></table><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="keyword" value="R:   tran.volume.1D">
+<param name="keyword" value=" 1-D volumetric advective-diffusive transport in an aquatic system">
+</object>
+
+
+<h2>1-D volumetric advective-diffusive transport in an aquatic system</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Estimates the volumetric transport term (i.e. the rate of change of the concentration due to diffusion and advection) in a one-dimensional model of an aquatic system (river, estuary). Volumetric transport implies the use of flows (mass per unit of time) rather than fluxes (mass per unit of area per unit of time) as is done in <code><a href="tran.1D.html">tran.1D</a></code>. The <code>tran.volume.1D</code> routine is particularly suited for modelling channels (like rivers, estuaries) where the cross-sectional area changes, but where this area chnage is not explicitly modelled as such. Another difference withy <code>tran.1D</code> is that the present routine also allows the input of lateral water flow.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
+C.lat=0, C.lat.grid=list(mid=rep(C.lat,length.out=length(C))), 
+F.up=NA, F.down=NA, 
+F.lat=NA, F.lat.grid=list(mid=rep(F.lat,length.out=length(C))),
+Disp=NULL, Disp.grid=list(int=rep(Disp,length.out=(length(C)+1))),
+flow = 0, flow.grid=list(int=rep(flow,length.out=(length(C)+1))),
+flow.lat=0, flow.lat.grid=list(mid=rep(flow.lat,length.out=length(C))),
+V=NULL,V.grid=list(mid=rep(V,length.out=length(C))))</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>C </code></td>
+<td>
+Tracer concentration, defined at the centre of the grid cells. A vector of length N [M/L3]</td></tr>
+<tr valign="top"><td><code>C.up </code></td>
+<td>
+Tracer concentration at the upstream interface. One value [M/L3]</td></tr>
+<tr valign="top"><td><code>C.down </code></td>
+<td>
+Tracer concentration at downstream interface. One value [M/L3]</td></tr>
+<tr valign="top"><td><code>C.lat </code></td>
+<td>
+Tracer concentration in the lateral input, defined at grid cell centres. One value or a vector of length N [M/L3]</td></tr>
+<tr valign="top"><td><code>C.lat.grid </code></td>
+<td>
+Tracer concentration in lateral input defined as grid property</td></tr>
+<tr valign="top"><td><code>F.up </code></td>
+<td>
+Total tracer input at the upstream interface. One value [M/T]</td></tr>
+<tr valign="top"><td><code>F.down </code></td>
+<td>
+Total tracer input at downstream interface. One value [M/T]</td></tr>
+<tr valign="top"><td><code>F.lat </code></td>
+<td>
+Total lateral tracer input, defined at grid cell centres. One value or a vector of length N [M/T]</td></tr>
+<tr valign="top"><td><code>F.lat.grid </code></td>
+<td>
+Total lateral tracer input defined as grid property</td></tr>
+<tr valign="top"><td><code>Disp </code></td>
+<td>
+BULK dispersion coefficient, defined on grid cell interfaces. One value or a vector of length N+1, [L3/T]</td></tr>
+<tr valign="top"><td><code>Disp.grid </code></td>
+<td>
+BULK dispersion coefficient defined as grid property</td></tr>
+<tr valign="top"><td><code>flow </code></td>
+<td>
+Water flow rate, defined on grid cell interfaces. One value or a vector of length N+1, [L3/T]</td></tr>
+<tr valign="top"><td><code>flow.grid </code></td>
+<td>
+Water flow rate defined as grid property</td></tr>
+<tr valign="top"><td><code>flow.lat </code></td>
+<td>
+Lateral water flow rate into each volume box, defined at grid cell centres. One value or a vector of length N, [L3/T]</td></tr>
+<tr valign="top"><td><code>flow.lat.grid </code></td>
+<td>
+Lateral water flow rate defined as grid property</td></tr>
+<tr valign="top"><td><code>V </code></td>
+<td>
+Grid cell volume, defined at grid cell centres. One value or a vector of length N [L3]</td></tr>
+<tr valign="top"><td><code>V.grid </code></td>
+<td>
+Grid cell volume defined as grid property </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The <B>boundary conditions</B> are of type
+<ul>
+<li>1. zero-gradient (default)
+<li>2. fixed concentration 
+<li>3. fixed input 
+</ul>
+<p>
+The <EM>bulk dispersion coefficient</EM> (<code>Disp</code>) and the <EM>flow rate</EM> (<code>flow</code>) can be either one value or a vector of length N+1, defined at all grid cell interfaces, including upstream and downstream boundary.
+</p>
+<p>
+The spatial discretisation is given by the volume of each box (<code>V</code>), which can be one value or a vector of length N+1, defined at the centre of each grid cell.
+The water flow is mass conservative. Over each volume box, the routine calculates internally the downstream outflow of water in terms of the upstream inflow and teh lateral inflow.
+</p>
+
+
+<h3>Value</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>dC </code></td>
+<td>
+The rate of change of the concentration C due to transport, defined in the centre of each grid cell [M/L3/T]</td></tr>
+<tr valign="top"><td><code>F </code></td>
+<td>
+Mass flow across at the interface of each grid cell. A vector of length N+1 [M/T]</td></tr>
+<tr valign="top"><td><code>F.up </code></td>
+<td>
+Mass flow across the upstream boundary, positive = INTO model domain. One value [M/T]</td></tr>
+<tr valign="top"><td><code>F.down </code></td>
+<td>
+Mass flow across the downstream boundary, positive = OUT of model domain. One value [M/T]</td></tr>
+<tr valign="top"><td><code>F.lat </code></td>
+<td>
+Lateral mass input per volume box, positive = INTO model domain. A vector of length N [M/T]</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Filip Meysman &lt;f.meysman@nioo.knaw.nl&gt;, Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Soetaert and Herman (2008) A practical guide to ecological modelling - using R as a simulation platform. Springer.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="tran.1D.html">tran.1D</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+##################################################################
+#  EXAMPLE : organic carbon (OC) decay in a widening river       #
+##################################################################
+
+# Two scenarios are simulated: the baseline includes only input 
+# of organic matter upstream. The second scenario simulates the 
+# input of an important side river half way the estuary.  
+
+#====================#
+# Model formulation  #
+#====================#
+
+river.model &lt;- function (t=0,OC,pars=NULL)
+{
+tran &lt;- tran.volume.1D(C=OC,F.up=F.OC,F.lat=F.lat,Disp=Disp,
+flow=flow,V=Volume)$dC 
+reac &lt;- - k*OC
+return(list(dCdt = tran + reac))
+}
+
+#======================#
+# Parameter definition #
+#======================#
+
+# Initialising morphology estuary: 
+
+nbox          &lt;- 500     # number of grid cells
+lengthEstuary &lt;- 100000  # length of estuary [m]
+BoxLength     &lt;- lengthEstuary/nbox # [m]
+Distance      &lt;- seq(BoxLength/2, by=BoxLength, len=nbox) # [m]
+
+# Cross sectional area: sigmoid function of estuarine distance [m2]
+CrossArea &lt;- 4000 + 72000 * Distance^5 /(Distance^5+50000^5)
+
+# Volume of boxes                          (m3)
+Volume  &lt;- CrossArea*BoxLength
+
+# Transport coefficients
+Disp    &lt;- 1000   # m3/s, bulk dispersion coefficient
+flow    &lt;- 180    # m3/s, mean river flow
+
+F.OC    &lt;- 180               # input organic carbon [mol s-1]
+F.lat.0 &lt;- F.OC              # lateral input organic carbon [mol s-1]
+
+k       &lt;- 10/(365*24*3600)  # decay constant organic carbon [s-1]
+
+#====================#
+# Model solution     #
+#====================#
+
+F.lat &lt;- rep(0,length.out=nbox)
+Conc1 &lt;- steady.band(runif(nbox),fun=river.model,nspec=1)$y   
+F.lat &lt;- F.lat.0*dnorm(x=Distance/lengthEstuary,
+mean = Distance[nbox/2]/lengthEstuary, sd = 1/20, log = FALSE)/nbox 
+Conc2 &lt;- steady.band(runif(nbox),fun=river.model,nspec=1)$y   
+
+#====================#
+# Plotting output    #
+#====================#
+
+matplot(Distance/1000,cbind(Conc1,Conc2),lwd=2,
+main="Organic carbon decay in an estuary",xlab="distance [km]",
+ylab="OC Concentration [mM]",
+type="l")  
+legend ("topright",lty=1,col=c("black","red"),
+        c("baseline","with lateral input"))
+</pre>
+
+
+
+<hr><div align="center">[Package <em>ReacTran</em> version 1.1 <a href="00Index.html">Index]</a></div>
+
+</body></html>

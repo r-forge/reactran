@@ -1,0 +1,117 @@
+<html><head><title>Attaches a property to a one-dimensional grid</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="Rchm.css">
+</head>
+<body>
+
+<table width="100%"><tr><td>setup.prop.1D(ReacTran)</td><td align="right">R Documentation</td></tr></table><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="keyword" value="R:   setup.prop.1D">
+<param name="keyword" value=" Attaches a property to a one-dimensional grid">
+</object>
+
+
+<h2>Attaches a property to a one-dimensional grid</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This routine calculates the value of a given property at the middle of grid cells (<code>mid</code>) and at the interfaces of the grid cells (<code>int</code>). Two possibilities are available: either specifying a mathematical function (<code>func</code>) that describes the spatial dependency of the property at hand, or the property is derived from interpolation of a data series (data matrix <code>xy</code>). For example, in a sediment model, <code>setup.prop.1D</code> can be used to specify the porosity, the mixing intensity or some other parameter over the one-dimensional grid. Similarly, in a water column model, <code>setup.prop.1D</code> can be used to specify the sinking velocity of particles or any other model parameter with water depth.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>setup.prop.1D(func=NULL, value=NULL, xy=NULL,
+       interpolate="spline", grid, ...)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>func </code></td>
+<td>
+Function that describes the depth dependency</td></tr>
+<tr valign="top"><td><code>value </code></td>
+<td>
+Constant value given to the property</td></tr>
+<tr valign="top"><td><code>xy </code></td>
+<td>
+A two-column matrix where the first column (<code>x</code>) provides the position, and the second column (<code>y</code>) provides the values that need interpolation over the grid</td></tr>
+<tr valign="top"><td><code>interpolate </code></td>
+<td>
+Specifies how the interpolation should be done, one of "spline" or "linear"; only used if <code>xy</code> is present</td></tr>
+<tr valign="top"><td><code>grid </code></td>
+<td>
+List specifying the 1D grid characteristics, see <code><a href="setup.grid.1D.html">setup.grid.1D</a></code> for details on the structure of this list </td></tr>
+<tr valign="top"><td><code>... </code></td>
+<td>
+Additional arguments that are passed on to <code>func</code> </td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+There are two options to carry out the interpolation:
+<ul>
+<li>"spline" gives a smooth profile, but sometimes generates strange profiles - always check the result!
+<li>"linear" gives a segmented profile
+</ul>
+
+<h3>Value</h3>
+
+<p>
+A list of type <code>prop.1D</code> containing:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>mid </code></td>
+<td>
+property value at the middle of the grid cells; vector of length N (where N is the number of grid cells)</td></tr>
+<tr valign="top"><td><code>int </code></td>
+<td>
+property value at at the interface of the grid cells; vector of length N+1</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Karline Soetaert &lt;k.soetaert@nioo.knaw.nl&gt;, Filip Meysman &lt;f.meysman@nioo.knaw.nl&gt;
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+# Construction of the 1D grid 
+
+grid &lt;- setup.grid.1D(x.up=0,L=10,N=10)
+
+# Porosity profile via function specification
+
+exp.profile &lt;- function(x,y.0=NULL,y.inf=NULL,x.att=NULL)
+{return(y.inf + (y.0-y.inf)*exp(-x/x.att))}
+
+P.func &lt;- setup.prop.1D(func=exp.profile,grid=grid,y.0=0.9,
+y.inf=0.5,x.att=3)
+
+# Porosity profile via data series interpolation
+
+P.data &lt;- matrix(ncol=2,data=c(0,3,6,10,0.9,0.65,0.55,0.5))
+P.spline &lt;- setup.prop.1D(xy=P.data,grid=grid)
+P.linear &lt;- setup.prop.1D(xy=P.data,grid=grid,interpolate="linear")
+
+# Plot different profiles 
+
+plot(grid$x.int,P.func$int,type="l",
+main="setup.prop, function evaluation")  
+points(P.data,cex=1.5,pch=16) 
+lines(grid$x.int,P.spline$int,lty="dashed")
+lines(grid$x.int,P.linear$int,lty="dotdash")
+</pre>
+
+
+
+<hr><div align="center">[Package <em>ReacTran</em> version 1.1 <a href="00Index.html">Index]</a></div>
+
+</body></html>

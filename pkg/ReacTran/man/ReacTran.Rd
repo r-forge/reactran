@@ -7,16 +7,13 @@ Reactive transport modelling in 1D or 2-D
 }
 \description{
   
-  R-package ReacTran contains routines for developing models that describe reaction and
-  advective-diffusive transport in one or two dimensions.
-
-  It can be applied to describe transport in porous media, in estuaries, and in bodies with
-  variable shape.
-
+  R-package ReacTran contains routines that enable the development of one-dimensional and two-dimensional reactive transport models in aquatic systems (rivers, lakes) as well porous media (floc aggregates, sediments). 
+  
   It contains:
   \itemize{
-    \item Functions to transport properties in one or two dimensions
-    \item Functions to setup a grid, usable in transport
+    \item Functions to setup a finite-difference grid (1D or 2D)
+    \item Functions to attach parameters and properties to the grid (1D or 2D)
+    \item Functions to calculate the advective-diffusive transport term over the grid (1D or 2D)
     \item Utility functions
   }
   
@@ -36,12 +33,6 @@ Reactive transport modelling in 1D or 2-D
   
   Filip Meysman
 }
-\references{
-  
-% to be filled in...
-
-}
-
 \examples{
 \dontrun{
 ## show examples (see respective help pages for details)
