@@ -174,7 +174,7 @@ Res <- list(x.up = x.grid$x.up,
             dx.aux = x.grid$dx.aux, # auxiliary vector with distances between centre of adjacent cells, first and last: half of cell size, vector of length N+1
             x.N = x.grid$N,         # number of vertical grid layers
             y.left = y.grid$x.up,
-				    y.right = y.grid$x.up,
+				    y.right = y.grid$x.down,
 				    y.mid = y.grid$x.mid,   # position of centre of the grid cells, vector of length N
             y.int  = y.grid$x.int,  # position grid cell interfaces , vector of length N+1
             dy = y.grid$dx,         # thickness of grid cells , vector length N
@@ -1120,8 +1120,8 @@ if (!is.null(a.bl.right) & !is.null(C.bl.right[1]))
 }
 
 # Calculate diffusive part of the flux 
-x.Dif.flux <- as.matrix(-VF.grid$x.int*D.grid$x.int*diff(rbind(C.up,C,C.down,deparse.level = 0))/grid$dx.aux)  
-y.Dif.flux <- as.matrix(-VF.grid$y.int*D.grid$y.int*t(diff(t(cbind(C.left,C,C.right,deparse.level = 0)))/grid$dy.aux))  
+x.Dif.flux <- as.matrix(-VF.grid$x.int*D.grid$x.int*diff(rbind(C.up,C,C.down,deparse.level = 0))/matrix(data=grid$dx.aux,nrow=(N+1),ncol=M,byrow=FALSE))  
+y.Dif.flux <- as.matrix(-VF.grid$y.int*D.grid$y.int*t(diff(t(cbind(C.left,C,C.right,deparse.level = 0))))/matrix(data=grid$dy.aux,nrow=N,ncol=(M+1),byrow=TRUE))  
 
 # Calculate adcevtive part of the flux 
 x.Adv.flux <- as.matrix(VF.grid$x.int*v.grid$x.int*((1-AFDW.grid$x.int)*rbind(C.up,C,deparse.level = 0)+AFDW.grid$x.int*rbind(C,C.down,deparse.level = 0)))  
