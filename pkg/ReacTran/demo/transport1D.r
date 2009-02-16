@@ -1,10 +1,10 @@
 mf <- par("mfrow")
 par (mfrow=c(1,1))
 example(tran.1D)
-example(tran.1D.river)
+example(tran.volume.1D)
 example(tran.2D)
-example(setup.1D.advection)
-example(setup.1D.prop)
+example(setup.compaction.1D)
+example(setup.prop.1D)
 example(fiadeiro)
 par (mfrow=mf)
 
