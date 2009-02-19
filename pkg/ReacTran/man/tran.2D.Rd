@@ -51,17 +51,20 @@ full.check = FALSE, full.output = FALSE)}
   \item{full.output }{logical flag enabling a full return of the output (default = FALSE; TRUE slows down execution by 20 percent)}
 }
 \value{
-  when (full.output = FALSE) then a list containing:
+  \item{when (full.output = FALSE) then a list containing:}
   \item{dC }{The rate of change of the concentration C due to transport, defined in the centre of each grid cell [M/L3/T]}
-  when (full.output = TRUE) then a list containing:
+  \item{when (full.output = TRUE) then a list containing:}
   \item{dC }{The rate of change of the concentration C due to transport, defined in the centre of each grid cell [M/L3/T]}
-  \item{C.up }{Concentration at the upstream interface. One value [M/L3]}
-  \item{C.down }{Concentration at the downstream interface. One value [M/L3]}
-  \item{adv.flux }{Advective flux across at the interface of each grid cell. A vector of length N+1 [M/L2/T]}
-  \item{dif.flux }{Diffusive flux across at the interface of each grid cell. A vector of length N+1 [M/L2/T]}
-  \item{flux }{Total flux across at the interface of each grid cell. A vector of length N+1 [M/L2/T]}
-  \item{flux.up }{Flux across the upstream boundary, positive = INTO model domain. One value [M/L2/T]}
-  \item{flux.down }{Flux across the downstream boundary, positive = OUT of model domain. One value [M/L2/T]}
+  \item{C.up }{Concentration at the upstream interface. A vector of length M [M/L3]}
+  \item{C.down }{Concentration at the downstream interface. A vector of length M [M/L3]}
+  \item{C.left }{Concentration at the left interface. A vector of length N [M/L3]}
+  \item{C.right }{Concentration at the right interface. A vector of length N [M/L3]}
+  \item{x.flux }{Flux across the horizontal interface of the grid cells. A (N+1)x(M) matrix  [M/L2/T]}
+  \item{y.flux }{Flux across the vertical interfaces of the grid cells. A (N)x(M+1) matrix [M/L2/T]}
+  \item{flux.up }{Flux across the upstream boundary, positive = INTO model domain. A vector of length M [M/L2/T]}
+  \item{flux.down }{Flux across the downstream boundary, positive = OUT of model domain. A vector of length M [M/L2/T]}
+  \item{flux.left }{Flux across the left boundary, positive = INTO model domain. A vector of length N [M/L2/T]}
+  \item{flux.right }{Flux across the right boundary, positive = OUT of model domain. A vector of length N [M/L2/T]}
 }
 \author{Filip Meysman <f.meysman@nioo.knaw.nl>, Karline Soetaert <k.soetaert@nioo.knaw.nl> }
 \examples{
@@ -153,7 +156,12 @@ system.time(test3())
 }
 \references{Soetaert and Herman, a guide to ecological modelling - using R as
 a simulation platform, 2008. Springer}
-\details{The \bold{boundary conditions} are either
+\details{
+\itemize{
+  \item {The x-axis is taken in the vertical pointing downwards (N grid cells).}
+  \item {The y-axis is taken in the horizontal pointing to the right (M grid cells).}
+}
+The \bold{boundary conditions} are either
 \itemize{
   \item (1) zero-gradient 
   \item (2) fixed concentration 
