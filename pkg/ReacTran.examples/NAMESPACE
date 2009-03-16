@@ -1,0 +1,4 @@
+useDynLib(ReacTran.examples)
+
+export(OMEXDIAmodel)
+

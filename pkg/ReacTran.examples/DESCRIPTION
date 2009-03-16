@@ -1,0 +1,11 @@
+Package: ReacTran.examples
+Version: 1.0
+Title: Reactive transport model examples
+Author: Karline Soetaert <k.soetaert@nioo.knaw.nl>,
+  Filip Meysman <f.meysman@nioo.knaw.nl>
+Maintainer: Karline Soetaert <k.soetaert@nioo.knaw.nl>
+Depends: R (>= 2.01), ReacTran
+Description: Examples of reactive transport models
+License: GPL
+LazyData: yes
+Packaged: Fri Sep 12 12:44:06 2008; karlines
