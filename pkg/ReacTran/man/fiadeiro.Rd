@@ -1,18 +1,52 @@
 \name{fiadeiro}
 \alias{fiadeiro}
-\title{Advective finite difference weights}
-\description{Weighing coefficients used in the finite difference scheme for advection calculated according to Fiadeiro and Veronis (1977). This particular AFDW (advective finite difference weights) scheme switches from backward differencing (in advection dominated conditions; large Peclet numbers) to central differencing (under diffusion dominated conditions; small Peclet numbers). This way it forms a compromise between stability, accuracy and reduced numerical dispersion.}
-\usage{fiadeiro(v, D, dx.aux, grid=list(dx.aux=dx.aux))}
+\title{
+  Advective finite difference weights
+}
+
+\description{
+  Weighing coefficients used in the finite difference scheme for advection
+  calculated according to Fiadeiro and Veronis (1977).
+
+  This particular AFDW (advective finite difference weights) scheme switches
+  from backward differencing (in advection dominated conditions; large Peclet
+  numbers) to central differencing (under diffusion dominated conditions;
+  small Peclet numbers).
+
+  This way it forms a compromise between stability, accuracy and reduced
+  numerical dispersion.
+}
+
+\usage{
+fiadeiro(v, D, dx.aux, grid=list(dx.aux=dx.aux))
+}
+
 \arguments{
-  \item{v }{advective velocity; either one value or a vector of length N+1 with N the number of grid cells [L/T]}
-  \item{D }{diffusion coefficient; either one value or a vector of length N+1 [L2/T]}
-  \item{dx.aux }{auxiliary vector containing the distances between the locations where the concentration is defined (i.e. the grid cell centers and the two outer interfaces); either one value or a vector of length N+1 }
-  \item{grid }{discretization grid as calculated by \code{\link{setup.grid.1D}}}
+  \item{v }{advective velocity; either one value or a vector of length N+1,
+    with N the number of grid cells [L/T].
+  }
+  \item{D }{diffusion coefficient; either one value or a vector of length N+1
+    [L2/T].
+  }
+  \item{dx.aux }{auxiliary vector containing the distances between the
+    locations where the concentration is defined (i.e. the grid cell centers
+    and the two outer interfaces); either one value or a vector of length N+1.
+  }
+  \item{grid }{discretization grid as calculated by \code{\link{setup.grid.1D}}.
+  }
 }
+
 \value{
-  the Advective Finite Difference Weighing (AFDW) coefficients as used for the transport routines \code{\link{tran.1D}} and \code{\link{tran.volume.1D}}; either one value or a vector of length N+1
+  the Advective Finite Difference Weighing (AFDW) coefficients as used for
+  the transport routines \code{\link{tran.1D}} and \code{\link{tran.volume.1D}};
+  either one value or a vector of length N+1
 }
-\author{Filip Meysman <f.meysman@nioo.knaw.nl>, Karline Soetaert <k.soetaert@nioo.knaw.nl>}
+
+\author{
+  Filip Meysman <f.meysman@nioo.knaw.nl>,
+  Karline Soetaert <k.soetaert@nioo.knaw.nl>
+}
+
 \examples{
 #=============================================================================
 # Model formulation (set of differential equations)
@@ -141,30 +175,64 @@ legend=c("backward diff","centred diff","Fiadeiro&Veronis")
 # - For the fine grid, all three solutions are identical
 # - For the coarse grid, the BD and FV solutions show numerical dispersion
 }
-\references{
-\itemize{
-\item Fiadeiro ME and Veronis G (1977) Weighted-mean schemes for finite-difference approximation to advection-diffusion equation.
-Tellus 29, 512-522.
-\item Boudreau (1997) Diagnetic models and their implementation. Chapter 8: Numerical Methods. Springer.  
-}}
-\details{The Fiadeiro and Veronis (1977) scheme adapts the differencing method to the situation at hand (either advection or diffusion dominance). 
-It is based on the following rationale:
-\itemize{
-\item When using forward differences (AFDW = 0), the scheme is first order accurate, creates a low level of (artificial) numerical dispersion, but is highly unstable (state variables may become negative). 
-\item When using backward differences (AFDW = 1), the scheme is first order accurate, is universally stable (state variables always remain positive), but the scheme creates high levels of numerical dispersion.
-\item When using central differences (AFDW = 0.5), the scheme is second order accurate, is not universally stable (but , and has a moderate level of numerical dispersion.  
-but state variables may become negative.}
 
-Because of this instability issue, forward schemes should be avoided. Because of its higher accuracy, the central scheme is preferred over the backward scheme. The central scheme is stable when sufficient physical dispersion is present, it may become unstable when advection is the only transport process.
-The Fiadeiro and Veronis (1977) scheme takes this into account: it uses central differencing when possible (when physical diffusion is high enough), and switches to backward differing when needed (when advection dominates). The switching is detrmined by the Peclet number \code{Pe = abs(v)*dx.aux/D}.
-\itemize{
-\item the higher the diffusion \code{D} (\code{Pe > 1}), the closer the AFDW coefficients are to 0.5 (central differencing)
-\item the higher the advection \code{v} (\code{Pe < 1}), the closer the AFDW coefficients are to 1 (backward differencing) 
-}}
+\references{
+  \itemize{
+    \item Fiadeiro ME and Veronis G (1977) Weighted-mean schemes for
+      finite-difference approximation to advection-diffusion equation.
+      Tellus 29, 512-522.
+    \item Boudreau (1997) Diagnetic models and their implementation.
+      Chapter 8: Numerical Methods. Springer.
+  }
+}
+
+\details{
+  The Fiadeiro and Veronis (1977) scheme adapts the differencing method to
+  the situation at hand (either advection or diffusion dominance).
+
+  It is based on the following rationale:
+  \itemize{
+    \item When using forward differences (AFDW = 0), the scheme is first
+      order accurate, creates a low level of (artificial) numerical dispersion,
+      but is highly unstable (state variables may become negative).
+    \item When using backward differences (AFDW = 1), the scheme is first
+      order accurate, is universally stable (state variables always remain
+      positive), but the scheme creates high levels of numerical dispersion.
+    \item When using central differences (AFDW = 0.5), the scheme is second
+      order accurate, is not universally stable, and has a moderate level of
+      numerical dispersion, but state variables may become negative.
+  }
+
+  Because of this instability issue, forward schemes should be avoided.
+  Because of its higher accuracy, the central scheme is preferred over the
+  backward scheme.
+
+  The central scheme is stable when sufficient physical dispersion is present,
+  it may become unstable when advection is the only transport process.
+
+  The Fiadeiro and Veronis (1977) scheme takes this into account: it uses
+  central differencing when possible (when physical diffusion is high enough),
+  and switches to backward differing when needed (when advection dominates).
+  The switching is detrmined by the Peclet number \code{Pe = abs(v)*dx.aux/D}.
+  \itemize{
+    \item the higher the diffusion \code{D} (\code{Pe > 1}), the closer the
+      AFDW coefficients are to 0.5 (central differencing)
+    \item the higher the advection \code{v} (\code{Pe < 1}), the closer the
+      AFDW coefficients are to 1 (backward differencing)
+  }
+}
+
 \note{
-\itemize{
-\item If the state variables (concentrations) decline in the direction of the 1D axis, then central difference schme will be stable. If known a prioiri, under these circumstances, central differencing is to be preferred over the fiadeiro scheme.
-\item Each scheme will always create some numerical diffusion. this depends on the resolution of the grid (i.e. the magnitude of \code{dx.aux}). In order to reduce numerical dispersion, one should increase the grid resolution (i.e. decrease \code{dx.aux}).
-}}
+  \itemize{
+    \item If the state variables (concentrations) decline in the direction
+      of the 1D axis, then central difference schme will be stable.
+      If known a prioiri, under these circumstances, central differencing is
+      to be preferred over the fiadeiro scheme.
+    \item Each scheme will always create some numerical diffusion. this
+      depends on the resolution of the grid (i.e. the magnitude of
+      \code{dx.aux}). In order to reduce numerical dispersion, one should
+      increase the grid resolution (i.e. decrease \code{dx.aux}).
+  }
+}
 \keyword{utilities}
 

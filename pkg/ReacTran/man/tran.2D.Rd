@@ -1,72 +1,188 @@
 \name{tran.2D}
 \alias{tran.2D}
-\title{General two-dimensional advective-diffusive transport}
-\description{Estimates the transport term (i.e. the rate of change of the concentration due to diffusion and advection) in a two-dimensional rectangular model domain.} 
-\usage{tran.2D(C, C.up=C[1,], C.down=C[nrow(C),],
-C.left=C[,1], C.right=C[,ncol(C)], 
-flux.up=NA, flux.down=NA, flux.left=NA, flux.right=NA,
-a.bl.up=NULL, C.bl.up=NULL, a.bl.down=NULL, C.bl.down=NULL,
-a.bl.left=NULL, C.bl.left=NULL, a.bl.right=NULL, C.bl.right=NULL,
-D.x=NULL, D.y=D.x, D.grid=NULL, 
-v.x=0, v.y=v.x, v.grid=NULL, 
-AFDW.x=1, AFDW.y=AFDW.x, AFDW.grid=NULL, 
-VF.x=1, VF.y=VF.x, VF.grid=NULL,
-dx=NULL, dy=NULL, grid=NULL,
-full.check = FALSE, full.output = FALSE)}
+\title{
+  General two-dimensional advective-diffusive transport
+}
+
+\description{
+  Estimates the transport term (i.e. the rate of change of a concentration
+  due to diffusion and advection) in a two-dimensional rectangular model domain.
+}
+
+\usage{
+tran.2D ( C, C.up=C[1,], C.down=C[nrow(C),],
+  C.left=C[,1], C.right=C[,ncol(C)],
+  flux.up=NA, flux.down=NA, flux.left=NA, flux.right=NA,
+  a.bl.up=NULL, C.bl.up=NULL, a.bl.down=NULL, C.bl.down=NULL,
+  a.bl.left=NULL, C.bl.left=NULL, a.bl.right=NULL, C.bl.right=NULL,
+  D.x=NULL, D.y=D.x, D.grid=NULL,
+  v.x=0, v.y=v.x, v.grid=NULL,
+  AFDW.x=1, AFDW.y=AFDW.x, AFDW.grid=NULL,
+  VF.x=1, VF.y=VF.x, VF.grid=NULL,
+  dx=NULL, dy=NULL, grid=NULL,
+  full.check = FALSE, full.output = FALSE)
+}
 
 \arguments{
-  \item{C }{Concentration, expressed per unit volume, defined at the centre of each grid cell; NxM matrix [M/L3] }
-  \item{C.up }{Concentration at upstream boundary; vector of length M [M/L3]}
-  \item{C.down }{Concentration at downstream boundary; vector of length M [M/L3]}
-  \item{C.left }{Concentration at left boundary; vector of length N [M/L3]}
-  \item{C.right }{Concentration at right boundary; vector of length N [M/L3]}
-  \item{flux.up }{Flux across the upstream boundary, positive = INTO model domain; vector of length M [M/L2/T]}
-  \item{flux.down }{Flux across the downstream boundary, positive = OUT of model domain; vector of length M [M/L2/T]}
-  \item{flux.left }{Flux across the left boundary, positive = INTO model domain; vector of length N [M/L2/T]}
-  \item{flux.right }{Flux across the right boundary, positive = OUT of model domain; vector of length N [M/L2/T]}
-  \item{a.bl.up }{Transfer coefficient across the upstream boundary layer. \code{Flux=a.bl.up*(C.bl.up-C[1,])}. One value [L/T]}
-  \item{C.bl.up }{Concentration at the upstream boundary layer; vector of length M  [M/L3]}
-  \item{a.bl.down }{Transfer coefficient across the downstream boundary layer; \code{Flux=a.bl.down*(C[N,]-C.bl.down)}. One value [L/T]}
-  \item{C.bl.down }{Concentration at the downstream boundary layer; vector of length M  [M/L3]}
-  \item{a.bl.left }{Transfer coefficient across the left boundary layer. \code{Flux=a.bl.left*(C.bl.left-C[,1])}. One value [L/T]}
-  \item{C.bl.left }{Concentration at the left boundary layer; vector of length N  [M/L3]}
-  \item{a.bl.right }{Transfer coefficient across the right boundary layer; \code{Flux=a.bl.right*(C[,M]-C.bl.right)}. One value [L/T]}
-  \item{C.bl.right }{Concentration at the right boundary layer; vector of length N  [M/L3]}
-  \item{D.x }{diffusion coefficient in x-direction, defined on grid cell interfaces. One value or an (N+1)x(M) matrix [L2/T]}
-  \item{D.y }{diffusion coefficient in y-direction, defined on grid cell interfaces. One value or an (N)x(M+1) matrix [L2/T]}
-  \item{D.grid }{diffusion coefficient packaged as a grid list; the list contains at least the elements \code{x.int} and \code{y.int} (see \code{\link{setup.prop.2D}})  [L2/T]}
-  \item{v.x }{advective velocity in the x-direction, defined on grid cell interfaces. Can be positive (downstream flow) or negative (upstream flow). One value or an (N+1)x(M) matrix  [L/T]}
-  \item{v.y }{advective velocity in the y-direction, defined on grid cell interfaces. Can be positive (downstream flow) or negative (upstream flow). One value or an (N)x(M+1) matrix  [L/T]}
-  \item{v.grid }{advective velocity packaged as a grid list; the list contains at least the elements \code{x.int} and \code{y.int} (see \code{\link{setup.prop.2D}}) [L/T]}
-  \item{AFDW.x }{weight used in the finite difference scheme for advection in the x-direction, defined on grid cell interfaces; backward = 1, centred = 0.5, forward = 0; default is backward. One value or an (N+1)x(M) matrix [-]}
-  \item{AFDW.y }{weight used in the finite difference scheme for advection in the y-direction, defined on grid cell interfaces; backward = 1, centred = 0.5, forward = 0; default is backward. One value or an (N)x(M+1) matrix [-]}
-  \item{AFDW.grid }{AFDW coefficients packaged as a grid list; the list contains at least the elements \code{x.int} and \code{y.int} (see \code{\link{setup.prop.2D}}) [-]}
-  \item{VF.x }{Volume fraction at the grid cell interfaces in the x-direction. One value or an (N+1)x(M) matrix [-]}
-  \item{VF.y }{Volume fraction at the grid cell interfaces in the y-direction. One value or an (N)x(M+1) matrix [-]}
-  \item{VF.grid }{Volume fraction packaged as a grid list; the list contains at least the elements \code{x.int}, \code{y.int}, 'x.mid' and 'y.mid' (see \code{\link{setup.prop.2D}}) [-]}
-  \item{dx }{distance between adjacent cell interfaces in the x-direction (thickness of grid cells). One value or vector of length N [L]}
-  \item{dy }{distance between adjacent cell interfaces in the y-direction (thickness of grid cells). One value or vector of length M [L]}
-  \item{grid }{discretization grid, a list containing at least elements \code{dx}, \code{dx.aux}, \code{dy}, \code{dy.aux} (see \code{\link{setup.grid.2D}}) [L]}
-  \item{full.check }{logical flag enabling a full check of the consistency of the arguments (default = FALSE; TRUE slows down execution by 50 percent)}
-  \item{full.output }{logical flag enabling a full return of the output (default = FALSE; TRUE slows down execution by 20 percent)}
+  \item{C }{concentration, expressed per unit volume, defined at the centre
+    of each grid cell; NxM matrix [M/L3].
+  }
+  \item{C.up }{concentration at upstream boundary; vector of length M [M/L3].
+  }
+  \item{C.down }{concentration at downstream boundary; vector of length
+    M [M/L3].
+  }
+  \item{C.left }{concentration at left boundary; vector of length N [M/L3].
+  }
+  \item{C.right }{concentration at right boundary; vector of length N [M/L3].
+  }
+  \item{flux.up }{flux across the upstream boundary, positive = INTO model
+    domain; vector of length M [M/L2/T].
+  }
+  \item{flux.down }{flux across the downstream boundary, positive = OUT of
+    model domain; vector of length M [M/L2/T].
+  }
+  \item{flux.left }{flux across the left boundary, positive = INTO model
+    domain; vector of length N [M/L2/T].
+  }
+  \item{flux.right }{flux across the right boundary, positive = OUT of
+    model domain; vector of length N [M/L2/T].
+  }
+  \item{a.bl.up }{transfer coefficient across the upstream boundary layer.
+    \code{Flux=a.bl.up*(C.bl.up-C[1,])}. One value [L/T].
+  }
+  \item{C.bl.up }{concentration at the upstream boundary layer; vector of
+    length M  [M/L3].
+  }
+  \item{a.bl.down }{transfer coefficient across the downstream boundary
+    layer; \code{Flux=a.bl.down*(C[N,]-C.bl.down)}. One value [L/T].
+  }
+  \item{C.bl.down }{concentration at the downstream boundary layer; vector of
+    length M  [M/L3].
+  }
+  \item{a.bl.left }{transfer coefficient across the left boundary layer.
+    \code{Flux=a.bl.left*(C.bl.left-C[,1])}. One value [L/T].
+  }
+  \item{C.bl.left }{concentration at the left boundary layer; vector of
+    length N  [M/L3].
+  }
+  \item{a.bl.right }{transfer coefficient across the right boundary layer;
+    \code{Flux=a.bl.right*(C[,M]-C.bl.right)}. One value [L/T].
+  }
+  \item{C.bl.right }{concentration at the right boundary layer; vector of
+    length N  [M/L3].
+  }
+  \item{D.x }{diffusion coefficient in x-direction, defined on grid cell
+    interfaces. One value or an (N+1)x(M) matrix [L2/T].
+  }
+  \item{D.y }{diffusion coefficient in y-direction, defined on grid cell
+    interfaces. One value or an (N)x(M+1) matrix [L2/T].
+  }
+  \item{D.grid }{diffusion coefficient packaged as a grid list; the list
+    contains at least the elements \code{x.int} and \code{y.int}
+    (see \code{\link{setup.prop.2D}})  [L2/T].
+  }
+  \item{v.x }{advective velocity in the x-direction, defined on grid cell
+    interfaces. Can be positive (downstream flow) or negative (upstream flow).
+    One value or an (N+1)x(M) matrix  [L/T].
+  }
+  \item{v.y }{advective velocity in the y-direction, defined on grid cell
+    interfaces. Can be positive (downstream flow) or negative (upstream flow).
+    One value or an (N)x(M+1) matrix  [L/T].
+  }
+  \item{v.grid }{advective velocity packaged as a grid list; the list
+    contains at least the elements \code{x.int} and \code{y.int} (see
+    \code{\link{setup.prop.2D}}) [L/T].
+  }
+  \item{AFDW.x }{weight used in the finite difference scheme for advection
+    in the x-direction, defined on grid cell interfaces; backward = 1,
+    centred = 0.5, forward = 0; default is backward. One value or an
+    (N+1)x(M) matrix [-].
+  }
+  \item{AFDW.y }{weight used in the finite difference scheme for advection
+    in the y-direction, defined on grid cell interfaces; backward = 1,
+    centred = 0.5, forward = 0; default is backward. One value or an
+    (N)x(M+1) matrix [-].
+  }
+  \item{AFDW.grid }{AFDW coefficients packaged as a grid list; the list
+    contains at least the elements \code{x.int} and \code{y.int}
+    (see \code{\link{setup.prop.2D}}) [-].
+  }
+  \item{VF.x }{Volume fraction at the grid cell interfaces in the x-direction.
+    One value or an (N+1)x(M) matrix [-].
+  }
+  \item{VF.y }{Volume fraction at the grid cell interfaces in the y-direction.
+    One value or an (N)x(M+1) matrix [-].
+  }
+  \item{VF.grid }{Volume fraction packaged as a grid list; the list contains
+    at least the elements \code{x.int}, \code{y.int}, 'x.mid' and 'y.mid'
+    (see \code{\link{setup.prop.2D}}) [-].
+  }
+  \item{dx }{distance between adjacent cell interfaces in the x-direction
+    (thickness of grid cells). One value or vector of length N [L].
+  }
+  \item{dy }{distance between adjacent cell interfaces in the y-direction
+    (thickness of grid cells). One value or vector of length M [L].
+  }
+  \item{grid }{discretization grid, a list containing at least elements
+    \code{dx}, \code{dx.aux}, \code{dy}, \code{dy.aux}
+    (see \code{\link{setup.grid.2D}}) [L].
+  }
+  \item{full.check }{logical flag enabling a full check of the consistency
+    of the arguments (default = \code{FALSE}; \code{TRUE} slows down
+    execution by 50 percent).
+  }
+  \item{full.output }{logical flag enabling a full return of the output
+    (default = \code{FALSE}; \code{TRUE} slows down execution by 20 percent).
+  }
 }
 \value{
-  \item{when (full.output = FALSE) then a list containing:}
-  \item{dC }{The rate of change of the concentration C due to transport, defined in the centre of each grid cell [M/L3/T]}
-  \item{when (full.output = TRUE) then a list containing:}
-  \item{dC }{The rate of change of the concentration C due to transport, defined in the centre of each grid cell [M/L3/T]}
-  \item{C.up }{Concentration at the upstream interface. A vector of length M [M/L3]}
-  \item{C.down }{Concentration at the downstream interface. A vector of length M [M/L3]}
-  \item{C.left }{Concentration at the left interface. A vector of length N [M/L3]}
-  \item{C.right }{Concentration at the right interface. A vector of length N [M/L3]}
-  \item{x.flux }{Flux across the horizontal interface of the grid cells. A (N+1)x(M) matrix  [M/L2/T]}
-  \item{y.flux }{Flux across the vertical interfaces of the grid cells. A (N)x(M+1) matrix [M/L2/T]}
-  \item{flux.up }{Flux across the upstream boundary, positive = INTO model domain. A vector of length M [M/L2/T]}
-  \item{flux.down }{Flux across the downstream boundary, positive = OUT of model domain. A vector of length M [M/L2/T]}
-  \item{flux.left }{Flux across the left boundary, positive = INTO model domain. A vector of length N [M/L2/T]}
-  \item{flux.right }{Flux across the right boundary, positive = OUT of model domain. A vector of length N [M/L2/T]}
+  \item{when (\code{full.output = FALSE}) then a list containing:}
+  \item{dC }{the rate of change of the concentration C due to transport,
+    defined in the centre of each grid cell [M/L3/T].
+  }
+  \item{when (\code{full.output = TRUE}) then a list containing:
+  }
+  \item{dC }{the rate of change of the concentration C due to transport,
+    defined in the centre of each grid cell [M/L3/T].
+  }
+  \item{C.up }{concentration at the upstream interface.
+    A vector of length M [M/L3].
+  }
+  \item{C.down }{concentration at the downstream interface.
+    A vector of length M [M/L3].
+  }
+  \item{C.left }{concentration at the left interface.
+    A vector of length N [M/L3].
+  }
+  \item{C.right }{concentration at the right interface.
+    A vector of length N [M/L3].
+  }
+  \item{x.flux }{flux across the horizontal interface of the grid cells.
+    A (N+1)x(M) matrix  [M/L2/T].
+  }
+  \item{y.flux }{flux across the vertical interfaces of the grid cells.
+    A (N)x(M+1) matrix [M/L2/T].
+  }
+  \item{flux.up }{flux across the upstream boundary, positive = INTO model
+    domain. A vector of length M [M/L2/T].
+  }
+  \item{flux.down }{flux across the downstream boundary, positive = OUT
+    of model domain. A vector of length M [M/L2/T].
+  }
+  \item{flux.left }{flux across the left boundary, positive = INTO model
+    domain. A vector of length N [M/L2/T].
+  }
+  \item{flux.right }{flux across the right boundary, positive = OUT of model
+    domain. A vector of length N [M/L2/T].
+  }
 }
-\author{Filip Meysman <f.meysman@nioo.knaw.nl>, Karline Soetaert <k.soetaert@nioo.knaw.nl> }
+
+\author{
+  Filip Meysman <f.meysman@nioo.knaw.nl>,
+  Karline Soetaert <k.soetaert@nioo.knaw.nl>
+}
+
 \examples{
 # Parameters
 F        <- 100             # input flux [micromol cm-2 yr-1]
@@ -154,21 +270,26 @@ VF.x=por,dx=dx,dy=dy,C.bl.up=C.bl.up,a.bl.up=a.bl,C.down=C.down)
 system.time(test3())
 
 }
-\references{Soetaert and Herman, a guide to ecological modelling - using R as
-a simulation platform, 2008. Springer}
+\references{
+  Soetaert and Herman, a practical guide to ecological modelling - using R as
+  a simulation platform, 2009. Springer
+}
+
 \details{
-\itemize{
-  \item {The x-axis is taken in the vertical pointing downwards (N grid cells).}
-  \item {The y-axis is taken in the horizontal pointing to the right (M grid cells).}
-}
-The \bold{boundary conditions} are either
-\itemize{
-  \item (1) zero-gradient 
-  \item (2) fixed concentration 
-  \item (3) convective boundary layer 
-  \item (4) fixed flux 
-}
-This is also the order of priority. The zero gradient is the default, the fixed flux overrules all other. 
+  \itemize{
+    \item {The x-axis is taken in the vertical pointing downwards (N grid cells).}
+    \item {The y-axis is taken in the horizontal pointing to the right (M grid cells).}
+  }
+  The \bold{boundary conditions} are either
+  \itemize{
+    \item (1) zero-gradient
+    \item (2) fixed concentration
+    \item (3) convective boundary layer
+    \item (4) fixed flux
+  }
+  This is also the order of priority. The zero gradient is the default,
+  the fixed flux overrules all other.
 }  
+
 \keyword{utilities}
 

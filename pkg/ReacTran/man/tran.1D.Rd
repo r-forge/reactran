@@ -1,54 +1,144 @@
 \name{tran.1D}
 \alias{tran.1D}
-\title{General one-dimensional advective-diffusive transport}
-\description{Estimates the transport term (i.e. the rate of change of the concentration due to diffusion and advection) in a one-dimensional model of a liquid (volume fraction constant and equal to one) or a porous medium (volume fraction variable and lower than one). The interfaces between grid cells can have a variable cross-sectional area, for example when model spherical or cylindrical geometries (see example).} 
-\usage{tran.1D(C, C.up=C[1],C.down=C[length(C)], 
-flux.up=NA, flux.down=NA, a.bl.up=NULL, C.bl.up=NULL, 
-a.bl.down=NULL, C.bl.down=NULL,
-D=NULL, D.grid=NULL, v=0, v.grid=NULL,
-AFDW=1, AFDW.grid=NULL, 
-VF=1, VF.grid=NULL, A=1, A.grid=NULL, dx=NULL,grid=NULL,
-full.check=FALSE, full.output=FALSE)}
+
+\title{
+  General one-dimensional advective-diffusive transport
+}
+
+\description{
+  Estimates the transport term (i.e. the rate of change of a concentration
+  due to diffusion and advection) in a one-dimensional model of a
+  liquid (volume fraction constant and equal to one) or in a porous medium
+  (volume fraction variable and lower than one).
+
+  The interfaces between grid cells can have a variable cross-sectional area,
+  for example when modelling spherical or cylindrical geometries
+  (see example).
+}
+
+\usage{
+tran.1D(C, C.up = C[1], C.down = C[length(C)],
+  flux.up = NA, flux.down = NA, a.bl.up = NULL, C.bl.up = NULL,
+  a.bl.down = NULL, C.bl.down = NULL,
+  D = NULL, D.grid = NULL, v = 0, v.grid = NULL,
+  AFDW = 1, AFDW.grid = NULL, VF = 1, VF.grid = NULL,
+  A = 1, A.grid = NULL, dx = NULL, grid = NULL,
+  full.check = FALSE, full.output = FALSE)
+}
 
 \arguments{
-  \item{C }{concentration, expressed per unit volume, defined at the centre of each grid cell. A vector of length N [M/L3] }
-  \item{C.up }{concentration at upstream boundary. One value [M/L3]}
-  \item{C.down }{concentration at downstream boundary. One value [M/L3]}
-  \item{flux.up }{flux across the upstream boundary, positive = INTO model domain. One value [M/L2/T]}
-  \item{flux.down }{flux across the downstream boundary, positive = OUT of model domain. One value [M/L2/T]}
-  \item{a.bl.up }{convective transfer coefficient across the upstream boundary layer. \code{Flux = a.bl.up*(C.bl.up-C[1])}. One value [L/T]}
-  \item{C.bl.up }{concentration at the upstream boundary layer. One value [M/L3]}
-  \item{a.bl.down }{convective transfer coefficient across the downstream boundary layer. \code{Flux = a.bl.down*(C[N]-C.bl.down)}. One value [L/T]}
-  \item{C.bl.down }{concentration at the downstream boundary layer. One value [M/L3]}
-  \item{D }{diffusion coefficient, defined on grid cell interfaces. One value or a vector of length N+1 [L2/T]}
-  \item{D.grid }{diffusion coefficient packaged as a grid list; the list contains at least the element \code{int} (see \code{\link{setup.prop.1D}})  [L2/T]}
-  \item{v }{advective velocity in the x-axis direction, defined on grid cell interfaces. Can be positive (downstream flow) or negative (upstream flow). One value or a vector of length N+1 [L/T]}
-  \item{v.grid }{advective velocity packaged as a grid list; the list contains at least the element \code{int} (see \code{\link{setup.prop.1D}}) [L/T]}
-  \item{AFDW }{weight used in the finite difference scheme for advection, defined on grid cell interfaces; backward = 1, centred = 0.5, forward = 0; default is backward. One value or a vector of length N+1 [-]}
-  \item{AFDW.grid }{AFDW coefficients packaged as a grid list; the list contains at least the element \code{int} (see \code{\link{setup.prop.1D}}) [-]}
-  \item{VF }{Volume fraction defined at the grid cell interfaces, one value or a vector of length N+1 [-]}
-  \item{VF.grid }{Volume fraction packaged as a grid list; the list contains at least the elements \code{int} and \code{mid} (see \code{\link{setup.prop.1D}}) [-]}
-  \item{A }{Interface area defined at the grid cell interfaces, one value or a vector of length N+1 [L2]}
-  \item{A.grid }{Interface area packaged as a grid list; the list contains at least the elements \code{int} and \code{mid} (see \code{\link{setup.prop.1D}}) [L2]}
-  \item{dx }{distance between adjacent cell interfaces (thickness of grid cells). One value or vector of length N [L]}
-  \item{grid }{discretization grid, a list containing at least elements \code{dx} and \code{dx.aux} (see \code{\link{setup.prop.1D}}) [L]}
-  \item{full.check }{logical flag enabling a full check of the consistency of the arguments (default = FALSE; TRUE slows down execution by 50 percent)}
-  \item{full.output }{logical flag enabling a full return of the output (default = FALSE; TRUE slows down execution by 20 percent)}
+  \item{C }{concentration, expressed per unit volume, defined at the
+    centre of each grid cell. A vector of length N [M/L3].
+  }
+  \item{C.up }{concentration at upstream boundary. One value [M/L3].
+  }
+  \item{C.down }{concentration at downstream boundary. One value [M/L3].
+  }
+  \item{flux.up }{flux across the upstream boundary, positive = INTO model
+    domain. One value [M/L2/T].
+  }
+  \item{flux.down }{flux across the downstream boundary, positive = OUT
+    of model domain. One value [M/L2/T].
+  }
+  \item{a.bl.up }{convective transfer coefficient across the upstream
+    boundary layer. \code{Flux = a.bl.up*(C.bl.up-C[1])}. One value [L/T].
+  }
+  \item{C.bl.up }{concentration at the upstream boundary layer.
+    One value [M/L3].
+  }
+  \item{a.bl.down }{convective transfer coefficient across the downstream
+    boundary layer. \code{Flux = a.bl.down*(C[N]-C.bl.down)}. One value [L/T].
+  }
+  \item{C.bl.down }{concentration at the downstream boundary layer.
+    One value [M/L3].
+  }
+  \item{D }{diffusion coefficient, defined on grid cell interfaces.
+    One value or a vector of length N+1 [L2/T].
+  }
+  \item{D.grid }{diffusion coefficient packaged as a \code{grid} list; the list
+    contains at least the element \code{int} (see \code{\link{setup.prop.1D}})
+    [L2/T].
+  }
+  \item{v }{advective velocity in the x-axis direction, defined on grid cell
+    interfaces. Can be positive (downstream flow) or negative (upstream flow).
+    One value or a vector of length N+1 [L/T].
+  }
+  \item{v.grid }{advective velocity packaged as a \code{grid} list; the list
+    contains at least the element \code{int} (see \code{\link{setup.prop.1D}})
+    [L/T].
+  }
+  \item{AFDW }{weight used in the finite difference scheme for advection,
+    defined on grid cell interfaces; backward = 1, centred = 0.5, forward = 0;
+    default is backward. One value or a vector of length N+1 [-].
+  }
+  \item{AFDW.grid }{AFDW coefficients packaged as a \code{grid} list; the list
+    contains at least the element \code{int} (see \code{\link{setup.prop.1D}})
+    [-].
+  }
+  \item{VF }{Volume fraction defined at the grid cell interfaces, one value
+    or a vector of length N+1 [-].
+  }
+  \item{VF.grid }{Volume fraction packaged as a \code{grid} list; the list
+    contains at least the elements \code{int} and \code{mid}
+    (see \code{\link{setup.prop.1D}}) [-].
+  }
+  \item{A }{Interface area defined at the grid cell interfaces, one value or
+    a vector of length N+1 [L2].
+  }
+  \item{A.grid }{Interface area packaged as a \code{grid} list; the list
+    contains at least the elements \code{int} and \code{mid}
+    (see \code{\link{setup.prop.1D}}) [L2].
+  }
+  \item{dx }{distance between adjacent cell interfaces (thickness of grid
+    cells). One value or vector of length N [L].
+  }
+  \item{grid }{discretization grid, a list containing at least elements
+    \code{dx} and \code{dx.aux} (see \code{\link{setup.prop.1D}}) [L].
+  }
+  \item{full.check }{logical flag enabling a full check of the consistency
+    of the arguments (default = \code{FALSE}; \code{TRUE} slows down execution
+    by 50 percent).
+  }
+  \item{full.output }{logical flag enabling a full return of the output
+    (default = \code{FALSE}; \code{TRUE} slows down execution by 20 percent).
+  }
 }
+
 \value{
-  when (full.output = FALSE) then a list containing:
-  \item{dC }{The rate of change of the concentration C due to transport, defined in the centre of each grid cell [M/L3/T]}
-  when (full.output = TRUE) then a list containing:
-  \item{dC }{The rate of change of the concentration C due to transport, defined in the centre of each grid cell [M/L3/T]}
-  \item{C.up }{Concentration at the upstream interface. One value [M/L3]}
-  \item{C.down }{Concentration at the downstream interface. One value [M/L3]}
-  \item{adv.flux }{Advective flux across at the interface of each grid cell. A vector of length N+1 [M/L2/T]}
-  \item{dif.flux }{Diffusive flux across at the interface of each grid cell. A vector of length N+1 [M/L2/T]}
-  \item{flux }{Total flux across at the interface of each grid cell. A vector of length N+1 [M/L2/T]}
-  \item{flux.up }{Flux across the upstream boundary, positive = INTO model domain. One value [M/L2/T]}
-  \item{flux.down }{Flux across the downstream boundary, positive = OUT of model domain. One value [M/L2/T]}
+  when (\code{full.output} = \code{FALSE}) then a list containing:
+  \item{dC }{the rate of change of the concentration C due to transport,
+    defined in the centre of each grid cell [M/L3/T].
+  }
+
+  when (\code{full.output} = \code{TRUE}) then a list containing:
+  \item{dC }{the rate of change of the concentration C due to transport,
+    defined in the centre of each grid cell [M/L3/T].
+  }
+  \item{C.up }{concentration at the upstream interface. One value [M/L3].
+  }
+  \item{C.down }{concentration at the downstream interface. One value [M/L3].
+  }
+  \item{adv.flux }{advective flux across at the interface of each grid cell.
+    A vector of length N+1 [M/L2/T].
+  }
+  \item{dif.flux }{diffusive flux across at the interface of each grid cell.
+    A vector of length N+1 [M/L2/T].
+  }
+  \item{flux }{total flux across at the interface of each grid cell. A vector
+    of length N+1 [M/L2/T].
+  }
+  \item{flux.up }{flux across the upstream boundary, positive = INTO model
+    domain. One value [M/L2/T].
+  }
+  \item{flux.down }{flux across the downstream boundary, positive = OUT of
+    model domain. One value [M/L2/T].
+  }
 }
-\author{Filip Meysman <f.meysman@nioo.knaw.nl>, Karline Soetaert <k.soetaert@nioo.knaw.nl> }
+\author{
+  Filip Meysman <f.meysman@nioo.knaw.nl>,
+  Karline Soetaert <k.soetaert@nioo.knaw.nl>
+}
+
 \examples{
 ##################################################################
 ###### EXAMPLE 1: O2 and OC consumption in sediments        ######
@@ -63,22 +153,20 @@ full.check=FALSE, full.output=FALSE)}
 
 # Monod consumption of oxygen (O2)
 
-O2.model <- function (t=0,O2,pars=NULL)
-{
-tran <- tran.1D(C=O2,C.up=C.ow.O2,D.grid=D.grid,v.grid=v.grid,
-VF.grid=por.grid,grid=grid)$dC 
-reac <- - R.O2*(O2/(Ks+O2))
-return(list(dCdt = tran+reac))
+O2.model <- function (t=0,O2,pars=NULL) {
+  tran <- tran.1D(C=O2,C.up=C.ow.O2,D.grid=D.grid,v.grid=v.grid,
+  VF.grid=por.grid,grid=grid)$dC
+  reac <- - R.O2*(O2/(Ks+O2))
+  return(list(dCdt = tran+reac))
 }
 
 # First order consumption of organic carbon (OC)
 
-OC.model <- function (t=0,OC,pars=NULL)
-{
-tran <- tran.1D(C=OC,flux.up=F.OC,D.grid=Db.grid,v.grid=v.grid,
-VF.grid=svf.grid,grid=grid)$dC 
-reac <- - k*OC
-return(list(dCdt = tran + reac))
+OC.model <- function (t=0,OC,pars=NULL) {
+  tran <- tran.1D(C=OC,flux.up=F.OC,D.grid=Db.grid,v.grid=v.grid,
+  VF.grid=svf.grid,grid=grid)$dC
+  reac <- - k*OC
+  return(list(dCdt = tran + reac))
 }
 
 #======================#
@@ -158,10 +246,10 @@ axis(pos=0, side=3)
 
 # the numerical model - rate of change=transport-consumption
 Cylinder.Model <- function(time,O2,pars)
-return (list(tran.1D(C=O2,C.down=BW,D=Da,A=A.cyl,dx=dx)$dC-Q))
+  return (list(tran.1D(C=O2,C.down=BW,D=Da,A=A.cyl,dx=dx)$dC-Q))
 
 Sphere.Model <- function(time,O2,pars)
-return (list(tran.1D(C=O2,C.down=BW,D=Da,A=A.sphere,dx=dx)$dC-Q))
+  return (list(tran.1D(C=O2,C.down=BW,D=Da,A=A.sphere,dx=dx)$dC-Q))
 
 #======================#
 # Parameter definition #
@@ -233,13 +321,15 @@ legend ("bottomright",pch=c(1,18),lty=1,col=c("black","red"),
 # Model formulation  #
 #====================#
 
-Aggregate.Model <- function(time,O2,pars)
-{
-tran <- tran.1D(C=O2,C.down=C.ow.O2,
-D.grid=D.grid,A.grid=A.grid,
-VF.grid=por.grid,grid=grid)$dC 
-reac <- - R.O2*(O2/(Ks+O2))*(O2>0)
-return(list(dCdt = tran+reac))
+Aggregate.Model <- function(time,O2,pars) {
+
+  tran <- tran.1D(C=O2, C.down=C.ow.O2,
+    D.grid=D.grid, A.grid=A.grid,
+    VF.grid=por.grid, grid=grid )$dC
+
+  reac <- - R.O2*(O2/(Ks+O2))*(O2>0)
+  return(list(dCdt = tran+reac))
+
 }
 
 #======================#
@@ -293,24 +383,40 @@ legend ("bottomright",pch=c(1,18),lty=1,col=c("black"),
         c("O2 concentration"))
 
 }
-\references{Soetaert and Herman (2008) A practical guide to ecological modelling - using R as
-a simulation platform. Springer}
-
-\details{The \bold {boundary conditions} are either
-\itemize{
-  \item (1) zero-gradient 
-  \item (2) fixed concentration 
-  \item (3) convective boundary layer 
-  \item (4) fixed flux 
+\references{
+  Soetaert and Herman (2009). A practical guide to ecological modelling -
+  using R as a simulation platform. Springer
 }
-The above order also shows the priority. The default condition is the zero gradient. The fixed concentration condition overrules the zero gradient. The convective boundary layer condition overrules the fixed concentration and zero gradient. The fixed flux overrules all other specifications. 
+
+\details{
+  The \bold {boundary conditions} are either
+  \itemize{
+    \item (1) zero-gradient.
+    \item (2) fixed concentration.
+    \item (3) convective boundary layer.
+    \item (4) fixed flux.
+  }
+  The above order also shows the priority. The default condition is the
+  zero gradient. The fixed concentration condition overrules the zero gradient.
+  The convective boundary layer condition overrules the fixed concentration
+  and zero gradient. The fixed flux overrules all other specifications.
   
   \bold{Transport properties:}
-  The \emph{diffusion coefficient} (\code{D}), the \emph{advective velocity} (\code{v}), the \emph{volume fraction} (VF), the \emph{interface surface} (\code{A}), and the \emph{advective finite difference weight} (\code{AFDW})  can be either be specified as one value, a vector or a grid property (see \code{\link{setup.prop.1D}}).
-  When a vector, this vector must be of length N+1, defined at all grid cell interfaces, including upper and lower boundary.
+  
+  The \emph{diffusion coefficient} (\code{D}),
+  the \emph{advective velocity} (\code{v}),
+  the \emph{volume fraction} (VF), the \emph{interface surface} (\code{A}),
+  and the \emph{advective finite difference weight} (\code{AFDW})
+  can be either be specified as one value, a vector or a grid property
+  (see \code{\link{setup.prop.1D}}).
 
-  The \bold{finite difference grid} (\code{grid}) is specified either as a grid list, as generated by \code{\link{setup.grid.1D}} or 
-  by the parameter \code{dx} representing the thickness of the grid cells (one value or a vector of length N+1)
+  When a vector, this vector must be of length N+1, defined at all grid
+  cell interfaces, including upper and lower boundary.
+
+  The \bold{finite difference grid} (\code{grid}) is specified either as
+  a grid list, as generated by \code{\link{setup.grid.1D}} or 
+  by the parameter \code{dx} representing the thickness of the grid
+  cells (one value or a vector of length N+1)
 }
 \note{ 
 The advective-diffusion equation is not checked for mass conservation. Sometimes, this is not an issue, for instance when \code{v} represents a sinking velocity of particles or a swimming velocity of organisms. In others cases however, mass conservation needs to be accounted for. To ensure mass conservation, the advective velocity must obey certain continuity constraints: in essence the product of the volume fraction (VF), interface surface (A) and advective velocity (v) should be constant. In sediments, one can use \code{\link{setup.compaction.1D}} to ensure that the advective velocities for the pore water and solid phase meet these constraints. 

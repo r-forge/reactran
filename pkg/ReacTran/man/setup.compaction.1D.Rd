@@ -1,22 +1,61 @@
 \name{setup.compaction.1D}
 \alias{setup.compaction.1D}
-\title{Calculates the advective velocities of the pore water and the solid phase in a water saturated sediment assuming steady state compaction}
-\description{This routine calculates the advective velocities of the pore water and the solid phase in a sediment based on the assumption of steady state compaction.  The velocities of the pore water (\code{u}) and the solid phase (\code{v}) are calculated in the middle (\code{mid}) of the grid cells and the interfaces (\code{int}). One needs to specify the porosity at the interface (\code{por.0}), the porosity at infinite depth (\code{por.inf}), as well as the advective velocity of the solid phase (either at the interface (\code{v.0}) or at infinite depth (\code{v.inf})). }
+\title{
+  Calculates the advective velocities of the pore water and the solid phase
+  in a water saturated sediment assuming steady state compaction
+}
+
+\description{
+  This function calculates the advective velocities of the pore water and
+  the solid phase in a sediment based on the assumption of steady state
+  compaction.
+
+  The velocities of the pore water (\code{u}) and the solid phase (\code{v})
+  are calculated in the middle (\code{mid}) of the grid cells and the
+  interfaces (\code{int}).
+
+  One needs to specify the porosity at the interface (\code{por.0}), the
+  porosity at infinite depth (\code{por.inf}), as well as the advective
+  velocity of the solid phase (either at the interface (\code{v.0}) or at
+  infinite depth (\code{v.inf})).
+}
+
 \usage{setup.compaction.1D(v.0 = NULL, v.inf = NULL, por.0, por.inf,
        por.grid)}
 \arguments{
-  \item{v.0 }{Advective velocity of the solid phase at the sediment-water interface (also referred to as the sedimentation velocity); if NULL then \code{v.inf} must not be NULL [L/T]}
-  \item{v.inf }{Advective velocity of the solid phase at infinite depth (also referred to as the burial velocity); if NULL then \code{v.0} must not be NULL [L/T]}
-  \item{por.0 }{Porosity at the sediment-water interface}
-  \item{por.inf }{Porosity at infinite depth }
-  \item{por.grid }{Porosity profile specified as a 1D grid property (see \code{\link{setup.prop.1D}} for details on the structure of this list)}
+  \item{v.0 }{advective velocity of the solid phase at the sediment-water
+    interface (also referred to as the sedimentation velocity); if \code{NULL}
+    then \code{v.inf} must not be \code{NULL} [L/T].
+  }
+  \item{v.inf }{advective velocity of the solid phase at infinite depth
+    (also referred to as the burial velocity); if \code{NULL} then
+    \code{v.0} must not be \code{NULL} [L/T].
+  }
+  \item{por.0 }{porosity at the sediment-water interface.
+  }
+  \item{por.inf }{porosity at infinite depth .
+  }
+  \item{por.grid }{porosity profile specified as a 1D grid property
+    (see \code{\link{setup.prop.1D}} for details on the structure of this list).
+  }
 }
+
 \value{
   A list containing:
-  \item{u }{list with pore water advective velocities at the middle of the grid cells (\code{mid}) and at the interfaces (\code{int})}
-  \item{v }{list with solid phase advective velocities at the middle of the grid cells (\code{mid}) and at the interfaces (\code{int})}
+  \item{u }{list with pore water advective velocities at the middle of the
+    grid cells (\code{mid}) and at the interfaces (\code{int}).
+  }
+  \item{v }{list with solid phase advective velocities at the middle of the
+    grid cells (\code{mid}) and at the interfaces (\code{int}).
+  }
 }
-\author{Filip Meysman <f.meysman@nioo.knaw.nl>, Karline Soetaert <k.soetaert@nioo.knaw.nl> }
+
+\author{
+  Filip Meysman <f.meysman@nioo.knaw.nl>,
+  Karline Soetaert <k.soetaert@nioo.knaw.nl>
+}
+
+
 \examples{
 
 # setup of the 1D grid 
@@ -58,5 +97,6 @@ legend(x="bottomright", legend=c("pore water","solid phase"),
 col=c("blue","red"),lwd=c(2,2))
 
 }
+
 \keyword{utilities}
 
