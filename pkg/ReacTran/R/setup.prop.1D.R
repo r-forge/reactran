@@ -9,26 +9,30 @@ setup.prop.1D <- function(func = NULL, value = NULL, xy = NULL,
 ## check input
   gn <- names(grid)
   if (! "x.up"   %in% gn)
-    stop("error in setup.1Dprop: grid should be a list that contains x.up")
+    stop("error in setup.prop.1D: grid should be a list that contains x.up")
   if (! "x.down" %in% gn)
-    stop("error in setup.1Dprop: grid should be a list that contains x.down")
+    stop("error in setup.prop.1D: grid should be a list that contains x.down")
   if (! "x.mid"  %in% gn)
-    stop("error in setup.1Dprop: grid should be a list that contains x.mid")
+    stop("error in setup.prop.1D: grid should be a list that contains x.mid")
   if (! "x.int"  %in% gn)
-    stop("error in setup.1Dprop: grid should be a list that contains x.int")
+    stop("error in setup.prop.1D: grid should be a list that contains x.int")
   if (! "dx"     %in% gn)
-    stop("error in setup.1Dprop: grid should be a list that contains dx")
+    stop("error in setup.prop.1D: grid should be a list that contains dx")
   if (! "dx.aux" %in% gn)
-    stop("error in setup.1Dprop: grid should be a list that contains dx.aux")
+    stop("error in setup.prop.1D: grid should be a list that contains dx.aux")
   if (! "N"      %in% gn)
-    stop("error in setup.1Dprop: grid should be a list that contains N")
+    stop("error in setup.prop.1D: grid should be a list that contains N")
 
 
   if (is.null(xy) && is.null(value) && is.null(func))
-    stop("error in setup.prop: function, value and xy cannot be NULL together")
+    stop("error in setup.prop.1D: function, value and xy cannot be NULL together")
 
   if (! is.null(func)) {   # profile specification via function
   	y.int <- func(grid$x.int,...)
+    ## KS ##
+  	if (length(y.int)==0)
+      stop (" error in setup.prop.1D: 'func' should return a vector ")
+      
 	  y.mid <- func(grid$x.mid,...)
   }
 
@@ -39,9 +43,9 @@ setup.prop.1D <- function(func = NULL, value = NULL, xy = NULL,
 
   if (! is.null(xy)) { # profile speficication via data series input
     if (! is.matrix(xy))
-      stop("error in setup.prop: xy should be a 2-columned matrix or NULL")
+      stop("error in setup.prop.1D: xy should be a 2-columned matrix or NULL")
 	  if (!(interpolate %in% c("linear","spline")))
-      stop("error in setup.prop: <interpolate> not properly specified, should be <linear> or <spline>")
+      stop("error in setup.prop.1D: 'interpolate' not properly specified, should be 'linear' or 'spline'")
 		
     if (interpolate=="linear") {
       # check the range of input data-series (inr))
@@ -73,3 +77,16 @@ setup.prop.1D <- function(func = NULL, value = NULL, xy = NULL,
   return(Res)
 }
 
+
+##==============================================================================
+## S3 method: Plotting of a one-dimensional grid property
+##==============================================================================
+
+
+plot.prop.1D <- function(x, grid, xyswap =FALSE, ...) {
+  if (xyswap)
+    plot(x$int, grid$x.int, ylim = rev(range(grid$x.int)),
+      ylab="prop",xlab="x",...)
+  else
+    plot(grid$x.int,x$int, ylab="prop",xlab="x",...)
+}

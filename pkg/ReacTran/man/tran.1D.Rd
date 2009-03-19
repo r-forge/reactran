@@ -18,7 +18,7 @@
 
 \usage{
 tran.1D(C, C.up = C[1], C.down = C[length(C)],
-  flux.up = NA, flux.down = NA, a.bl.up = NULL, C.bl.up = NULL,
+  flux.up = NULL, flux.down = NULL, a.bl.up = NULL, C.bl.up = NULL,
   a.bl.down = NULL, C.bl.down = NULL,
   D = NULL, D.grid = NULL, v = 0, v.grid = NULL,
   AFDW = 1, AFDW.grid = NULL, VF = 1, VF.grid = NULL,
@@ -105,27 +105,26 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
 }
 
 \value{
-  when (\code{full.output} = \code{FALSE}) then a list containing:
-  \item{dC }{the rate of change of the concentration C due to transport,
-    defined in the centre of each grid cell [M/L3/T].
-  }
-
-  when (\code{full.output} = \code{TRUE}) then a list containing:
   \item{dC }{the rate of change of the concentration C due to transport,
     defined in the centre of each grid cell [M/L3/T].
   }
   \item{C.up }{concentration at the upstream interface. One value [M/L3].
+    only when (\code{full.output} = \code{TRUE})
   }
   \item{C.down }{concentration at the downstream interface. One value [M/L3].
+    only when (\code{full.output} = \code{TRUE})
   }
   \item{adv.flux }{advective flux across at the interface of each grid cell.
     A vector of length N+1 [M/L2/T].
+    only when (\code{full.output} = \code{TRUE})
   }
   \item{dif.flux }{diffusive flux across at the interface of each grid cell.
     A vector of length N+1 [M/L2/T].
+    only when (\code{full.output} = \code{TRUE})
   }
   \item{flux }{total flux across at the interface of each grid cell. A vector
     of length N+1 [M/L2/T].
+    only when (\code{full.output} = \code{TRUE})
   }
   \item{flux.up }{flux across the upstream boundary, positive = INTO model
     domain. One value [M/L2/T].

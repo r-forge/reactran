@@ -5,7 +5,7 @@
 
 tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
   C.left=C[,1],  C.right=C[,ncol(C)],
-  flux.up=NA, flux.down=NA, flux.left=NA, flux.right=NA,
+  flux.up=NULL, flux.down=NULL, flux.left=NULL, flux.right=NULL,
   a.bl.up=NULL, C.bl.up=NULL, a.bl.down=NULL, C.bl.down=NULL,
   a.bl.left=NULL, C.bl.left=NULL, a.bl.right=NULL, C.bl.right=NULL,
   D.x=NULL, D.y=D.x, D.grid=NULL,
@@ -209,7 +209,7 @@ tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
 
 ## Impose boundary flux at upper boundary when needed
 ## Default boundary condition is no gradient
-  if (! is.na (flux.up[1])) {
+  if (! is.null (flux.up[1])) {
     nom <- flux.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1] +
            (1-AFDW.grid$x.int[1,])*v.grid$x.int[1,])*C[1,]
     denom <- VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1]+
@@ -219,7 +219,7 @@ tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
 
 ## Impose boundary flux at lower boundary when needed
 ## Default boundary condition is no gradient
-  if (! is.na (flux.down[1])) {
+  if (! is.null (flux.down[1])) {
   	nom <- flux.down - VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/
             grid$dx.aux[N+1] + AFDW.grid$x.int[(N+1),]*v.grid$x.int[(N+1),])*C[N,]
     denom <- -VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/grid$dx.aux[N+1]+
@@ -229,7 +229,7 @@ tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
 
 # Impose boundary flux at upper boundary when needed
 # Default boundary condition is no gradient
-  if (! is.na (flux.left[1])) {
+  if (! is.null (flux.left[1])) {
     nom <- flux.left + VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[1] +
            (1-AFDW.grid$y.int[,1])*v.grid$y.int[,1])*C[,1]
     denom <- VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[1]+
@@ -239,7 +239,7 @@ tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
 
 # Impose boundary flux at lower boundary when needed
 # Default boundary condition is no gradient
-  if (! is.na (flux.right[1]))  {
+  if (! is.null (flux.right[1]))  {
 	  nom <- flux.right - VF.grid$y.int[,(M+1)]*(D.grid$y.int[,(M+1)]/
            grid$dy.aux[M+1] + AFDW.grid$y.int[,(M+1)]*v.grid$y.int[,(M+1)])*C[,M]
     denom <- -VF.grid$y.int[,(M+1)]*(D.grid$y.int[,(M+1)]/grid$dy.aux[M+1]+
@@ -306,14 +306,14 @@ tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
 
 ## Impose boundary fluxes when needed
 ## Default boundary condition is no gradient
-  if (! is.na (flux.up[1]))
+  if (! is.null (flux.up[1]))
     x.flux[1,]   <- flux.up
-  if (! is.na (flux.down[1]))
+  if (! is.null (flux.down[1]))
     x.flux[nrow(x.flux),] <- flux.down
     
-  if (! is.na (flux.left[1]))
+  if (! is.null (flux.left[1]))
     y.flux[,1]   <- flux.left
-  if (! is.na (flux.right[1]))
+  if (! is.null (flux.right[1]))
     y.flux[,ncol(y.flux)] <- flux.right
 
 ## Calculate rate of change = flux gradient

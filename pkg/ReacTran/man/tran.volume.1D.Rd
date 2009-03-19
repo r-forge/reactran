@@ -15,7 +15,7 @@
 
   The \code{tran.volume.1D} routine is particularly suited for modelling
   channels (like rivers, estuaries) where the cross-sectional area changes,
-  but where this area chnage is not explicitly modelled as such.
+  but where this area change is not explicitly modelled as such.
 
   Another difference withy \code{tran.1D} is that the present routine also
   allows the input of lateral water flow.
@@ -23,13 +23,14 @@
 
 \usage{
 tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
-  C.lat=0, C.lat.grid=list(mid=rep(C.lat,length.out=length(C))),
-  F.up=NA, F.down=NA,
-  F.lat=NA, F.lat.grid=list(mid=rep(F.lat,length.out=length(C))),
-  Disp=NULL, Disp.grid=list(int=rep(Disp,length.out=(length(C)+1))),
-  flow = 0, flow.grid=list(int=rep(flow,length.out=(length(C)+1))),
-  flow.lat=0, flow.lat.grid=list(mid=rep(flow.lat,length.out=length(C))),
-  V=NULL,V.grid=list(mid=rep(V,length.out=length(C))))
+   C.lat=0, C.lat.grid=NULL,
+   F.up=NULL, F.down=NULL,
+   F.lat=NULL, F.lat.grid=NULL,
+	 Disp=NULL,	Disp.grid=NULL,
+	 flow = 0, flow.grid=NULL,
+	 flow.lat=0,flow.lat.grid=NULL,
+	 V=NULL,V.grid=NULL)
+
 }
 
 \arguments{

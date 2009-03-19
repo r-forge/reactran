@@ -12,7 +12,7 @@
 \usage{
 tran.2D ( C, C.up=C[1,], C.down=C[nrow(C),],
   C.left=C[,1], C.right=C[,ncol(C)],
-  flux.up=NA, flux.down=NA, flux.left=NA, flux.right=NA,
+  flux.up=NULL, flux.down=NULL, flux.left=NULL, flux.right=NULL,
   a.bl.up=NULL, C.bl.up=NULL, a.bl.down=NULL, C.bl.down=NULL,
   a.bl.left=NULL, C.bl.left=NULL, a.bl.right=NULL, C.bl.right=NULL,
   D.x=NULL, D.y=D.x, D.grid=NULL,

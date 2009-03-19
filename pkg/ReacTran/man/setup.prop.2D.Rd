@@ -62,8 +62,8 @@ y.grid <- setup.grid.1D(x.up=0,L=10,N=10)
 grid2D <- setup.grid.2D(x.grid,y.grid)
 
 # Attaching the inverse quadratic function to the 2D grid 
-setup.prop.2D(func=inv.quad,grid=grid2D,a=5,b=5)
-
+(twoD<-setup.prop.2D(func=inv.quad,grid=grid2D,a=5,b=5))
+contour(log(twoD$x.int))
 }
 
 \keyword{utilities}

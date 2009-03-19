@@ -14,25 +14,29 @@ setup.grid.1D <- function(x.up=0,	x.down=NULL, L=NULL,
     stop ("Cannot create grid: the length or end point is not specified")
 
   if (is.null(x.down[1])) {
-	  x.down <- vector(length=length(L))
-    x.check <- x.up
-	  for (i in 1:length(L)) {
-      if (L[i] < 0)
-        stop ("Cannot create grid: L < 0")
-      x.down[i] <- x.check + L[i]
-      x.check <- x.down[i]
-    }
+    x.down <- cumsum(L)
+#### KS ####
+#	  x.down <- vector(length=length(L))
+#    x.check <- x.up
+#	  for (i in 1:length(L)) {
+#      if (L[i] < 0)
+#        stop ("Cannot create grid: L < 0")
+#      x.down[i] <- x.check + L[i]
+#      x.check <- x.down[i]
+#    }
   }
   
   if (is.null(L[1])) {
-  	L <- vector(length=length(x.down))
-    x.check <- x.up
-    for (i in 1:length(x.down)) {
-   	  if (x.down[i] < x.check)
-         stop ("Cannot create grid: x.down < x.up")
-	    L[i] <- x.down[i] - x.check
-      x.check <- x.down[i]
-    }
+    L <- diff(c(0,x.down))
+#### KS ####
+#  	L <- vector(length=length(x.down))
+#    x.check <- x.up
+#    for (i in 1:length(x.down)) {
+#   	  if (x.down[i] < x.check)
+#         stop ("Cannot create grid: x.down < x.up")
+#	    L[i] <- x.down[i] - x.check
+#      x.check <- x.down[i]
+#    }
   }
 
 ## Calculation of the grid cell sizes
@@ -47,15 +51,16 @@ setup.grid.1D <- function(x.up=0,	x.down=NULL, L=NULL,
     if ((is.null(dx.1[i])) && (is.null(dx.N[i])))  { # all grid cells are equal
 
       if (N[i] < 1)
-        stop ("Cannot create grid: N < 0")
+        stop ("Cannot create grid: N < 1")
       A.dx  <- rep(L[i]/N[i],N[i])
     }
-    else if (is.null(dx.N[i])) {
+    else if (is.null(dx.N[i])) { # dx.1 has a value
+  ## KS Ik denk dat dit niet kan - wel eventueel testen of niet = 0?##
       if (is.null(dx.1[i]))
         stop ("Cannot create grid: dx.1 not specified")
       if (dx.1[i] > L[i])
         stop ("Cannot create grid: dx.1 > L")
-      # use gradual increase of grid cell size at uper interface alone
+      # use gradual increase of grid cell size at upper interface alone
       A.dx <- vector()
       pos <- vector()
       A.dx[1] <- dx.1[i]
@@ -135,8 +140,11 @@ plot.grid.1D <- function(x,...) {
   mf <- par(mfrow=c(2,1))
   on.exit(par(mf))
     
-  plot(x$x.mid,main="position of cells",ylab="x.mid",xlab="index",...)
-  plot(x$dx,main="box thickness",ylab="dx",xlab="index",...)
-
+  plot(x$x.int,main="position of cells",ylab="x",xlab="index",...)
+  points(0.5+(1:x$N),x$x.mid,pch=16)
+  legend("topleft",c("x.int","x.mid"),pch=c(1,16))
+  plot(x$dx.aux,main="box thickness",ylab="dx",xlab="index",...)
+  points(0.5+(1:x$N),x$dx,pch=16)
+  legend("topleft",c("dx.aux","dx.mid"),pch=c(1,16))
 }
 

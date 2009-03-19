@@ -5,21 +5,45 @@
 ##==============================================================================
 
 tran.volume.1D <- function(C, C.up=C[1], C.down=C[length(C)],
-   C.lat=0, C.lat.grid=list(mid=rep(C.lat,length.out=length(C))),
-   F.up=NA, F.down=NA, F.lat=NA, F.lat.grid=list(mid=rep(F.lat,length.out=length(C))),
-	 Disp=NULL,	Disp.grid=list(int=rep(Disp,length.out=(length(C)+1))),
-	 flow = 0, flow.grid=list(int=rep(flow,length.out=(length(C)+1))),
-	 flow.lat=0,flow.lat.grid=list(mid=rep(flow.lat,length.out=length(C))),
-	 V=NULL,V.grid=list(mid=rep(V,length.out=length(C))))
+   C.lat=0, C.lat.grid=NULL,
+   F.up=NULL, F.down=NULL,
+   F.lat=NULL, F.lat.grid=NULL,
+	 Disp=NULL,	Disp.grid=NULL,
+	 flow = 0, flow.grid=NULL,
+	 flow.lat=0,flow.lat.grid=NULL,
+	 V=NULL,V.grid=NULL)
                             
 {
 
 ## INPUT CHECKS
-## check input of grid
 
+  N <- length(C)
+
+
+  if (is.null(F.lat.grid))
+   F.lat.grid=list(mid=rep(F.lat,length.out=N))
+
+  if (is.null(Disp.grid))
+    Disp.grid=Disp.grid=list(int=rep(Disp,length.out=N+1))
+
+  if (is.null(flow.grid))
+    flow.grid<-list(int=rep(flow,length.out=(N+1)))
+
+  if (is.null(flow.lat.grid))
+    flow.lat.grid<-list(mid=rep(flow.lat,length.out=N))
+
+  if (is.null(V.grid))
+    V.grid <- list(mid=rep(V,length.out=N))
+
+  if (is.null(C.lat.grid))
+    C.lat.grid <- list(mid=rep(C.lat,length.out=length(C)))
+
+## check input of grid
   gn <- names(V.grid)
+
   if (! "mid" %in% gn)
     stop("error: V.grid should be a list that contains 'mid' ")
+
   if (is.null(V.grid$mid))
 	  stop("error: the argument V.grid should be a list with (numeric) values for 'mid'")
 
@@ -59,38 +83,61 @@ tran.volume.1D <- function(C, C.up=C[1], C.down=C[length(C)],
   if (! "mid" %in% gn)
     stop("error: the argument F.lat.grid should be a list that contains 'mid'")
 
-  if (is.na (F.lat.grid$mid[1]))
+  if (is.null (F.lat.grid$mid[1]))
     F.lat.grid$mid <- C.lat.grid$mid*flow.lat.grid$mid
 
 ## FUNCTION BODY: CALCULATIONS
 
-  N <- length(C)
-
 ## Calculate the discharge in each box (using the water balance)
 
-  for (i in 2:(N+1))
-  	flow.grid$int[i] = flow.grid$int[i-1] + flow.lat.grid$mid[i-1]
+##  KS  MUCH FASTER ALTERNATIVE
+##  for (i in 2:(N+1))
+##  	flow.grid$int[i] = flow.grid$int[i-1] + flow.lat.grid$mid[i-1]
+##  KS  MUCH FASTER ALTERNATIVE
+  f1 <- flow.grid$int[1]
+  flow.grid$int <- c(f1,f1+cumsum(flow.lat.grid$mid))
 
 ## Calculate diffusive part of the mass flow F
 
   Dif.F <- as.vector(-Disp.grid$int*diff(c(C.up,C,C.down)))
-  Adv.F <- vector(length=(N+1))
 
-  for (i in 1:(N+1)) {
-	  if (flow.grid$int[i] > 0) # advection directed downstream
-   		Adv.F[i] <- flow.grid$int[i]*c(C.up,C)[i]
 
-  	if (flow.grid$int[i] < 0)  # advection directed downstream
- 	  	Adv.F[i] <- flow.grid$int[i]*c(C,C.down)[i+1]
-	}
 
+##  KS  MUCH FASTER ALTERNATIVE
+##  LOOPING VERMIJDEN...
+#  Adv.F <- vector(length=(N+1))
+
+#  for (i in 1:(N+1)) {
+#	  if (flow.grid$int[i] > 0) # advection directed downstream
+#   		Adv.F[i] <- flow.grid$int[i]*c(C.up,C)[i]
+
+#  	if (flow.grid$int[i] < 0)  # advection directed downstream
+# 	  	Adv.F[i] <- flow.grid$int[i]*c(C,C.down)[i+1]
+#	}
+##  KS  MUCH FASTER ALTERNATIVE:
+
+# Advection: positive flows first
+  v1 <- flow.grid$int
+
+  if ( any (v1 > 0 )) {
+    v1[v1<0] <- 0
+	  Adv.F <- v1 *c(C.up,C)
+  } else Adv.F <- 0
+  
+# If there are negative flows:
+  if ( any (v1 < 0 )) {
+    v1 <- flow.grid$int
+    v1[v1>0] <- 0
+  	Adv.F <- Adv.F + v1 *c(C,C.down)
+  }
+  
 
   F <- as.vector(Dif.F + Adv.F)
 
 ## Impose boundary fluxes when needed
-  if (! is.na (F.up))
+  if (! is.null (F.up))
     F[1]   <- F.up
-  if (! is.na (F.down))
+  if (! is.null (F.down))
     F[length(F)] <- F.down
     
 ## Calculate rate of change = Flux gradient + lateral input

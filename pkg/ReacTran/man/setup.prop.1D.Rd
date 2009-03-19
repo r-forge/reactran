@@ -1,5 +1,6 @@
 \name{setup.prop.1D}
 \alias{setup.prop.1D}
+\alias{plot.prop.1D}
 \title{
   Attaches a property to a one-dimensional grid
 }
@@ -25,6 +26,9 @@
 \usage{
 setup.prop.1D(func=NULL, value=NULL, xy=NULL,
   interpolate="spline", grid, ...)
+
+\method{plot}{prop.1D}(x, grid, xyswap = FALSE, \dots)
+
 }
 
 \arguments{
@@ -42,7 +46,14 @@ setup.prop.1D(func=NULL, value=NULL, xy=NULL,
   \item{grid }{list specifying the 1D grid characteristics, see
     \code{\link{setup.grid.1D}} for details on the structure of this list.
   }
-  \item{... }{additional arguments that are passed on to \code{func}.
+  \item{x }{the object of class \code{grid.1D} that needs plotting.
+  }
+  \item{xyswap }{if \code{TRUE}, then x- and y-values are swapped and
+    the y-axis etends from top to bottom. Useful for drawing
+    vertical profiles.
+  }
+  \item{... }{additional arguments that are passed on to \code{func} or
+    to the method.
   }
 }
 
@@ -83,8 +94,8 @@ P.linear <- setup.prop.1D(xy=P.data,grid=grid,interpolate="linear")
 
 # Plot different profiles 
 
-plot(grid$x.int,P.func$int,type="l",
-main="setup.prop, function evaluation")  
+plot(P.func,grid,type="l",
+     main="setup.prop, function evaluation")
 points(P.data,cex=1.5,pch=16) 
 lines(grid$x.int,P.spline$int,lty="dashed")
 lines(grid$x.int,P.linear$int,lty="dotdash")
