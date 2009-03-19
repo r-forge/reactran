@@ -1,0 +1,135 @@
+
+EVENTUEEL:
+in plaats van twee argumenten per property:
+D = NULL, D.grid = NULL
+
+slechts 1 argument:
+D ,
+
+in code:
+
+if (is.na(D) )
+  stop(" errror etc")
+
+if (is.vector(D)) {
+ if (length(D) == 1) D <- rep(D,N)
+ D <- list(int=D)
+
+
+en dan met D$int werken.
+
+Dus:  functie aanroep wordt dan:
+
+
+tran.1D <- function(C, C.up=C[1], C.down=C[length(C)],
+     flux.up=NULL, flux.down=NULL, a.bl.up=NULL, C.bl.up=NULL,
+		 a.bl.down=NULL, C.bl.down=NULL,
+     D=0, v=0, AFDW=1, VF=1, A=1, grid=NULL,
+     full.check = FALSE, full.output = FALSE) {
+
+
+
+Liever: u in plaats van v
+(u,v,w ~ x,y,z)
+
+u dC/dx, v dC/dy, w dC/dz
+
+
+Als default voor D: liever 0 (i.e. geen mixing) dan NULL.
+
+
+
+
+Tran.volume.1d
+
+Disp.grid, flow.grid
+
+Hoofd/kleine letter?
+
+TO DO:
+####
+
+confusion units per bulk or per volume fraction.
+
+####
+    if (any (v.grid$int > 0)) {   # advection directed downwards
+	     conc <- AFDW.grid$int*c(C.up,C)
+	     if (any (AFDW.grid$int < 1))
+         conc <- conc +(1-AFDW.grid$int)*c(C,C.down)
+	     adv.flux <- as.vector(VF.grid$int*v.grid$int*conc)
+    }
+    if (any (v.grid$int < 0)) {   # advection directed upwards
+	    conc <- AFDW.grid$int*c(C,C.down)
+	    if (any (AFDW.grid$int < 1))
+        conc <- conc +(1-AFDW.grid$int)*c(C.up,C)
+	    adv.flux <- as.vector(VF.grid$int*v.grid$int*conc)
+    }
+  => CHANGE TO:
+      if (any (v.grid$int > 0)) {   # advection directed downwards
+       v <- v.grid$int
+       v[v.grid$int<0] <- 0
+	     conc <- AFDW.grid$int*c(C.up,C)
+	     if (any (AFDW.grid$int < 1))
+         conc <- conc +(1-AFDW.grid$int)*c(C,C.down)
+	     adv.flux <- as.vector(VF.grid$int*v*conc)
+    }
+    if (any (v.grid$int < 0)) {   # advection directed upwards
+       v <- v.grid$int
+       v[v.grid$int>0] <- 0
+
+      conc <- AFDW.grid$int*c(C,C.down)
+	    if (any (AFDW.grid$int < 1))
+        conc <- conc +(1-AFDW.grid$int)*c(C.up,C)
+	    adv.flux <- adv.flux + as.vector(VF.grid$int*v*conc)
+    }
+
+
+DONE:
+####
+flux.up and flux.down returned, also when full.output=FALSE.
+
+Consistent use of NULL for missing arguments. (instead of mix NA, NULL)
+
+Added Error control in setup.prop.1D:
+  func should return a value.
+
+Error controls everywhere:
+  if (is.null(x) || length(x) == 0) stop("x should be a value")
+
+
+tran.volume.1D faster (factor 10)
+
+
+#### opmerkingen bij veranderingen ####
+1. Had de "concentrations" C "y" genoemd om ook bijv. temperatuur, velocity, etc..
+te omvatten.  (maar de term "reaction" is hier dan wel misplaatst).
+
+Is nu opnieuw "C"
+Zo laten.
+
+2. Vind de "boundary layer exchange" verwarrend; ik had geopteerd om dit
+NIET in tran.1D op te nemen (wel als aparte "source" term).
+Is nu veranderd.
+Zo laten.
+
+
+
+#### GEVAARLIJKE OPTIE: VF als vector !
+## Zie Sidia.r
+
+In SiDia model:
+
+Porosity <- exp.profile(Grid$x.int, y.0=p.0, y.inf=p.inf, x.att=0.5)
+Por.mid  <- exp.profile(Grid$x.mid, y.0=p.0, y.inf=p.inf, x.att=0.5)
+
+EN in transport:
+
+... VF = Porosity ....
+
+ dDSi        <- DSiTran$dC                      +           # transport
+                Dissolution * (1-Por.mid)/Por.mid           # biogeochemistry
+
+
+GEVOLG: massa budget NIET gesloten. Probleem: 2 verschillende porositeiten:
+Por. mid  voor geochemie; 0.5*(Porosity[1:N]+Porosity[2:(N+1)]) voor transport
+
