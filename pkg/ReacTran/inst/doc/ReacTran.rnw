@@ -407,9 +407,8 @@ FILIP, Dit werkt NIET!
     tran.1D(C, C.up = C[1], C.down = C[length(C)],
       flux.up = NULL, flux.down = NULL, a.bl.up = NULL, C.bl.up = NULL,
       a.bl.down = NULL, C.bl.down = NULL,
-      D = NULL, D.grid = NULL, v = 0, v.grid = NULL,
-      AFDW = 1, AFDW.grid = NULL, VF = 1, VF.grid = NULL,
-      A = 1, A.grid = NULL, dx = NULL, grid = NULL,
+      D = 0, v = 0, AFDW = 1, VF = 1, A = 1,
+      dx = NULL, grid = NULL,
       full.check = FALSE, full.output = FALSE)
   \end{verbatim}
   with the following arguments:
@@ -422,13 +421,13 @@ FILIP, Dit werkt NIET!
     \item \code{a.bl.up, C.bl.up, a.bl.down, C.bl.down}, the convective
       transfer coefficients (\code{a.bl} and boundary layer concentrations
       \code{C.bl}
-    \item \code{D, D.grid}, the diffusion (dispersion) coefficients, either
+    \item \code{D}, the diffusion (dispersion) coefficients, either
       one value, or a vector (\code{D}) or packed as a \code{grid},
       ($L^2 T^{-1}$).
-    \item \code{v, v.grid}, the advective velocity ($L T^{-1}$).
-    \item \code{AFDW, AFDW.grid} the weights used in the finite difference
+    \item \code{v}, the advective velocity ($L T^{-1}$).
+    \item \code{AFDW} the weights used in the finite difference
       approximation for advection (-).
-    \item \code{VF, VF.grid}, the volume fractions (-).
+    \item \code{VF}, the volume fractions (-).
     \item \code{A} the surface areas ($L^2$)
     \item \code{dx, grid}, the distances between cell interfaces (L), the
       discretization grid.
@@ -437,7 +436,8 @@ FILIP, Dit werkt NIET!
     \item \code{full.output}, when \code{TRUE} full output is returned.
   \end{itemize}
   
-  Note that several properties can be passed in different ways:
+  Note that several properties (\code{D, v, AFDW, VF, A} can be passed
+  in different ways:
   \begin{itemize}
     \item a single number, in which case they are assumed constant
     \item a vector of length N+1, i.e. defined on the grid interfaces
@@ -588,8 +588,8 @@ with (out, print(sum(Consumption)-(flux.up-flux.down)))
 Aggregate.Model <- function(time,O2,pars) {
 
   tran <- tran.1D(C=O2, C.down=C.ow.O2,
-    D.grid=D.grid, A.grid=A.grid,
-    VF.grid=por.grid, grid=grid )
+    D=D.grid, A=A.grid,
+    VF=por.grid, grid=grid )
 
   reac <- - R.O2*(O2/(Ks+O2))*(O2>0)
   return(list(dCdt = tran$dC + reac, reac = reac,
@@ -852,10 +852,8 @@ tran.2D ( C, C.up=C[1,], C.down=C[nrow(C),],
   flux.up=NULL, flux.down=NULL, flux.left=NULL, flux.right=NULL,
   a.bl.up=NULL, C.bl.up=NULL, a.bl.down=NULL, C.bl.down=NULL,
   a.bl.left=NULL, C.bl.left=NULL, a.bl.right=NULL, C.bl.right=NULL,
-  D.x=0, D.y=D.x, D.grid=NULL,
-  v.x=0, v.y=0, v.grid=NULL,
-  AFDW.x=1, AFDW.y=AFDW.x, AFDW.grid=NULL,
-  VF.x=1, VF.y=VF.x, VF.grid=NULL,
+  D.x=0, D.y=D.x, v.x=0, v.y=0,
+  AFDW.x=1, AFDW.y=AFDW.x, VF.x=1, VF.y=VF.x,
   dx=NULL, dy=NULL, grid=NULL,
   full.check = FALSE, full.output = FALSE)
 }

@@ -20,9 +20,8 @@
 tran.1D(C, C.up = C[1], C.down = C[length(C)],
   flux.up = NULL, flux.down = NULL, a.bl.up = NULL, C.bl.up = NULL,
   a.bl.down = NULL, C.bl.down = NULL,
-  D = NULL, D.grid = NULL, v = 0, v.grid = NULL,
-  AFDW = 1, AFDW.grid = NULL, VF = 1, VF.grid = NULL,
-  A = 1, A.grid = NULL, dx = NULL, grid = NULL,
+  D = 0, v = 0, AFDW = 1, VF = 1, A = 1,
+  dx = NULL, grid = NULL,
   full.check = FALSE, full.output = FALSE)
 }
 
@@ -53,39 +52,30 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
     One value [M/L3].
   }
   \item{D }{diffusion coefficient, defined on grid cell interfaces.
-    One value or a vector of length N+1 [L2/T].
-  }
-  \item{D.grid }{diffusion coefficient packaged as a \code{grid} list; the list
+    One value, a vector of length N+1 [L2/T], or a \code{grid} list; the list
     contains at least the element \code{int} (see \code{\link{setup.prop.1D}})
     [L2/T].
   }
   \item{v }{advective velocity in the x-axis direction, defined on grid cell
     interfaces. Can be positive (downstream flow) or negative (upstream flow).
-    One value or a vector of length N+1 [L/T].
-  }
-  \item{v.grid }{advective velocity packaged as a \code{grid} list; the list
+    One value or a vector of length N+1 [L/T], or a \code{grid} list; the list
     contains at least the element \code{int} (see \code{\link{setup.prop.1D}})
     [L/T].
   }
   \item{AFDW }{weight used in the finite difference scheme for advection,
     defined on grid cell interfaces; backward = 1, centred = 0.5, forward = 0;
-    default is backward. One value or a vector of length N+1 [-].
-  }
-  \item{AFDW.grid }{AFDW coefficients packaged as a \code{grid} list; the list
-    contains at least the element \code{int} (see \code{\link{setup.prop.1D}})
+    default is backward. One value or a vector of length N+1 [-], or a
+    \code{grid} list; the list contains at least the element \code{int}
+    (see \code{\link{setup.prop.1D}})
     [-].
   }
   \item{VF }{Volume fraction defined at the grid cell interfaces, one value
-    or a vector of length N+1 [-].
-  }
-  \item{VF.grid }{Volume fraction packaged as a \code{grid} list; the list
+    or a vector of length N+1 [-] or a \code{grid} list; the list
     contains at least the elements \code{int} and \code{mid}
     (see \code{\link{setup.prop.1D}}) [-].
   }
   \item{A }{Interface area defined at the grid cell interfaces, one value or
-    a vector of length N+1 [L2].
-  }
-  \item{A.grid }{Interface area packaged as a \code{grid} list; the list
+    a vector of length N+1 [L2] or a \code{grid} list; the list
     contains at least the elements \code{int} and \code{mid}
     (see \code{\link{setup.prop.1D}}) [L2].
   }
@@ -153,8 +143,8 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
 # Monod consumption of oxygen (O2)
 
 O2.model <- function (t=0,O2,pars=NULL) {
-  tran <- tran.1D(C=O2,C.up=C.ow.O2,D.grid=D.grid,v.grid=v.grid,
-  VF.grid=por.grid,grid=grid)$dC
+  tran <- tran.1D(C=O2,C.up=C.ow.O2,D=D.grid,v=v.grid,
+  VF=por.grid,grid=grid)$dC
   reac <- - R.O2*(O2/(Ks+O2))
   return(list(dCdt = tran+reac))
 }
@@ -162,8 +152,8 @@ O2.model <- function (t=0,O2,pars=NULL) {
 # First order consumption of organic carbon (OC)
 
 OC.model <- function (t=0,OC,pars=NULL) {
-  tran <- tran.1D(C=OC,flux.up=F.OC,D.grid=Db.grid,v.grid=v.grid,
-  VF.grid=svf.grid,grid=grid)$dC
+  tran <- tran.1D(C=OC,flux.up=F.OC,D=Db.grid,v=v.grid,
+  VF=svf.grid,grid=grid)$dC
   reac <- - k*OC
   return(list(dCdt = tran + reac))
 }
@@ -323,8 +313,8 @@ legend ("bottomright",pch=c(1,18),lty=1,col=c("black","red"),
 Aggregate.Model <- function(time,O2,pars) {
 
   tran <- tran.1D(C=O2, C.down=C.ow.O2,
-    D.grid=D.grid, A.grid=A.grid,
-    VF.grid=por.grid, grid=grid )$dC
+    D=D.grid, A=A.grid,
+    VF=por.grid, grid=grid )$dC
 
   reac <- - R.O2*(O2/(Ks+O2))*(O2>0)
   return(list(dCdt = tran+reac))

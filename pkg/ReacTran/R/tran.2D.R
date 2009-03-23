@@ -8,11 +8,8 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   flux.x.up=NULL, flux.x.down=NULL, flux.y.up=NULL, flux.y.down=NULL,
   a.bl.x.up=NULL, C.bl.x.up=NULL, a.bl.x.down=NULL, C.bl.x.down=NULL,
   a.bl.y.up=NULL, C.bl.y.up=NULL, a.bl.y.down=NULL, C.bl.y.down=NULL,
-  D.x=NULL, D.y=D.x, D.grid=NULL,
-	v.x=0, v.y=0, v.grid=NULL,
-	AFDW.x=1, AFDW.y=AFDW.x, AFDW.grid=NULL,
-  VF.x=1, VF.y=VF.x, VF.grid=NULL,
-	dx=NULL, dy=NULL, grid=NULL,
+  D.x=NULL, D.y=D.x, v.x=0, v.y=0, AFDW.x=1, AFDW.y=AFDW.x,
+  VF.x=1, VF.y=VF.x, dx=NULL, dy=NULL, grid=NULL,
   full.check = FALSE, full.output = FALSE)
 											
 {
@@ -29,20 +26,54 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
                  dy=rep(dy,length.out=M),
                  dy.aux=0.5*(c(0,rep(dy,length.out=M))+
                              c(rep(dy,length.out=M),0)))
-  if (is.null(AFDW.grid))
-    AFDW.grid <- list(x.int=matrix(data=AFDW.x,nrow=(N+1),ncol=M),
-                      y.int=matrix(data=AFDW.y,nrow=N,ncol=(M+1)))
-  if (is.null(D.grid))
-    D.grid <- list(x.int=matrix(data=D.x,nrow=(N+1),ncol=M),
-                   y.int=matrix(data=D.y,nrow=N,ncol=(M+1)))
-  if (is.null(v.grid))
-    v.grid <- list(x.int=matrix(data=v.x,nrow=(N+1),ncol=M),
-                   y.int=matrix(data=v.y,nrow=N,ncol=(M)+1))
-  if (is.null(VF.grid))
-    VF.grid <- list(x.int=matrix(data=VF.x,nrow=(N+1),ncol=M),
-                    y.int=matrix(data=VF.y,nrow=N,ncol=(M+1)),
-                    x.mid=matrix(data=VF.x,nrow=N,ncol=M),
-                    y.mid=matrix(data=VF.y,nrow=N,ncol=M))
+  if (is.list(AFDW.x))AFDW.x <- AFDW.x$int
+  if (is.list(AFDW.y))AFDW.y <- AFDW.y$int
+  if (is.list(D.x))   D.x <- D.x$int
+  if (is.list(D.y))   D.y <- D.y$int
+  if (is.list(v.x))   v.x <- v.x$int
+  if (is.list(v.y))   v.y <- v.y$int
+
+  VF.grid <- list()
+  
+  if (is.list(VF.x)) {
+    VF.grid$x.int <- matrix(data=VF.x$int,nrow=(N+1),ncol=M)
+    VF.grid$x.mid <-  matrix(data=VF.x$mid, nrow=N, ncol=M)
+  } else if (length(VF.x) == 1) {
+    VF.grid$x.int <- matrix(data=VF.x,nrow=(N+1),ncol=M)
+    VF.grid$x.mid <- matrix(data=VF.x,nrow=N,ncol=M)
+  } else if (length(VF.x) != N+1) {
+    stop("error: VF.x should be a vector of length 1 or N+1")
+  } else {  # correct length
+    VF.grid$x.int <- matrix(data=VF.x,nrow=(N+1),ncol=M)
+    VF.grid$x.mid <- matrix(data=0.5*(VF.x[1:N]  +VF.x[2:(N+1)]),
+                     nrow=N, ncol=M)
+  }
+
+  if (is.list(VF.y)) {
+    VF.grid$y.int <- matrix(data=VF.y$int,nrow=N,ncol=(M+1))
+    VF.grid$y.mid <-  matrix(data=VF.y$mid, nrow=N, ncol=M)
+  } else if (length(VF.y) == 1) {
+    VF.grid$y.int <- matrix(data=VF.y,nrow=N,ncol=(M+1))
+    VF.grid$y.mid <- matrix(data=VF.y,nrow=N,ncol=M)
+  } else if (length(VF.y) != M+1) {
+    stop("error: VF.y should be a vector of length 1 or M+1")
+  } else {  # correct length
+    VF.grid$y.int <- matrix(data=VF.y,nrow=N,ncol=(M+1))
+    VF.grid$y.mid <- matrix(data=0.5*(VF.y[1:N]  +VF.y[2:(N+1)]),
+                     nrow=N, ncol=M)
+  }
+
+  AFDW.grid <- list(x.int=matrix(data=AFDW.x,nrow=(N+1),ncol=M),
+                    y.int=matrix(data=AFDW.y,nrow=N,ncol=(M+1)))
+  D.grid <- list(x.int=matrix(data=D.x,nrow=(N+1),ncol=M),
+                 y.int=matrix(data=D.y,nrow=N,ncol=(M+1)))
+  v.grid <- list(x.int=matrix(data=v.x,nrow=(N+1),ncol=M),
+                 y.int=matrix(data=v.y,nrow=N,ncol=(M)+1))
+#  if (is.null(VF.grid))
+#    VF.grid <- list(x.int=matrix(data=VF.x,nrow=(N+1),ncol=M),
+#                    y.int=matrix(data=VF.y,nrow=N,ncol=(M+1)),
+#                    x.mid=matrix(data=VF.x,nrow=N,ncol=M),
+#                    y.mid=matrix(data=VF.y,nrow=N,ncol=M))
 
 #==============================================================================
 # INPUT CHECKS  

@@ -23,13 +23,9 @@
 
 \usage{
 tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
-   C.lat=0, C.lat.grid=NULL,
-   F.up=NULL, F.down=NULL,
-   F.lat=NULL, F.lat.grid=NULL,
-	 Disp=NULL,	Disp.grid=NULL,
-	 flow = 0, flow.grid=NULL,
-	 flow.lat=0,flow.lat.grid=NULL,
-	 V=NULL,V.grid=NULL)
+   C.lat=0, F.up=NULL, F.down=NULL, F.lat=NULL,
+   Disp=NULL,	flow = 0, flow.lat=0, V=NULL,
+   full.check = FALSE, full.output = FALSE)
 
 }
 
@@ -42,9 +38,7 @@ tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
   \item{C.down }{tracer concentration at downstream interface. One value [M/L3].
   }
   \item{C.lat }{tracer concentration in the lateral input, defined at
-    grid cell centres. One value or a vector of length N [M/L3].
-  }
-  \item{C.lat.grid }{tracer concentration in lateral input defined as
+    grid cell centres. One value or a vector of length N [M/L3],  or a
     grid property.
   }
   \item{F.up }{total tracer input at the upstream interface. One value [M/T].
@@ -52,29 +46,27 @@ tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
   \item{F.down }{total tracer input at downstream interface. One value [M/T].
   }
   \item{F.lat }{total lateral tracer input, defined at grid cell centres.
-    One value or a vector of length N [M/T].
-  }
-  \item{F.lat.grid }{total lateral tracer input defined as grid property.
+    One value or a vector of length N [M/T], or a grid property.
   }
   \item{Disp }{BULK dispersion coefficient, defined on grid cell interfaces.
-    One value or a vector of length N+1, [L3/T].
-  }
-  \item{Disp.grid }{BULK dispersion coefficient defined as grid property.
+    One value or a vector of length N+1, [L3/T], or a grid property.
   }
   \item{flow }{water flow rate, defined on grid cell interfaces. One value
-    or a vector of length N+1, [L3/T].
-  }
-  \item{flow.grid }{water flow rate defined as grid property.
+    or a vector of length N+1, [L3/T], or a grid property.
   }
   \item{flow.lat }{lateral water flow rate into each volume box, defined at
-    grid cell centres. One value or a vector of length N, [L3/T].
-  }
-  \item{flow.lat.grid }{lateral water flow rate defined as grid property.
+    grid cell centres. One value or a vector of length N, [L3/T], or a
+    grid property.
   }
   \item{V }{grid cell volume, defined at grid cell centres. One value or a
-    vector of length N [L3].
+    vector of length N [L3], or a grid property.
   }
-  \item{V.grid }{grid cell volume defined as grid property.
+  \item{full.check }{logical flag enabling a full check of the consistency
+    of the arguments (default = \code{FALSE}; \code{TRUE} slows down execution
+    by 50 percent).
+  }
+  \item{full.output }{logical flag enabling a full return of the output
+    (default = \code{FALSE}; \code{TRUE} slows down execution by 20 percent).
   }
 }
 
@@ -83,7 +75,7 @@ tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
     defined in the centre of each grid cell [M/L3/T].
   }
   \item{F }{mass flow across at the interface of each grid cell. A vector
-    of length N+1 [M/T].
+    of length N+1 [M/T]. only when (\code{full.output} = \code{TRUE}
   }
   \item{F.up }{mass flow across the upstream boundary, positive = INTO
     model domain. One value [M/T].

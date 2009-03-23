@@ -15,11 +15,8 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   flux.x.up=NULL, flux.x.down=NULL, flux.y.up=NULL, flux.y.down=NULL,
   a.bl.x.up=NULL, C.bl.x.up=NULL, a.bl.x.down=NULL, C.bl.x.down=NULL,
   a.bl.y.up=NULL, C.bl.y.up=NULL, a.bl.y.down=NULL, C.bl.y.down=NULL,
-  D.x=NULL, D.y=D.x, D.grid=NULL,
-  v.x=0, v.y=0, v.grid=NULL,
-  AFDW.x=1, AFDW.y=AFDW.x, AFDW.grid=NULL,
-  VF.x=1, VF.y=VF.x, VF.grid=NULL,
-  dx=NULL, dy=NULL, grid=NULL,
+  D.x=NULL, D.y=D.x, v.x=0, v.y=0, AFDW.x=1, AFDW.y=AFDW.x,
+  VF.x=1, VF.y=VF.x, dx=NULL, dy=NULL, grid=NULL,
   full.check = FALSE, full.output = FALSE)
 }
 
@@ -78,50 +75,38 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     in x-direction ; vector of length M  [M/L3].
   }
   \item{D.x }{diffusion coefficient in x-direction, defined on grid cell
-    interfaces. One value or an (N+1)x(M) matrix [L2/T].
+    interfaces. One value, or a vector of length (N+1) or
+    a \code{grid} list [L2/T].
   }
   \item{D.y }{diffusion coefficient in y-direction, defined on grid cell
-    interfaces. One value or an (N)x(M+1) matrix [L2/T].
-  }
-  \item{D.grid }{diffusion coefficient packaged as a grid list; the list
-    contains at least the elements \code{x.int} and \code{y.int}
-    (see \code{\link{setup.prop.2D}})  [L2/T].
+    interfaces. One value, or a vector of length (M+1), or
+    a \code{grid} list [L2/T].
   }
   \item{v.x }{advective velocity in the x-direction, defined on grid cell
     interfaces. Can be positive (downstream flow) or negative (upstream flow).
-    One value or an (N+1)x(M) matrix  [L/T].
+    One value or a  or a vector of length (N+1) or
+    a \code{grid} list  [L/T].
   }
   \item{v.y }{advective velocity in the y-direction, defined on grid cell
     interfaces. Can be positive (downstream flow) or negative (upstream flow).
-    One value or an (N)x(M+1) matrix  [L/T].
-  }
-  \item{v.grid }{advective velocity packaged as a grid list; the list
-    contains at least the elements \code{x.int} and \code{y.int} (see
-    \code{\link{setup.prop.2D}}) [L/T].
+    One value, or a vector of length (M+1), or
+    a \code{grid} list [L/T].
   }
   \item{AFDW.x }{weight used in the finite difference scheme for advection
     in the x-direction, defined on grid cell interfaces; backward = 1,
-    centred = 0.5, forward = 0; default is backward. One value or an
-    (N+1)x(M) matrix [-].
+    centred = 0.5, forward = 0; default is backward. One value or a
+    vector of length (N+1) or a \code{grid} list [-].
   }
   \item{AFDW.y }{weight used in the finite difference scheme for advection
     in the y-direction, defined on grid cell interfaces; backward = 1,
-    centred = 0.5, forward = 0; default is backward. One value or an
-    (N)x(M+1) matrix [-].
-  }
-  \item{AFDW.grid }{AFDW coefficients packaged as a grid list; the list
-    contains at least the elements \code{x.int} and \code{y.int}
-    (see \code{\link{setup.prop.2D}}) [-].
+    centred = 0.5, forward = 0; default is backward. One value, or a
+    vector of length (M+1), or a \code{grid} list [-].
   }
   \item{VF.x }{Volume fraction at the grid cell interfaces in the x-direction.
-    One value or an (N+1)x(M) matrix [-].
+    One value or or a vector of length (N+1) or  a \code{grid} list  [-].
   }
   \item{VF.y }{Volume fraction at the grid cell interfaces in the y-direction.
-    One value or an (N)x(M+1) matrix [-].
-  }
-  \item{VF.grid }{Volume fraction packaged as a grid list; the list contains
-    at least the elements \code{x.int}, \code{y.int}, 'x.mid' and 'y.mid'
-    (see \code{\link{setup.prop.2D}}) [-].
+    One value, or a vector of length (M+1), or a \code{grid} list [-].
   }
   \item{dx }{distance between adjacent cell interfaces in the x-direction
     (thickness of grid cells). One value or vector of length N [L].
