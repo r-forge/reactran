@@ -130,7 +130,7 @@ tran.volume.1D <- function(C, C.up=C[1], C.down=C[length(C)],
     v1[v1>0] <- 0
   	Adv.F <- Adv.F + v1 *c(C,C.down)
   }
-  
+
 
   F <- as.vector(Dif.F + Adv.F)
 

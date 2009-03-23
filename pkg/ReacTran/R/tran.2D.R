@@ -3,13 +3,13 @@
 ## 2D Transport of a solute in the sediment
 ##==============================================================================
 
-tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
-  C.left=C[,1],  C.right=C[,ncol(C)],
-  flux.up=NULL, flux.down=NULL, flux.left=NULL, flux.right=NULL,
-  a.bl.up=NULL, C.bl.up=NULL, a.bl.down=NULL, C.bl.down=NULL,
-  a.bl.left=NULL, C.bl.left=NULL, a.bl.right=NULL, C.bl.right=NULL,
+tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
+  C.y.up=C[,1],  C.y.down=C[,ncol(C)],
+  flux.x.up=NULL, flux.x.down=NULL, flux.y.up=NULL, flux.y.down=NULL,
+  a.bl.x.up=NULL, C.bl.x.up=NULL, a.bl.x.down=NULL, C.bl.x.down=NULL,
+  a.bl.y.up=NULL, C.bl.y.up=NULL, a.bl.y.down=NULL, C.bl.y.down=NULL,
   D.x=NULL, D.y=D.x, D.grid=NULL,
-	v.x=0, v.y=v.x, v.grid=NULL,
+	v.x=0, v.y=0, v.grid=NULL,
 	AFDW.x=1, AFDW.y=AFDW.x, AFDW.grid=NULL,
   VF.x=1, VF.y=VF.x, VF.grid=NULL,
 	dx=NULL, dy=NULL, grid=NULL,
@@ -17,29 +17,32 @@ tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
 											
 {
 
+  N <- nrow(C)
+  M <- ncol(C)
+
 # DEFAULT INFILLING OF GRID PARAMETERS
 
   if (is.null(grid))
-    grid <- list(dx=rep(dx,length.out=nrow(C)),
-                        dx.aux=0.5*(c(0,rep(dx,length.out=nrow(C)))+
-                                    c(rep(dx,length.out=nrow(C)),0)),
-                        dy=rep(dy,length.out=ncol(C)),
-                        dy.aux=0.5*(c(0,rep(dy,length.out=ncol(C)))+
-                           c(rep(dy,length.out=ncol(C)),0)))
+    grid <- list(dx=rep(dx,length.out=N),
+                 dx.aux=0.5*(c(0,rep(dx,length.out=N))+
+                             c(rep(dx,length.out=N),0)),
+                 dy=rep(dy,length.out=M),
+                 dy.aux=0.5*(c(0,rep(dy,length.out=M))+
+                             c(rep(dy,length.out=M),0)))
   if (is.null(AFDW.grid))
-    AFDW.grid <- list(x.int=matrix(data=AFDW.x,nrow=(nrow(C)+1),ncol=ncol(C)),
-                      y.int=matrix(data=AFDW.y,nrow=nrow(C),ncol=(ncol(C)+1)))
+    AFDW.grid <- list(x.int=matrix(data=AFDW.x,nrow=(N+1),ncol=M),
+                      y.int=matrix(data=AFDW.y,nrow=N,ncol=(M+1)))
   if (is.null(D.grid))
-    D.grid <- list(x.int=matrix(data=D.x,nrow=(nrow(C)+1),ncol=ncol(C)),
-                   y.int=matrix(data=D.y,nrow=nrow(C),ncol=(ncol(C)+1)))
+    D.grid <- list(x.int=matrix(data=D.x,nrow=(N+1),ncol=M),
+                   y.int=matrix(data=D.y,nrow=N,ncol=(M+1)))
   if (is.null(v.grid))
-    v.grid <- list(x.int=matrix(data=v.x,nrow=(nrow(C)+1),ncol=ncol(C)),
-                   y.int=matrix(data=v.y,nrow=nrow(C),ncol=(ncol(C))+1))
+    v.grid <- list(x.int=matrix(data=v.x,nrow=(N+1),ncol=M),
+                   y.int=matrix(data=v.y,nrow=N,ncol=(M)+1))
   if (is.null(VF.grid))
-    VF.grid <- list(x.int=matrix(data=VF.x,nrow=(nrow(C)+1),ncol=ncol(C)),
-                    y.int=matrix(data=VF.y,nrow=nrow(C),ncol=(ncol(C)+1)),
-                    x.mid=matrix(data=VF.x,nrow=nrow(C),ncol=ncol(C)),
-                    y.mid=matrix(data=VF.y,nrow=nrow(C),ncol=ncol(C)))
+    VF.grid <- list(x.int=matrix(data=VF.x,nrow=(N+1),ncol=M),
+                    y.int=matrix(data=VF.y,nrow=N,ncol=(M+1)),
+                    x.mid=matrix(data=VF.x,nrow=N,ncol=M),
+                    y.mid=matrix(data=VF.y,nrow=N,ncol=M))
 
 #==============================================================================
 # INPUT CHECKS  
@@ -50,61 +53,61 @@ tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
 
 ## check dimensions of input concentrations
 
-    if (!is.null(C.up)) {
-      if (!((length(C.up)==1) || (length(C.up)==(ncol(C)))))
-        stop("error: C.up should be a vector of length 1 or ncol(C)")
+    if (!is.null(C.x.up)) {
+      if (!((length(C.x.up)==1) || (length(C.x.up)==(M))))
+        stop("error: C.x.up should be a vector of length 1 or ncol(C)")
     }
-    if (!is.null(C.down)) {
-      if (!((length(C.down)==1) || (length(C.down)==(ncol(C)))))
-        stop("error: C.down should be a vector of length 1 or ncol(C)")
+    if (!is.null(C.x.down)) {
+      if (!((length(C.x.down)==1) || (length(C.x.down)==(M))))
+        stop("error: C.x.down should be a vector of length 1 or ncol(C)")
     }
-    if (!is.null(C.left)) {
-      if (!((length(C.left)==1) || (length(C.left)==(nrow(C)))))
-        stop("error: C.left should be a vector of length 1 or nrow(C)")
+    if (!is.null(C.y.up)) {
+      if (!((length(C.y.up)==1) || (length(C.y.up)==(N))))
+        stop("error: C.y.up should be a vector of length 1 or nrow(C)")
     }
-    if (!is.null(C.right)) {
-      if (!((length(C.right)==1) || (length(C.right)==(nrow(C)))))
-        stop("error: C.right should be a vector of length 1 or nrow(C)")
+    if (!is.null(C.y.down)) {
+      if (!((length(C.y.down)==1) || (length(C.y.down)==(N))))
+        stop("error: C.y.down should be a vector of length 1 or nrow(C)")
     }
 
-    if (!is.null(C.bl.up)) {
-      if (!((length(C.bl.up)==1) || (length(C.bl.up)==(ncol(C)))))
-        stop("error: C.bl.up should be a vector of length 1 or ncol(C)")
+    if (!is.null(C.bl.x.up)) {
+      if (!((length(C.bl.x.up)==1) || (length(C.bl.x.up)==(M))))
+        stop("error: C.bl.x.up should be a vector of length 1 or ncol(C)")
    }
 
-    if (!is.null(C.bl.down)) {
-      if (!((length(C.bl.down)==1) || (length(C.bl.down)==(ncol(C)))))
-        stop("error: C.bl.down should be a vector of length 1 or ncol(C)")
+    if (!is.null(C.bl.x.down)) {
+      if (!((length(C.bl.x.down)==1) || (length(C.bl.x.down)==(M))))
+        stop("error: C.bl.x.down should be a vector of length 1 or ncol(C)")
     }
 
-    if (!is.null(C.bl.left)) {
-      if (!((length(C.bl.left)==1) || (length(C.bl.left)==(nrow(C)))))
-        stop("error: C.bl.left should be a vector of length 1 or nrow(C)")
+    if (!is.null(C.bl.y.up)) {
+      if (!((length(C.bl.y.up)==1) || (length(C.bl.y.up)==(N))))
+        stop("error: C.bl.y.up should be a vector of length 1 or nrow(C)")
     }
 
-    if (!is.null(C.bl.right)) {
-      if (!((length(C.bl.right)==1) || (length(C.bl.right)==(nrow(C)))))
-        stop("error: C.bl.right should be a vector of length 1 or nrow(C)")
+    if (!is.null(C.bl.y.down)) {
+      if (!((length(C.bl.y.down)==1) || (length(C.bl.y.down)==(N))))
+        stop("error: C.bl.y.down should be a vector of length 1 or nrow(C)")
     }
 
 # check dimensions of input fluxes
 
-    if (!is.null(flux.up)) {
-      if (!((length(flux.up)==1) || (length(flux.up)==(ncol(C)))))
-        stop("error: flux.up should be a vector of length 1 or ncol(C)")
+    if (!is.null(flux.x.up)) {
+      if (!((length(flux.x.up)==1) || (length(flux.x.up)==(M))))
+        stop("error: flux.x.up should be a vector of length 1 or ncol(C)")
     }
-    if (!is.null(flux.down)) {
-      if (!((length(flux.down)==1) || (length(flux.down)==(ncol(C)))))
-        stop("error: flux.down should be a vector of length 1 or ncol(C)")
+    if (!is.null(flux.x.down)) {
+      if (!((length(flux.x.down)==1) || (length(flux.x.down)==(M))))
+        stop("error: flux.x.down should be a vector of length 1 or ncol(C)")
     }
-    if (!is.null(flux.left)) {
-      if (!((length(flux.left)==1) || (length(flux.left)==(nrow(C)))))
-        stop("error: flux.left should be a vector of length 1 or nrow(C)")
+    if (!is.null(flux.y.up)) {
+      if (!((length(flux.y.up)==1) || (length(flux.y.up)==(N))))
+        stop("error: flux.y.up should be a vector of length 1 or nrow(C)")
     }
 
-    if (!is.null(flux.right)) {
-      if (!((length(flux.right)==1) || (length(flux.right)==(nrow(C)))))
-        stop("error: flux.right should be a vector of length 1 or nrow(C)")
+    if (!is.null(flux.y.down)) {
+      if (!((length(flux.y.down)==1) || (length(flux.y.down)==(N))))
+        stop("error: flux.y.down should be a vector of length 1 or nrow(C)")
     }
 
 
@@ -204,136 +207,139 @@ tran.2D <- function(C, C.up=C[1,], C.down=C[nrow(C),],
   }
 ## FUNCTION BODY: CALCULATIONS
 
-  N <- nrow(C)
-  M <- ncol(C)
-
 ## Impose boundary flux at upper boundary when needed
 ## Default boundary condition is no gradient
-  if (! is.null (flux.up[1])) {
-    nom <- flux.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1] +
+  if (! is.null (flux.x.up[1])) {
+    nom <- flux.x.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1] +
            (1-AFDW.grid$x.int[1,])*v.grid$x.int[1,])*C[1,]
     denom <- VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1]+
              AFDW.grid$x.int[1,]*v.grid$x.int[1,])
-    C.up <- nom/denom
+    C.x.up <- nom/denom
   }
 
 ## Impose boundary flux at lower boundary when needed
 ## Default boundary condition is no gradient
-  if (! is.null (flux.down[1])) {
-  	nom <- flux.down - VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/
+  if (! is.null (flux.x.down[1])) {
+  	nom <- flux.x.down - VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/
             grid$dx.aux[N+1] + AFDW.grid$x.int[(N+1),]*v.grid$x.int[(N+1),])*C[N,]
     denom <- -VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/grid$dx.aux[N+1]+
             (1-AFDW.grid$x.int[(N+1),])*v.grid$x.int[(N+1),])
-    C.down <- nom/denom
+    C.x.down <- nom/denom
   }
 
 # Impose boundary flux at upper boundary when needed
 # Default boundary condition is no gradient
-  if (! is.null (flux.left[1])) {
-    nom <- flux.left + VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[1] +
+  if (! is.null (flux.y.up[1])) {
+    nom <- flux.y.up + VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[1] +
            (1-AFDW.grid$y.int[,1])*v.grid$y.int[,1])*C[,1]
     denom <- VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[1]+
              AFDW.grid$y.int[,1]*v.grid$y.int[,1])
-    C.left <- nom/denom
+    C.y.up <- nom/denom
   }
 
 # Impose boundary flux at lower boundary when needed
 # Default boundary condition is no gradient
-  if (! is.null (flux.right[1]))  {
-	  nom <- flux.right - VF.grid$y.int[,(M+1)]*(D.grid$y.int[,(M+1)]/
+  if (! is.null (flux.y.down[1]))  {
+	  nom <- flux.y.down - VF.grid$y.int[,(M+1)]*(D.grid$y.int[,(M+1)]/
            grid$dy.aux[M+1] + AFDW.grid$y.int[,(M+1)]*v.grid$y.int[,(M+1)])*C[,M]
     denom <- -VF.grid$y.int[,(M+1)]*(D.grid$y.int[,(M+1)]/grid$dy.aux[M+1]+
              (1-AFDW.grid$y.int[,(M+1)])*v.grid$y.int[,(M+1)])
-    C.right <- nom/denom
+    C.y.down <- nom/denom
   }
 
-## when upper boundary layer is present, calculate new C.up
-  if (!is.null(a.bl.up) & !is.null(C.bl.up[1])) {
-	  nom <- a.bl.up*C.bl.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/
+## when upper boundary layer is present, calculate new C.x.up
+  if (!is.null(a.bl.x.up) & !is.null(C.bl.x.up[1])) {
+	  nom <- a.bl.x.up*C.bl.x.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/
            grid$dx.aux[1] + (1-AFDW.grid$x.int[1,])*v.grid$x.int[1,])*C[1,]
-    denom <- a.bl.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1]+
+    denom <- a.bl.x.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1]+
              AFDW.grid$x.int[1,]*v.grid$x.int[1,])
-	  C.up <- nom/denom
+	  C.x.up <- nom/denom
   }
 
-## when lower boundary layer is present, calculate new C.down
-  if (!is.null(a.bl.down) & !is.null(C.bl.down[1])) {
-	  nom <- a.bl.down*C.bl.down + VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/
+## when lower boundary layer is present, calculate new C.x.down
+  if (!is.null(a.bl.x.down) & !is.null(C.bl.x.down[1])) {
+	  nom <- a.bl.x.down*C.bl.x.down + VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/
            grid$dx.aux[(N+1)] + (1-AFDW.grid$x.int[(N+1),])*
            v.grid$x.int[(N+1),])*C[N,]
-    denom <- a.bl.down + VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/
+    denom <- a.bl.x.down + VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/
              grid$dx.aux[(N+1)]+ AFDW.grid$x.int[(N+1),]*v.grid$x.int[(N+1),])
-	  C.down <- nom/denom
+	  C.x.down <- nom/denom
   }
 
-## when left boundary layer is present, calculate new C.left
-  if (!is.null(a.bl.left) & !is.null(C.bl.left[1])) {
-	  nom <- a.bl.left*C.bl.left + VF.grid$y.int[,1]*(D.grid$y.int[,1]/
+## when left boundary layer is present, calculate new C.y.up
+  if (!is.null(a.bl.y.up) & !is.null(C.bl.y.up[1])) {
+	  nom <- a.bl.y.up*C.bl.y.up + VF.grid$y.int[,1]*(D.grid$y.int[,1]/
            grid$dy.aux[1] + (1-AFDW.grid$y.int[,1])*v.grid$y.int[,1])*C[,1]
-    denom <- a.bl.left + VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[1]+
+    denom <- a.bl.y.up + VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[1]+
              AFDW.grid$y.int[,1]*v.grid$y.int[,1])
-	  C.left <- nom/denom
+	  C.y.up <- nom/denom
   }
 
-## when right boundary layer is present, calculate new C.right
-  if (!is.null(a.bl.right) & !is.null(C.bl.right[1]))   {
-	  nom <- a.bl.right*C.bl.right + VF.grid$y.int[,(M+1)]*
+## when right boundary layer is present, calculate new C.y.down
+  if (!is.null(a.bl.y.down) & !is.null(C.bl.y.down[1]))   {
+	  nom <- a.bl.y.down*C.bl.y.down + VF.grid$y.int[,(M+1)]*
            (D.grid$y.int[,(M+1)]/grid$dy.aux[(M+1)] +
            (1-AFDW.grid$y.int[,(M+1)])*v.grid$y.int[,(M+1)])*C[,M]
-    denom <- a.bl.right + VF.grid$y.int[,(M+1)]*(D.grid$y.int[,(M+1)]/
+    denom <- a.bl.y.down + VF.grid$y.int[,(M+1)]*(D.grid$y.int[,(M+1)]/
              grid$dy.aux[(M+1)]+ AFDW.grid$y.int[,(M+1)]*v.grid$y.int[,(M+1)])
-	  C.right <- nom/denom
+	  C.y.down <- nom/denom
   }
 
 ## Calculate diffusive part of the flux
-  x.Dif.flux <- as.matrix(-VF.grid$x.int*D.grid$x.int*
-                diff(rbind(C.up,C,C.down,deparse.level = 0))/
+  x.Dif.flux <- as.matrix(-VF.grid$x.int * D.grid$x.int *
+                diff(rbind(C.x.up, C, C.x.down, deparse.level = 0))/
                 matrix(data=grid$dx.aux,nrow=(N+1),ncol=M,byrow=FALSE))
-  y.Dif.flux <- as.matrix(-VF.grid$y.int*D.grid$y.int*
-                t(diff(t(cbind(C.left,C,C.right,deparse.level = 0))))/
+  y.Dif.flux <- as.matrix(-VF.grid$y.int * D.grid$y.int *
+                t(diff(t(cbind(C.y.up,C,C.y.down,deparse.level = 0))))/
                 matrix(data=grid$dy.aux,nrow=N,ncol=(M+1),byrow=TRUE))
 
-## Calculate adcevtive part of the flux
-  x.Adv.flux <- as.matrix(VF.grid$x.int*v.grid$x.int*((1-AFDW.grid$x.int)*
-                rbind(C.up,C,deparse.level = 0)+AFDW.grid$x.int*
-                rbind(C,C.down,deparse.level = 0)))
-  y.Adv.flux <- as.matrix(VF.grid$y.int*v.grid$y.int*((1-AFDW.grid$y.int)*
-                cbind(C.left,C,deparse.level = 0)+AFDW.grid$y.int*
-                cbind(C,C.right,deparse.level = 0)))
+## Calculate advective part of the flux - NOG NEGATIEVE FLUXEN
+  x.Adv.flux <- as.matrix(VF.grid$x.int * v.grid$x.int * (
+                (1-AFDW.grid$x.int) * rbind(C.x.up,C,deparse.level = 0)
+                + AFDW.grid$x.int * rbind(C,C.x.down,deparse.level = 0)))
+  y.Adv.flux <- as.matrix(VF.grid$y.int * v.grid$y.int * (
+                (1-AFDW.grid$y.int)* cbind(C.y.up,C,deparse.level = 0)
+                +AFDW.grid$y.int*    cbind(C,C.y.down,deparse.level = 0)))
 
   x.flux <- x.Dif.flux + x.Adv.flux
   y.flux <- y.Dif.flux + y.Adv.flux
 
 ## Impose boundary fluxes when needed
 ## Default boundary condition is no gradient
-  if (! is.null (flux.up[1]))
-    x.flux[1,]   <- flux.up
-  if (! is.null (flux.down[1]))
-    x.flux[nrow(x.flux),] <- flux.down
+  if (! is.null (flux.x.up[1]))
+    x.flux[1,]   <- flux.x.up
+  if (! is.null (flux.x.down[1]))
+    x.flux[nrow(x.flux),] <- flux.x.down
     
-  if (! is.null (flux.left[1]))
-    y.flux[,1]   <- flux.left
-  if (! is.null (flux.right[1]))
-    y.flux[,ncol(y.flux)] <- flux.right
+  if (! is.null (flux.y.up[1]))
+    y.flux[,1]   <- flux.y.up
+  if (! is.null (flux.y.down[1]))
+    y.flux[,ncol(y.flux)] <- flux.y.down
 
 ## Calculate rate of change = flux gradient
-  dFdx <- -(diff(x.flux)/grid$dx)/VF.grid$x.mid
-  dFdy <- -t(diff(t(y.flux))/grid$dy)/VF.grid$y.mid
+  dFdx <- - (diff(x.flux) / grid$dx ) / VF.grid$x.mid
+  dFdy <- -t(diff(t(y.flux))/grid$dy) / VF.grid$y.mid
+
 
   if (!full.output) {
-    return (list (dC = dFdx + dFdy))                    # Rate of change due to advective-diffuisve transport in each grid cell
+    return (list (dC = dFdx + dFdy,                    # Rate of change due to advective-diffuisve transport in each grid cell
+                  flux.x.up = x.flux[1,],                # flux across lower boundary interface; positive = IN
+                  flux.x.down = x.flux[nrow(x.flux),],   # flux across lower boundary interface; positive = OUT
+                  flux.y.up = y.flux[,1],                # flux across lower boundary interface; positive = IN
+                  flux.y.down = y.flux[,ncol(y.flux)]))  # flux across lower boundary interface; positive = OUT
+
   } else {
     return (list (dC = dFdx + dFdy,                    # Rate of change in the centre of each grid cells
-                  C.up = C.up,                         # concentration at upper interface
-                  C.down = C.down,                     # concentration at upper interface
-                  C.left = C.left,                     # concentration at upper interface
-                  C.right = C.right,                   # concentration at upper interface
+                  C.x.up = C.x.up,                     # concentration at upper interface
+                  C.x.down = C.x.down,                 # concentration at upper interface
+                  C.y.up = C.y.up,                     # concentration at upper interface
+                  C.y.down = C.y.down,                 # concentration at upper interface
                   x.flux = x.flux,                     # flux across at the interface of each grid cell
                   y.flux = y.flux,                     # flux across at the interface of each grid cell
-                  flux.up = x.flux[1,],                # flux across lower boundary interface; positive = IN
-                  flux.down = x.flux[nrow(x.flux),],   # flux across lower boundary interface; positive = OUT
-                  flux.left = y.flux[,1],              # flux across lower boundary interface; positive = IN
-                  flux.right = y.flux[,ncol(y.flux)])) # flux across lower boundary interface; positive = OUT
+                  flux.x.up = x.flux[1,],               # flux across lower boundary interface; positive = IN
+                  flux.x.down = x.flux[nrow(x.flux),],  # flux across lower boundary interface; positive = OUT
+                  flux.y.up = y.flux[,1],               # flux across lower boundary interface; positive = IN
+                  flux.y.down = y.flux[,ncol(y.flux)])) # flux across lower boundary interface; positive = OUT
   }
 } # end tran.2D
 

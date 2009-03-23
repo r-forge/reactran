@@ -27,6 +27,7 @@ tran.1D <- function(C, C.up=C[1], C.down=C[length(C)],
     AFDW.grid <- list(int=AFDW)
   if (is.null(D.grid))
     D.grid <- list(int=D)
+  if (is.null(D.grid$int)) D.grid$int <- 0
   if (is.null(v.grid))
     v.grid <- list(int=v)
   if (is.null(VF.grid))
@@ -237,17 +238,35 @@ tran.1D <- function(C, C.up=C[1], C.down=C[length(C)],
     adv.flux <- rep(0,length.out=length(dif.flux))
 
     ## Add advective part of the flux if needed
-    if (any (v.grid$int > 0)) {   # advection directed downwards
+    ## KS: CHANGED
+#    if (any (v.grid$int > 0)) {   # advection directed downwards
+#	     conc <- AFDW.grid$int*c(C.up,C)
+#	     if (any (AFDW.grid$int < 1))
+#         conc <- conc +(1-AFDW.grid$int)*c(C,C.down)
+#	     adv.flux <- as.vector(VF.grid$int*v.grid$int*conc)
+#    }
+#    if (any (v.grid$int < 0)) {   # advection directed upwards
+#	    conc <- AFDW.grid$int*c(C,C.down)
+#	    if (any (AFDW.grid$int < 1))
+#        conc <- conc +(1-AFDW.grid$int)*c(C.up,C)
+#	    adv.flux <- as.vector(VF.grid$int*v.grid$int*conc)
+#    }
+      if (any (v.grid$int > 0)) {   # advection directed downwards
+       v <- v.grid$int
+       v[v.grid$int<0] <- 0
 	     conc <- AFDW.grid$int*c(C.up,C)
 	     if (any (AFDW.grid$int < 1))
          conc <- conc +(1-AFDW.grid$int)*c(C,C.down)
-	     adv.flux <- as.vector(VF.grid$int*v.grid$int*conc)
+	     adv.flux <- adv.flux + as.vector(VF.grid$int*v*conc)
     }
     if (any (v.grid$int < 0)) {   # advection directed upwards
-	    conc <- AFDW.grid$int*c(C,C.down)
+       v <- v.grid$int
+       v[v.grid$int>0] <- 0
+
+      conc <- AFDW.grid$int*c(C,C.down)
 	    if (any (AFDW.grid$int < 1))
         conc <- conc +(1-AFDW.grid$int)*c(C.up,C)
-	    adv.flux <- as.vector(VF.grid$int*v.grid$int*conc)
+	     adv.flux <- adv.flux + as.vector(VF.grid$int*v*conc)
     }
 
     flux <- dif.flux + adv.flux
@@ -289,21 +308,39 @@ tran.1D <- function(C, C.up=C[1], C.down=C[length(C)],
     ## Calculate diffusive part of the flux
 	  flux <- as.vector(-(VF.grid$int)*D.grid$int*
                       diff(c(C.up,C,C.down))/grid$dx.aux)
-	
     ## Add advective part of the flux if needed
-	  if (any (v.grid$int > 0)) 	{   # advection directed downwards
-  		conc <- AFDW.grid$int*c(C.up,C)
-	  	if (any (AFDW.grid$int < 1))
-        conc <- conc +(1-AFDW.grid$int)*c(C,C.down)
-		  flux <- flux + as.vector((VF.grid$int)*v.grid$int*conc)
-	  }
+    # KS CHANGED....
+#	  if (any (v.grid$int > 0)) 	{   # advection directed downwards
+#  		conc <- AFDW.grid$int*c(C.up,C)
+#	  	if (any (AFDW.grid$int < 1))
+#        conc <- conc +(1-AFDW.grid$int)*c(C,C.down)
+#		  flux <- flux + as.vector((VF.grid$int)*v.grid$int*conc)
+#	  }
 
-	  if (any (v.grid$int < 0))  {   # advection directed upwards
-  		conc <- AFDW.grid$int*c(C,C.down)
-		  if (any (AFDW.grid$int < 1))
+#	  if (any (v.grid$int < 0))  {   # advection directed upwards
+#  		conc <- AFDW.grid$int*c(C,C.down)
+#		  if (any (AFDW.grid$int < 1))
+#        conc <- conc +(1-AFDW.grid$int)*c(C.up,C)
+#		  flux <- flux + as.vector((VF.grid$int)*v.grid$int*conc)
+#	  }
+      if (any (v.grid$int > 0)) {   # advection directed downwards
+       v <- v.grid$int
+       v[v.grid$int<0] <- 0
+	     conc <- AFDW.grid$int*c(C.up,C)
+	     if (any (AFDW.grid$int < 1))
+         conc <- conc +(1-AFDW.grid$int)*c(C,C.down)
+	     flux <- flux + as.vector(VF.grid$int*v*conc)
+    }
+    if (any (v.grid$int < 0)) {   # advection directed upwards
+       v <- v.grid$int
+       v[v.grid$int>0] <- 0
+
+      conc <- AFDW.grid$int*c(C,C.down)
+	    if (any (AFDW.grid$int < 1))
         conc <- conc +(1-AFDW.grid$int)*c(C.up,C)
-		  flux <- flux + as.vector((VF.grid$int)*v.grid$int*conc)
-	  }
+	     flux <- flux + as.vector(VF.grid$int*v*conc)
+    }
+
   }
 
   if (! is.null (flux.up))

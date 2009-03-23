@@ -29,28 +29,40 @@ tran.1D <- function(C, C.up=C[1], C.down=C[length(C)],
 
 
 
-Liever: u in plaats van v
+-> Liever: u gebruiken in plaats van v
 (u,v,w ~ x,y,z)
 
 u dC/dx, v dC/dy, w dC/dz
 
 
-Als default voor D: liever 0 (i.e. geen mixing) dan NULL.
+-> Als default voor D: liever 0 (i.e. geen mixing) dan NULL.
 
 
+Tran.volume.1D
 
-
-Tran.volume.1d
-
-Disp.grid, flow.grid
+-> Disp.grid, flow.grid
 
 Hoofd/kleine letter?
+
+-> Tran.volume.1D: ook u (advectie)
+
+
+Tran.2D
+
+C.up en C.left
+ -> C.x.up en C.y.up
+
 
 TO DO:
 ####
 
-confusion units per bulk or per volume fraction.
+tran.2D en tran.volume.1D compatible with tran.1D
 
+tran.volume.1D: only backward differences...
+
+Allow negative velocities in tran.2D
+
+DONE:
 ####
     if (any (v.grid$int > 0)) {   # advection directed downwards
 	     conc <- AFDW.grid$int*c(C.up,C)
@@ -84,8 +96,10 @@ confusion units per bulk or per volume fraction.
     }
 
 
-DONE:
-####
+Tran2D: default v.y = 0 (was = v.x)
+
+tran.2D: added transport model + analytical solution.
+
 flux.up and flux.down returned, also when full.output=FALSE.
 
 Consistent use of NULL for missing arguments. (instead of mix NA, NULL)
@@ -97,8 +111,9 @@ Error controls everywhere:
   if (is.null(x) || length(x) == 0) stop("x should be a value")
 
 
-tran.volume.1D faster (factor 10)
+tran.volume.1D faster (factor 10) by avoiding loops
 
+is.null(D$int) => flux = 0 initialiseren.
 
 #### opmerkingen bij veranderingen ####
 1. Had de "concentrations" C "y" genoemd om ook bijv. temperatuur, velocity, etc..
@@ -114,7 +129,8 @@ Zo laten.
 
 
 
-#### GEVAARLIJKE OPTIE: VF als vector !
+#### GEVAARLIJKE OPTIE:
+# VF als vector !
 ## Zie Sidia.r
 
 In SiDia model:
@@ -133,3 +149,6 @@ EN in transport:
 GEVOLG: massa budget NIET gesloten. Probleem: 2 verschillende porositeiten:
 Por. mid  voor geochemie; 0.5*(Porosity[1:N]+Porosity[2:(N+1)]) voor transport
 
+
+##
+zero-gradient en niet-backward advection -> influx ! keep in mind
