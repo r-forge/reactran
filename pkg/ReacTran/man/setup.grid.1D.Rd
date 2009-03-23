@@ -33,8 +33,8 @@
 
 \usage{
 setup.grid.1D(x.up=0, x.down=NULL, L=NULL, N=NULL, dx.1=NULL,
-  p.dx.1=rep(1,length(L)), max.dx.1=10*dx.1, dx.N=NULL,
-  p.dx.N=rep(1,length(L)), max.dx.N=10*dx.N)
+  p.dx.1=rep(1,length(L)), max.dx.1=L, dx.N=NULL,
+  p.dx.N=rep(1,length(L)), max.dx.N=L)
 
 \method{plot}{grid.1D}(x, \dots)
 

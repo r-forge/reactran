@@ -5,114 +5,211 @@
 
 setup.grid.1D <- function(x.up=0,	x.down=NULL, L=NULL,
   N=NULL, dx.1 =NULL, p.dx.1 = rep(1,length(L)),
-  max.dx.1 = 10*dx.1, dx.N =NULL, p.dx.N = rep(1,length(L)),
-  max.dx.N = 10*dx.N) {
+  max.dx.1 = L, dx.N =NULL, p.dx.N = rep(1,length(L)),
+  max.dx.N = L) {
 
 ## Check on the input
 
-  if (is.null(x.down[1]) && is.null(L[1]))
-    stop ("Cannot create grid: the length or end point is not specified")
+  for (i in 1:length(L)) {
+  if (is.null(x.down[i]) && is.null(L[i]))
+    stop (paste("Error in setup.grid.1D! Grid zone",i,": either the length (L) or the end point (x.down) should be specified"))
+  }
 
+## If the interval lengths are given, create the end points of each zone 
   if (is.null(x.down[1])) {
+    if (any(L<0)) stop (paste("Error in setup.grid.1D! L[",which(L<0),"] < 0",sep=""))
     x.down <- cumsum(L)
-#### KS ####
-#	  x.down <- vector(length=length(L))
-#    x.check <- x.up
-#	  for (i in 1:length(L)) {
-#      if (L[i] < 0)
-#        stop ("Cannot create grid: L < 0")
-#      x.down[i] <- x.check + L[i]
-#      x.check <- x.down[i]
-#    }
   }
   
+## If the interval lengths are given, create the end points of each zone 
   if (is.null(L[1])) {
-    L <- diff(c(0,x.down))
-#### KS ####
-#  	L <- vector(length=length(x.down))
-#    x.check <- x.up
-#    for (i in 1:length(x.down)) {
-#   	  if (x.down[i] < x.check)
-#         stop ("Cannot create grid: x.down < x.up")
-#	    L[i] <- x.down[i] - x.check
-#      x.check <- x.down[i]
-#    }
+    L <- diff(c(x.up,x.down))
+    if (any(L<0)) stop (paste("Error in setup.grid.1D! L[",which(L<0),"] < 0",sep=""))
+  }
+
+  for (i in 1:length(L)) {
+    if (is.null(N[i]) && is.null(dx.1[i]) && is.null(dx.N[i]))
+    stop (paste("Error in setup.grid.1D! Both N[",i,"], dx.1[",i,"] and dx.N[",i,"] are NULL"))
   }
 
 ## Calculation of the grid cell sizes
 
   dx <- vector()
 
-## loop over all zones
+  f.root <- function(x,dx,N,L) dx*(x^(N)-1)/(x-1) - L
+
+## Loop over all grid zones
   for (i in 1:length(L)) {
-    if (is.null(N[i]) && is.null(dx.1[i]))
-		  stop ("Cannot create grid: neither N (the number of boxes) nor dx.1 (the size of the first grid cell) is specified")
 
-    if ((is.null(dx.1[i])) && (is.null(dx.N[i])))  { # all grid cells are equal
-
-      if (N[i] < 1)
-        stop ("Cannot create grid: N < 1")
+## Option 1: only N[i] is specified, all grid cells are equal
+    if (!(is.null(N[i])) && (is.null(dx.1[i])) && (is.null(dx.N[i])))  { 
+      if (N[i] < 1) stop (paste("Error in setup.grid.1D! N[",i,"] < 1",sep=""))
       A.dx  <- rep(L[i]/N[i],N[i])
     }
-    else if (is.null(dx.N[i])) { # dx.1 has a value
-  ## KS Ik denk dat dit niet kan - wel eventueel testen of niet = 0?##
-      if (is.null(dx.1[i]))
-        stop ("Cannot create grid: dx.1 not specified")
+    
+## Option 2: dx.1[i] specified, N[i] = NULL and dx.N[i] = NULL 
+
+    if ((is.null(N[i])) && !(is.null(dx.1[i])) && (is.null(dx.N[i])))  { 
+      if (dx.1[i]<=0)
+        stop (paste("Error in setup.grid.1D! dx.1[",i,"] <= 0",sep=""))
       if (dx.1[i] > L[i])
-        stop ("Cannot create grid: dx.1 > L")
-      # use gradual increase of grid cell size at upper interface alone
+        stop (paste("Error in setup.grid.1D! dx.1[",i,"] > L[",i,"]",sep=""))
+  
+     # use gradual increase of grid cell size at upstream interface 
       A.dx <- vector()
       pos <- vector()
       A.dx[1] <- dx.1[i]
       pos[1] <- dx.1[i]
       j <- 1
-
-      while ((is.null(N[i])&&(pos[j] < L[i])) || (!is.null(N[i])&&(j<N[i]))) {
+      while (pos[j] < L[i]) {
         j <- j + 1
         A.dx[j] <- min(max.dx.1[i],A.dx[j-1]*p.dx.1[i])
         pos[j] <- pos[j-1] + A.dx[j]
       }
-
+     # rescaling to fit the interval length 
       A.dx <- A.dx*(L[i]/pos[length(pos)])
+    }
 
-    } else {
+## Option 3: dx.N[i] specified, N[i] = NULL and dx.1[i] = NULL 
 
-      if (is.null(dx.1[i]))
-        stop ("Cannot create grid: dx.1 not specified")
-        # use gradual increase of grid cell size at both interfaces
+    if ((is.null(N[i])) && (is.null(dx.1[i])) && !(is.null(dx.N[i])))  { 
+      if (dx.N[i]<=0)
+        stop (paste("Error in setup.grid.1D! dx.N[",i,"] <= 0",sep=""))
+      if (dx.N[i] > L[i])
+        stop (paste("Error in setup.grid.1D! dx.N[",i,"] > L[",i,"]",sep=""))
+  
+     # use gradual increase of grid cell size at downstream interface 
+      A.dx <- vector()
+      pos <- vector()
+      A.dx[1] <- dx.N[i]
+      pos[1] <- dx.N[i]
+      j <- 1
+      while (pos[j] < L[i]) {
+        j <- j + 1
+        A.dx[j] <- min(max.dx.N[i],A.dx[j-1]*p.dx.N[i])
+        pos[j] <- pos[j-1] + A.dx[j]
+      }
+     # rescaling to fit the interval length 
+      A.dx <- A.dx*(L[i]/pos[length(pos)])
+     # reversing the A.dx vector
+      A.dx <- A.dx[length(A.dx):1]
+    }
+
+## Option 4: N[i] and dx.1[i] are specified, dx.N[i] = NULL 
+
+    if (!(is.null(N[i])) && !(is.null(dx.1[i])) && (is.null(dx.N[i])))  { 
+
+      if (N[i] < 1) stop (paste("Error in setup.grid.1D! N[",i,"] < 1",sep=""))
+      if (dx.1[i]<=0)
+        stop (paste("Error in setup.grid.1D! dx.1[",i,"] <= 0",sep=""))
+      if (dx.1[i] > L[i])
+        stop (paste("Error in setup.grid.1D! dx.1[",i,"] > L[",i,"]",sep=""))
+  
+      # estimate power in power law 
+      p.estim <- uniroot(f=f.root,dx=dx.1[i],N=N[i],L=L[i],lower=1.001,upper=2)$root
+      # use gradual increase of grid cell size at upper interface 
+      A.dx <- vector()
+      pos <- vector()
+      A.dx[1] <- dx.1[i]
+      pos[1] <- dx.1[i]
+      j <- 1
+      while (j < N[i]) {
+        j <- j + 1
+        A.dx[j] <- min(max.dx.1[i],A.dx[j-1]*p.estim)
+        pos[j] <- pos[j-1] + A.dx[j]
+      }
+     # rescaling to fit the interval length 
+      A.dx <- A.dx*(L[i]/pos[length(pos)])
+    }
+
+## Option 5: N[i] and dx.N[i] are specified, dx.1[i] = NULL 
+
+    if (!(is.null(N[i])) && (is.null(dx.1[i])) && !(is.null(dx.N[i])))  { 
+
+      if (N[i] < 1) stop (paste("Error in setup.grid.1D! N[",i,"] < 1",sep=""))
+      if (dx.N[i]<=0)
+        stop (paste("Error in setup.grid.1D! dx.N[",i,"] <= 0",sep=""))
+      if (dx.N[i] > L[i])
+        stop (paste("Error in setup.grid.1D! dx.N[",i,"] > L[",i,"]",sep=""))
+  
+      # estimate power in power law 
+      p.estim <- uniroot(f=f.root,dx=dx.N[i],N=N[i],L=L[i],lower=1.001,upper=2)$root
+      # use gradual increase of grid cell size at upper interface 
+      A.dx <- vector()
+      pos <- vector()
+      A.dx[1] <- dx.N[i]
+      pos[1] <- dx.N[i]
+      j <- 1
+      while (j < N[i]) {
+        j <- j + 1
+        A.dx[j] <- min(max.dx.N[i],A.dx[j-1]*p.estim)
+        pos[j] <- pos[j-1] + A.dx[j]
+      }
+     # rescaling to fit the interval length 
+      A.dx <- A.dx*(L[i]/pos[length(pos)])
+     # reversing the A.dx vector
+      A.dx <- A.dx[length(A.dx):1]
+    }
+
+## Option 6: dx.1[i] and dx.N[i] are specified, N[i] = NULL 
+
+    if (!(is.null(dx.1[i])) && !(is.null(dx.N[i])))  { 
+
+      if (dx.1[i]<=0)
+        stop (paste("Error in setup.grid.1D! dx.1[",i,"] <= 0",sep=""))
+      if (dx.1[i] > L[i]/2)
+        stop (paste("Error in setup.grid.1D! dx.1[",i,"] > L[",i,"]",sep=""))
+      if (dx.N[i]<=0)
+        stop (paste("Error in setup.grid.1D! dx.N[",i,"] <= 0",sep=""))
+      if (dx.N[i] > L[i]/2)
+        stop (paste("Error in setup.grid.1D! dx.N[",i,"] > L[",i,"]",sep=""))
+
+      # estimate power in power law 
+      if (!is.null(N[i])) {
+      N.A <- as.integer(N[i]/2) 
+      N.B <- N[i] - N.A
+      p.dx.1[i] <- uniroot(f=f.root,dx=dx.1[i],N=N.A,L=0.5*L[i],lower=1.001,upper=2)$root
+      p.dx.N[i] <- uniroot(f=f.root,dx=dx.N[i],N=N.B,L=0.5*L[i],lower=1.001,upper=2)$root
+      print(N.A)
+      print(p.dx.1[i])
+      print(p.dx.N[i])
+      }
+      # use gradual increase of grid cell size at upsteam interface
       A.dx  <- vector()
       pos <- vector()
       A.dx[1] <- dx.1[i]
       pos[1] <- dx.1[i]
       j <- 1
-      if (!is.null(N[i]))
-        N.half <- as.integer(N[i]/2)
-
-      while ((is.null(N[i])&&(pos[j] < 0.5*L[i])) ||
-             (!is.null(N[i])&&(j<N.half))) {
+      while ((is.null(N[i])&&(pos[j] < 0.5*L[i]))||(!is.null(N[i])&&(j < N.A))) {
          j <- j + 1
          A.dx[j] <- min(max.dx.1[i],A.dx[j-1]*p.dx.1[i])
          pos[j] <- pos[j-1] + A.dx[j]
       }
       A.dx <- A.dx*(0.5*L[i]/pos[length(pos)])
 
+      # use gradual increase of grid cell size at downsteam interface
       B.dx  <- vector()
       pos <- vector()
       B.dx[1] <- dx.N[i]
       pos[1] <- dx.N[i]
       j <- 1
-      while ((is.null(N[i])&&(pos[j] < 0.5*L[i])) ||
-            (!is.null(N[i])&&(j<(N[i]-N.half)))) {
+      while ((is.null(N[i])&&(pos[j] < 0.5*L[i]))||(!is.null(N[i])&&(j < N.B))) {
         j <- j + 1
         B.dx[j] <- min(max.dx.N[i],B.dx[j-1]*p.dx.N[i])
         pos[j] <- pos[j-1] + B.dx[j]
       }
       B.dx <- B.dx*(0.5*L[i]/pos[length(pos)])
-
+      # assemble the distance vector 
+      print(A.dx)
+      print(B.dx)
       A.dx <- c(A.dx,B.dx[length(B.dx):1])
     }
+
+  ## calculation of present zone has finished, add distances to existing array 
+  
     dx <- c(dx,A.dx)
   }
+
   ## positions and distances
 
   x.int  <- x.up + diffinv(dx)
