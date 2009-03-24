@@ -24,8 +24,8 @@
 \usage{
 tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
    C.lat=0, F.up=NULL, F.down=NULL, F.lat=NULL,
-   Disp=NULL,	flow = 0, flow.lat=0, V=NULL,
-   full.check = FALSE, full.output = FALSE)
+   Disp=NULL,	flow = 0, flow.lat=NULL, AFDW = 1,
+   V=NULL, full.check = FALSE, full.output = FALSE)
 
 }
 
@@ -39,24 +39,42 @@ tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
   }
   \item{C.lat }{tracer concentration in the lateral input, defined at
     grid cell centres. One value or a vector of length N [M/L3],  or a
-    grid property.
+    grid property. Note that \code{C.lat=0}, together with a positive
+    \code{F.lat} will lead to dilution of the tracer concentration in the
+    grid cells. It may be more realistic in some cases to set \code{C.lat = C}
+    (a zero-gradient condition).
   }
   \item{F.up }{total tracer input at the upstream interface. One value [M/T].
   }
   \item{F.down }{total tracer input at downstream interface. One value [M/T].
   }
   \item{F.lat }{total lateral tracer input, defined at grid cell centres.
-    One value or a vector of length N [M/T], or a grid property.
+    One value or a vector of length N , or a grid property,[M/T].
   }
   \item{Disp }{BULK dispersion coefficient, defined on grid cell interfaces.
-    One value or a vector of length N+1, [L3/T], or a grid property.
+    One value or a vector of length N+1, or a grid property, [L3/T].
   }
   \item{flow }{water flow rate, defined on grid cell interfaces. One value
-    or a vector of length N+1, [L3/T], or a grid property.
+    or a vector of length N+1, or a grid property. If one value, it
+    should contain the flow rate at the upstream boundary. If \code{flow}
+    is a vector, then \code{flow.lat} should be \code{NULL}, [L3/T].
   }
-  \item{flow.lat }{lateral water flow rate into each volume box, defined at
-    grid cell centres. One value or a vector of length N, [L3/T], or a
-    grid property.
+  \item{flow.lat }{lateral water flow rate [L3/T] into each volume box,
+    defined at grid cell centres. Either \code{NULL}, one value, or a vector of
+    length N, or a grid property. If \code{flow.lat} has a value, then
+    \code{flow} should be the flow rate at the upstream interface (one value).
+    For each grid cell, the \code{flow} at the downstream interface is
+    then estimated by adding \code{flow.lat} in the cell to the upstream
+    flow rate.
+    If \code{flow.lat} is \code{NULL}, then it is determined as the gradient
+    of \code{flow}.
+  }
+  \item{AFDW }{weight used in the finite difference scheme for advection,
+    defined on grid cell interfaces; backward = 1, centred = 0.5, forward = 0;
+    default is backward. One value or a vector of length N+1 [-], or a
+    \code{grid} list; the list contains at least the element \code{int}
+    (see \code{\link{setup.prop.1D}})
+    [-].
   }
   \item{V }{grid cell volume, defined at grid cell centres. One value or a
     vector of length N [L3], or a grid property.

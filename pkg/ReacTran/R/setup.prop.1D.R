@@ -86,7 +86,7 @@ setup.prop.1D <- function(func = NULL, value = NULL, xy = NULL,
 plot.prop.1D <- function(x, grid, xyswap =FALSE, ...) {
   if (xyswap)
     plot(x$int, grid$x.int, ylim = rev(range(grid$x.int)),
-      ylab="prop",xlab="x",...)
+      xlab="prop",ylab="x",...)
   else
     plot(grid$x.int,x$int, ylab="prop",xlab="x",...)
 }

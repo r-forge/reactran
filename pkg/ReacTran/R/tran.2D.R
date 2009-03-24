@@ -37,7 +37,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   
   if (is.list(VF.x)) {
     VF.grid$x.int <- matrix(data=VF.x$int,nrow=(N+1),ncol=M)
-    VF.grid$x.mid <-  matrix(data=VF.x$mid, nrow=N, ncol=M)
+    VF.grid$x.mid <- matrix(data=VF.x$mid, nrow=N, ncol=M)
   } else if (length(VF.x) == 1) {
     VF.grid$x.int <- matrix(data=VF.x,nrow=(N+1),ncol=M)
     VF.grid$x.mid <- matrix(data=VF.x,nrow=N,ncol=M)
@@ -51,7 +51,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
 
   if (is.list(VF.y)) {
     VF.grid$y.int <- matrix(data=VF.y$int,nrow=N,ncol=(M+1))
-    VF.grid$y.mid <-  matrix(data=VF.y$mid, nrow=N, ncol=M)
+    VF.grid$y.mid <- matrix(data=VF.y$mid, nrow=N, ncol=M)
   } else if (length(VF.y) == 1) {
     VF.grid$y.int <- matrix(data=VF.y,nrow=N,ncol=(M+1))
     VF.grid$y.mid <- matrix(data=VF.y,nrow=N,ncol=M)
@@ -325,12 +325,38 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
                 matrix(data=grid$dy.aux,nrow=N,ncol=(M+1),byrow=TRUE))
 
 ## Calculate advective part of the flux - NOG NEGATIEVE FLUXEN
-  x.Adv.flux <- as.matrix(VF.grid$x.int * v.grid$x.int * (
-                (1-AFDW.grid$x.int) * rbind(C.x.up,C,deparse.level = 0)
-                + AFDW.grid$x.int * rbind(C,C.x.down,deparse.level = 0)))
-  y.Adv.flux <- as.matrix(VF.grid$y.int * v.grid$y.int * (
-                (1-AFDW.grid$y.int)* cbind(C.y.up,C,deparse.level = 0)
-                +AFDW.grid$y.int*    cbind(C,C.y.down,deparse.level = 0)))
+  x.Adv.flux <- 0
+  
+  if (any(v.grid$x.int >0) ) {
+    vv <- v.grid$x.int
+    vv[vv<0]<-0
+    x.Adv.flux <-  x.Adv.flux + as.matrix(VF.grid$x.int * vv * (
+                 (1-AFDW.grid$x.int) * rbind(C.x.up,C,deparse.level = 0)
+                 + AFDW.grid$x.int * rbind(C,C.x.down,deparse.level = 0)))
+  }
+  if (any (v.grid$x.int < 0))  {
+    vv <- v.grid$x.int
+    vv[vv>0]<-0
+    x.Adv.flux <-  x.Adv.flux + as.matrix(VF.grid$x.int * vv * (
+                    AFDW.grid$x.int * rbind(C.x.up,C,deparse.level = 0)
+                 + (1-AFDW.grid$x.int) * rbind(C,C.x.down,deparse.level = 0)))
+
+  }
+  y.Adv.flux <- 0
+  if (any(v.grid$y.int >0) ) {
+    vv <- v.grid$y.int
+    vv[vv<0]<-0
+    y.Adv.flux <-  y.Adv.flux + as.matrix(VF.grid$y.int * vv * (
+                 (1-AFDW.grid$y.int) * cbind(C.y.up,C,deparse.level = 0)
+                 + AFDW.grid$y.int * cbind(C,C.y.down,deparse.level = 0)))
+  }
+  if (any (v.grid$y.int < 0)) {
+    vv <- v.grid$y.int
+    vv[vv>0]<-0
+    y.Adv.flux <-  y.Adv.flux + as.matrix(VF.grid$y.int * vv * (
+                    AFDW.grid$y.int * cbind(C.y.up,C,deparse.level = 0)
+                 + (1-AFDW.grid$y.int) * cbind(C,C.y.down,deparse.level = 0)))
+  }
 
   x.flux <- x.Dif.flux + x.Adv.flux
   y.flux <- y.Dif.flux + y.Adv.flux

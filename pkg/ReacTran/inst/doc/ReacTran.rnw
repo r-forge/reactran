@@ -341,12 +341,23 @@ par(mar=c(5.1,4.1,4.1,2.1))
   For example, to subdivide an estuary, 100 km long into 50 boxes, with the
   first box of size 1 km, we write:
 <<>>=
- setup.grid.1D(L=100,dx.1=1,N=50)
+ (grid<-setup.grid.1D(L=100,dx.1=1,N=50))
 @
-
-FILIP, Dit werkt NIET!
-
-  \subsection{Other grids}
+which can be plotted as follows:
+<<label=Grid,include=FALSE>>=
+ plot(grid)
+@
+\setkeys{Gin}{width=0.6\textwidth}
+\begin{figure}
+\begin{center}
+<<label=grid,fig=TRUE,echo=FALSE>>=
+<<Grid>>
+@
+\end{center}
+\caption{exponential grid size  - see text for \R-code}
+\label{fig:grid}
+\end{figure}
+  \subsection{Other grid properties}
   Other grids can be generated with \rt function \code{setup.prop.1D}.
   \begin{verbatim}
   setup.prop.1D(func=NULL, value=NULL, xy=NULL,
@@ -734,6 +745,32 @@ Volume <- A.grid$mid * grid$dx
   The \code{tran.volume.1D} routine is particularly suited for modelling
   channels (like rivers, estuaries) where the cross-sectional area changes,
   but where this area change is not explicitly modelled as such.
+
+  \subsection{R-function tran.volume.1D}
+  The default input for the \code{tran.volume1D()} function in \proglang{R} is:
+  \begin{verbatim}
+    tran.volume.1D(C, C.up = C[1], C.down = C[length(C)],
+      C.lat=0, F.up=NULL, F.down=NULL, F.lat=NULL,
+      Disp=NULL,   flow = 0, flow.lat=0, AFDW = 1, V=NULL,
+      full.check = FALSE, full.output = FALSE)
+  \end{verbatim}
+  with the following arguments:
+  \begin{itemize}
+    \item \code{C, C.up, C.down}. The concentrations in the centre of each
+      grid cell, a vector of length N (\code{C}) and at the upstream or
+      downstream boundary, one value (\code{C.up, C.down}).
+    \item  \code{F.up, F.down}.  Total input at the upstream and
+      downstream boundaries.
+    \item  \code{F.lat}.  Total input laterally, defined at the grid cells.
+    \item \code{Disp}, the bulk dispersion coefficients, ($L^3 T^{-1}$).
+    \item \code{Q}, the water flow rate, ($L^3 T^{-1}$).
+    \item \code{AFDW} the weights used in the finite difference
+      approximation for flow (-).
+    \item \code{V}, the volume of each grid cell ($L^3$).
+    \item \code{full.check}, when \code{TRUE}, the consistency of the
+      input is checked.
+    \item \code{full.output}, when \code{TRUE} full output is returned.
+  \end{itemize}
 
   Consider the following example that models organic carbon decay in an
   estuary.
