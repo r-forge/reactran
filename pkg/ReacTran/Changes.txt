@@ -1,42 +1,35 @@
-#Karline: DONE
-two arguments per property -> one argument, either one value, a vector or a list
+# Karline: DONE most things EXCEPT
 
-OK for tran.1D
-tran.1D <- function(C, C.up=C[1], C.down=C[length(C)],
-     flux.up=NULL, flux.down=NULL, a.bl.up=NULL, C.bl.up=NULL,
-		 a.bl.down=NULL, C.bl.down=NULL,
-     D=0, v=0, AFDW=1, VF=1, A=1, grid=NULL,
-     full.check = FALSE, full.output = FALSE) {
-
-Default for D: 0 (i.e. no mixing) rather than NULL.
-
-
-## UNSURE:
-But what with tran.2D???? D.x, D.y, D.grid????
-
-suggestion:
-=> D.x, D.y
-=> (REMOVE D.grid)
-
--> D.x, D.y ~ one value, a vector or a grid
-
-## Not done
 u rather than v?? NO: v ~ velocity
 
+Tran.volume.1D: ook u (advectie) - TOCH NIET GEDAAN - VERWARREND...
+MOET DAN MAAR IN 2 STAPPEN...  -> uitleggen aan hand van vis voorbeeld
+
+
+Changes in Tran.volume.1D:
+EITHER flow is a vector and flow.lat is NULL -> flow.lat is estimated
+OR
+flow is one value, the flow rate at upstream boundary and flow.lat has a value
+flow[1] + flow.lat used to estimate flow
+
+added Ash-Free Dry Weight (sic)
+
+Allow negative flow rates in tran.1D.volume OK - NOG TESTEN !
+
+
+?negative flow.lat????
+
+Allow negative flow rates in tran.2D
 
 
 
+# QUESTION:
+
+default value for C.lat=0 ? (prefer C.lat = C)
+
+made tran.2D en tran.volume.1D compatible with tran.1D
 
 
-TO DO:
-####
-Tran.volume.1D: ook u (advectie)
-
-tran.2D en tran.volume.1D compatible with tran.1D
-
-tran.volume.1D: only backward differences...
-
-Allow negative velocities in tran.2D
 
 
 #### GEVAARLIJKE OPTIES:    WAARSCHUWEN
