@@ -16,14 +16,14 @@
   \link{setup.prop.1D}
   
   \itemize{
-    \item \code{p.exp.increase}: exponentially increasing function
-      \deqn{
-         y = y_0 + (y_0-y_{\inf}) \exp(-\max(0,x-x_0)/x_a)
-      }{y=y0+(y0-yinf)*exp(-max(0,(x-x0))/xa}
-
     \item \code{p.exp.decrease}: exponentially decreasing function
       \deqn{
-         y = 1- (y_0 + (y_0-y_{\inf}) \exp(-\max(0,x-x_0)/x_a))
+         y = y_{\inf} + (y_0-y_{\inf}) \exp(-\max(0,x-x_0)/x_a)
+      }{y=y0+(y0-yinf)*exp(-max(0,(x-x0))/xa}
+
+    \item \code{p.exp.increase}: exponentially increasing function
+      \deqn{
+         y = 1- (y_{\inf} + (y_0-y_{\inf}) \exp(-\max(0,x-x_0)/x_a))
       }{y=1-(y0+(y0-yinf)*exp(-max(0,(x-x0))/xa)}
     \item \code{p.sphere.surf, p.sphere.vol} the surface and volume of a
       sphere
@@ -55,7 +55,7 @@ p.cylinder.vol (x, L=1)
 }
 
 \arguments{
-  \item{x }{the x-values for which the property has to be estimated.
+  \item{x }{the x-values for which the property has to be calculated.
   }
   \item{x.0 }{the x-offset; for \code{x <= x.0}, the value will be equal
     to \code{y.0}.
