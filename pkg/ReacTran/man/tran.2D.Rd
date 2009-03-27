@@ -16,7 +16,7 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   a.bl.x.up=NULL, C.bl.x.up=NULL, a.bl.x.down=NULL, C.bl.x.down=NULL,
   a.bl.y.up=NULL, C.bl.y.up=NULL, a.bl.y.down=NULL, C.bl.y.down=NULL,
   D.x=NULL, D.y=D.x, v.x=0, v.y=0, AFDW.x=1, AFDW.y=AFDW.x,
-  VF.x=1, VF.y=VF.x, dx=NULL, dy=NULL, grid=NULL,
+  VF.x=1, VF.y=VF.x, A.x=1, A.y=1, dx=NULL, dy=NULL, grid=NULL,
   full.check = FALSE, full.output = FALSE)
 }
 
@@ -107,6 +107,14 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   }
   \item{VF.y }{Volume fraction at the grid cell interfaces in the y-direction.
     One value, or a vector of length (M+1), or a \code{grid} list [-].
+  }
+  \item{A.x }{Interface area defined at the grid cell interfaces in
+    the x-direction, one value or a vector of length N+1 [L2] or
+    a \code{grid} list.
+  }
+  \item{A.y }{Interface area defined at the grid cell interfaces in
+    the y-direction, one value or a vector of length M+1 [L2] or
+    a \code{grid} list.
   }
   \item{dx }{distance between adjacent cell interfaces in the x-direction
     (thickness of grid cells). One value or vector of length N [L].

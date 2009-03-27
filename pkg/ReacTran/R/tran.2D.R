@@ -9,7 +9,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   a.bl.x.up=NULL, C.bl.x.up=NULL, a.bl.x.down=NULL, C.bl.x.down=NULL,
   a.bl.y.up=NULL, C.bl.y.up=NULL, a.bl.y.down=NULL, C.bl.y.down=NULL,
   D.x=NULL, D.y=D.x, v.x=0, v.y=0, AFDW.x=1, AFDW.y=AFDW.x,
-  VF.x=1, VF.y=VF.x, dx=NULL, dy=NULL, grid=NULL,
+  VF.x=1, VF.y=VF.x, A.x=1, A.y=1, dx=NULL, dy=NULL, grid=NULL,
   full.check = FALSE, full.output = FALSE)
 											
 {
@@ -62,7 +62,37 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     VF.grid$y.mid <- matrix(data=0.5*(VF.y[1:N]  +VF.y[2:(N+1)]),
                      nrow=N, ncol=M)
   }
+  A.grid <- list()
 
+  if (is.list(A.x)) {
+    A.grid$x.int <- matrix(data=A.x$int,nrow=(N+1),ncol=M)
+    A.grid$x.mid <- matrix(data=A.x$mid, nrow=N, ncol=M)
+  } else if (length(A.x) == 1) {
+    A.grid$x.int <- A.x
+    A.grid$x.mid <- A.x
+  } else if (length(A.x) != N+1) {
+    stop("error: A.x should be a vector of length 1 or N+1")
+  } else {  # has correct length, is vector
+    A.grid$x.int <- matrix(data=A.x,nrow=(N+1),ncol=M)
+    A.grid$x.mid <- matrix(data=0.5*(A.x[1:N]  +A.x[2:(N+1)]),
+                     nrow=N, ncol=M)
+  }
+
+  AyCt  <- FALSE
+  if (is.list(A.y)) {
+    A.grid$y.int <- matrix(data=A.y$int,nrow=N,ncol=(M+1))
+    A.grid$y.mid <- matrix(data=A.y$mid, nrow=N, ncol=M)
+  } else if (length(A.y) == 1) {
+    AyCt  <- TRUE
+    A.grid$y.int <- A.y
+    A.grid$y.mid <- A.y
+  } else if (length(A.y) != M+1) {
+    stop("error: A.y should be a vector of length 1 or M+1")
+  } else {  # correct length
+    A.grid$y.int <- matrix(data=A.y,nrow=N,ncol=(M+1))
+    A.grid$y.mid <- matrix(data=0.5*(A.y[1:N]  +A.y[2:(N+1)]),
+                     nrow=N, ncol=M)
+  }
   AFDW.grid <- list(x.int=matrix(data=AFDW.x,nrow=(N+1),ncol=M),
                     y.int=matrix(data=AFDW.y,nrow=N,ncol=(M+1)))
   D.grid <- list(x.int=matrix(data=D.x,nrow=(N+1),ncol=M),
@@ -218,22 +248,15 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
 
 ## check input of VF.grid
 
-    if (is.null(VF.x) && is.null(VF.y) && is.null(VF.grid))
-      stop("error: VF.x, VF.y, and VF.grid cannot be NULL at the same time")
-
-    gn <- names(VF.grid)
-    if (! "x.int" %in% gn)
-      stop("error: VF.grid should be a list that contains 'x.int', the values at the vertical interfaces of the grid cells")
-    if (! "y.int" %in% gn)
-      stop("error: VF.grid should be a list that contains 'y.int', the values at the horizontal interfaces of the grid cells")
-    if (! "x.mid" %in% gn)
-      stop("error: VF.grid should be a list that contains 'x.mid', the values at the middle of the grid cells")
-    if (! "y.mid" %in% gn)
-      stop("error: VF.grid should be a list that contains 'y.mid', the values at the middle of the grid cells")
     if (is.null(VF.grid$x.int) || is.null(VF.grid$y.int) || is.null(VF.grid$x.mid) || is.null(VF.grid$y.mid))
-      stop("error: the VF.grid should be a list with (numeric) values")
+     stop("error: VF should contain (numeric) values")
     if (any (VF.grid$x.int < 0) || any (VF.grid$y.int < 0) || any (VF.grid$x.mid < 0) || any (VF.grid$y.mid < 0))
-      stop("error: the VF.grid values should always be positive")
+      stop("error: the VF values should always be positive")
+
+    if (is.null(A.grid$x.int) || is.null(A.grid$y.int) || is.null(A.grid$x.mid) || is.null(A.grid$y.mid))
+     stop("error: the VF should contain (numeric) values")
+    if (any (A.grid$x.int < 0) || any (A.grid$y.int < 0) || any (A.grid$x.mid < 0) || any (A.grid$y.mid < 0))
+      stop("error: the A values should always be positive")
 
   }
 ## FUNCTION BODY: CALCULATIONS
@@ -374,8 +397,11 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     y.flux[,ncol(y.flux)] <- flux.y.down
 
 ## Calculate rate of change = flux gradient
-  dFdx <- - (diff(x.flux) / grid$dx ) / VF.grid$x.mid
-  dFdy <- -t(diff(t(y.flux))/grid$dy) / VF.grid$y.mid
+  dFdx <- - (diff(A.grid$x.int*x.flux) / A.grid$x.mid/grid$dx ) / VF.grid$x.mid
+  if (!AyCt)
+    dFdy <- -t(diff(t(A.grid$y.int*y.flux))/t(A.grid$y.mid)/grid$dy) / VF.grid$y.mid
+  else
+    dFdy <- -t(diff(t(A.grid$y.int*y.flux))/A.grid$y.mid/grid$dy) / VF.grid$y.mid
 
 
   if (!full.output) {
