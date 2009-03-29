@@ -45,3 +45,24 @@ setup.prop.2D <- function(func = NULL, value = NULL, grid, ...) {
   return(Res)
 }
 
+##==============================================================================
+## S3 method: Plotting of a two-dimensional grid property
+##==============================================================================
+
+
+filled.contour.prop.2D <- function(prop, grid, xyswap = FALSE, ...) {
+
+  if (xyswap)
+    filled.contour(x=grid$y.mid,y=rev(-grid$x.mid),z=t(prop$mid),...)
+##  levelplot(t(prop2D$mid),row.values=grid2D$y.mid, column.values=rev(-grid2D$x.mid))
+  else
+    filled.contour(x=grid$x.mid,y=grid$y.mid,z=prop$mid,...)
+##  levelplot(prop2D$mid,row.values=grid2D$x.mid,column.values=grid2D$y.mid)
+}
+
+contour.prop.2D <- function(prop, grid, xyswap = FALSE,...) {
+  if (xyswap)
+    contour(x=grid$y.mid,y=rev(-grid$x.mid),z=t(prop$mid),...)
+  else
+    contour(x=grid$x.mid,y=grid$y.mid,z=prop$mid,...)
+}

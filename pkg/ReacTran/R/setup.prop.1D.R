@@ -27,7 +27,8 @@ setup.prop.1D <- function(func = NULL, value = NULL, xy = NULL,
   if (is.null(xy) && is.null(value) && is.null(func))
     stop("error in setup.prop.1D: function, value and xy cannot be NULL together")
 
-  if (! is.null(func)) {   # profile specification via function
+## profile specification via function
+  if (! is.null(func)) {   
   	y.int <- func(grid$x.int,...)
     ## KS ##
   	if (length(y.int)==0)
@@ -41,7 +42,8 @@ setup.prop.1D <- function(func = NULL, value = NULL, xy = NULL,
 	  y.mid <- rep(value,times=length(grid$x.mid))
   }
 
-  if (! is.null(xy)) { # profile speficication via data series input
+## profile speficication via data series input
+  if (! is.null(xy)) { 
     if (! is.matrix(xy))
       stop("error in setup.prop.1D: xy should be a 2-columned matrix or NULL")
 	  if (!(interpolate %in% c("linear","spline")))
@@ -83,10 +85,10 @@ setup.prop.1D <- function(func = NULL, value = NULL, xy = NULL,
 ##==============================================================================
 
 
-plot.prop.1D <- function(x, grid, xyswap =FALSE, ...) {
+plot.prop.1D <- function(prop, grid, xyswap =FALSE, ...) {
   if (xyswap)
-    plot(x$int, grid$x.int, ylim = rev(range(grid$x.int)),
+    plot(prop$int, grid$x.int, ylim = rev(range(grid$x.int)),
       xlab="prop",ylab="x",...)
   else
-    plot(grid$x.int,x$int, ylab="prop",xlab="x",...)
+    plot(grid$x.int,prop$int, ylab="prop",xlab="x",...)
 }

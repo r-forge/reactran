@@ -16,16 +16,20 @@ setup.grid.1D <- function(x.up=0,	x.down=NULL, L=NULL,
   }
 
 ## If the interval lengths are given, create the end points of each zone 
+
   if (is.null(x.down[1])) {
     if (any(L<0)) stop (paste("Error in setup.grid.1D! L[",which(L<0),"] < 0",sep=""))
     x.down <- cumsum(L)
   }
   
 ## If the interval lengths are given, create the end points of each zone 
+
   if (is.null(L[1])) {
     L <- diff(c(x.up,x.down))
     if (any(L<0)) stop (paste("Error in setup.grid.1D! L[",which(L<0),"] < 0",sep=""))
   }
+
+## Check wether all info is available in each zone 
 
   for (i in 1:length(L)) {
     if (is.null(N[i]) && is.null(dx.1[i]) && is.null(dx.N[i]))
@@ -36,7 +40,11 @@ setup.grid.1D <- function(x.up=0,	x.down=NULL, L=NULL,
 
   dx <- vector()
 
-  f.root <- function(x,dx,N,L) dx*(x^(N)-1)/(x-1) - L
+## Power law function that controls the increase in grid size. The 
+## root of this function determines the power factor that corresponds to a 
+## desired number of cells N 
+
+  f.root <- function(p,dx,N,L) dx*(p^(N)-1)/(p-1) - L
 
 ## Loop over all grid zones
   for (i in 1:length(L)) {
@@ -170,9 +178,6 @@ setup.grid.1D <- function(x.up=0,	x.down=NULL, L=NULL,
       N.B <- N[i] - N.A
       p.dx.1[i] <- uniroot(f=f.root,dx=dx.1[i],N=N.A,L=0.5*L[i],lower=1.001,upper=2)$root
       p.dx.N[i] <- uniroot(f=f.root,dx=dx.N[i],N=N.B,L=0.5*L[i],lower=1.001,upper=2)$root
-      print(N.A)
-      print(p.dx.1[i])
-      print(p.dx.N[i])
       }
       # use gradual increase of grid cell size at upsteam interface
       A.dx  <- vector()
@@ -200,8 +205,6 @@ setup.grid.1D <- function(x.up=0,	x.down=NULL, L=NULL,
       }
       B.dx <- B.dx*(0.5*L[i]/pos[length(pos)])
       # assemble the distance vector 
-      print(A.dx)
-      print(B.dx)
       A.dx <- c(A.dx,B.dx[length(B.dx):1])
     }
 

@@ -1,6 +1,16 @@
-# Karline: DONE most things EXCEPT
+# Filip: 
 
-u rather than v?? NO: v ~ velocity
+Opsplitsen files properties en geometries
+ 
+Aanpassingen in Tran.1D:
+- grid weggelaten als argument (nu onder dx gezet, dus nu kan dx een list zijn)
+- error check aangepast (was niet consistent)
+- any(v$int>0) formuleringen aangepast in de berekening boundary condities. Wordt (v$int[1]>0) en (v$int[N+1]>0)
+  
+   
+
+
+# Karline: DONE most things EXCEPT
 
 Tran.volume.1D: ook u (advectie) - TOCH NIET GEDAAN - VERWARREND...
 MOET DAN MAAR IN 2 STAPPEN...  -> uitleggen aan hand van vis voorbeeld

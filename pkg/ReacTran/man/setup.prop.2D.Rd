@@ -1,5 +1,7 @@
 \name{setup.prop.2D}
 \alias{setup.prop.2D}
+\alias{filled.contour.prop.2D}
+\alias{contour.prop.2D}
 \title{
   Attaches a property to a two-dimensional grid
 }
@@ -12,36 +14,46 @@
   (\code{func}) that describes the spatial dependency of the property, or
   asssuming a constant value (\code{value}).
 
-  For example, on a sediment model, the routine can be used to specify the
+  For example, in a sediment model, the routine can be used to specify the
   porosity, the mixing intensity or other parameters over the grid of the
   reactangular sediment domain.
 }
 
 \usage{
 setup.prop.2D(func = NULL, value = NULL, grid,...)
+
+\method{filled.contour}{prop.2D}(prop, grid, xyswap = FALSE, \dots)
+\method{contour}{prop.2D}(prop, grid, xyswap = FALSE, \dots)
 }
 
 \arguments{
-  \item{func }{function that describes the spatial dependency.
+  \item{func }{function that describes the spatial dependency
   }
-  \item{value }{constant value given to the property.
+  \item{value }{constant value given to the property (no spatial dependency)
   }
   \item{grid }{list specifying the 2D grid characteristics, see
-    \code{\link{setup.grid.2D}} for details on the structure of this list.
+    \code{\link{setup.grid.2D}} for details on the structure of this list
   }
-  \item{... }{additional arguments that are passed on to \code{func}.
+  \item{prop }{the object of class \code{prop.1D} that needs plotting
+  }
+  \item{xyswap }{if \code{TRUE}, then x- and y-values are swapped and
+    the y-axis is oriented from top to bottom. Useful for drawing
+    vertical depth profiles
+  }
+  \item{... }{additional arguments that are passed on to \code{func} or
+    to the method
   }
 }
 
 \value{
   A list of type \code{prop.2D} containing:
-  \item{mid }{property value at the middle of the grid cells; NxM matrix.
+  \item{mid }{property values at the middle of the grid cells; NxM matrix
   }
-  \item{x.int }{property value at the horizontal interfaces of the grid cells;
-    (N+1)xM matrix.
+  \item{x.int }{property values at the horizontal interfaces of the grid cells;
+    (N+1)xM matrix
   }
-  \item{y.int }{property value at the vertical interfaces of the grid cells;
-    Nx(M+1) matrix.
+  \item{y.int }{property values at the vertical interfaces of the grid cells;
+    Nx(M+1) matrix
   }
 }
 

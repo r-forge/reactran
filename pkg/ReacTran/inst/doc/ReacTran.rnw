@@ -418,8 +418,7 @@ which can be plotted as follows:
     tran.1D(C, C.up = C[1], C.down = C[length(C)],
       flux.up = NULL, flux.down = NULL, a.bl.up = NULL, C.bl.up = NULL,
       a.bl.down = NULL, C.bl.down = NULL,
-      D = 0, v = 0, AFDW = 1, VF = 1, A = 1,
-      dx = NULL, grid = NULL,
+      D = 0, v = 0, AFDW = 1, VF = 1, A = 1, dx = NULL, 
       full.check = FALSE, full.output = FALSE)
   \end{verbatim}
   with the following arguments:
@@ -600,7 +599,7 @@ Aggregate.Model <- function(time,O2,pars) {
 
   tran <- tran.1D(C=O2, C.down=C.ow.O2,
     D=D.grid, A=A.grid,
-    VF=por.grid, grid=grid )
+    VF=por.grid, dx=grid )
 
   reac <- - R.O2*(O2/(Ks+O2))*(O2>0)
   return(list(dCdt = tran$dC + reac, reac = reac,

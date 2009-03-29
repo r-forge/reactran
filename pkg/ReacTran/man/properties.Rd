@@ -1,75 +1,54 @@
-\name{p.exp.increase}
-\alias{p.exp.increase}
-\alias{p.exp.decrease}
-\alias{p.sphere.surf}
-\alias{p.sphere.vol}
-\alias{p.spheroid.surf}
-\alias{p.spheroid.vol}
-\alias{p.cylinder.surf}
-\alias{p.cylinder.vol}
+\name{p.exp}
+\alias{p.exp}
+\alias{p.lin}
+\alias{p.sig}
+
 \title{
-  Properties to be used with setup.prop.1D
+  Common depth dependencies for one-dimensional properties to be used with setup.prop.1D
 }
 
 \description{
-  Functions that define properties as a function of x. To be used with
+  Functions that define an y-property as a function of the one-dimensional x-coordinate. These routines can be used to specify properties and parameters as a function of depth in the water column or the sediment. They make a transition from an upper (or upstream) with value \code{y.0} to a lower zone with a value \code{y.inf}. The width of the transition zone is \code{x.att} and the depth where the transiztion zone starts is \code{x.L}. Particularly useful in combination with
   \link{setup.prop.1D}
   
   \itemize{
-    \item \code{p.exp.decrease}: exponentially decreasing function
+    \item \code{p.exp}: exponentially decreasing transition 
       \deqn{
          y = y_{\inf} + (y_0-y_{\inf}) \exp(-\max(0,x-x_0)/x_a)
       }{y=y0+(y0-yinf)*exp(-max(0,(x-x0))/xa}
 
-    \item \code{p.exp.increase}: exponentially increasing function
+    \item \code{p.lin}: linearly decreasing transition 
       \deqn{
-         y = 1- (y_{\inf} + (y_0-y_{\inf}) \exp(-\max(0,x-x_0)/x_a))
-      }{y=1-(y0+(y0-yinf)*exp(-max(0,(x-x0))/xa)}
-    \item \code{p.sphere.surf, p.sphere.vol} the surface and volume of a
-      sphere
-      
-    \item \code{p.spheroid.surf, p.spheroid.vol} the surface and volume of a
-      spheroid
-
-    \item \code{p.cylinder.surf, p.cylinder.vol} the surface and volume of a
-      cylinder; note that the surface ignores the top and bottom.
+         0 <= x <= x_L => y = y_0
+         x_L < x <= x_L + x_{att} => y = y_0 - (y_0-y_{inf})*(x-x_L)/x_{att})
+         x >= x_L + x.att => y = y_{inf} 
+        }
+    \item \code{p.sig}: sogmoidal decreasing transition 
+      \deqn{
+         y = y_{inf} + (y_0-y_{inf})\exp(-(x-(x_L + 0.5 x_{att}))/(0.25 x_{att}))/(1+\exp(-(x-(x_L+0.5*x_{att}))/(0.25 x_{att})))
+        }
   }
 }
 
 \usage{
-p.exp.decrease (x, x.0=0, y.0=1, y.inf=0.5, x.att=1)
+p.exp(x, y.0=1, y.inf=0.5, x.L=0, x.att=1)
 
-p.exp.increase (x, x.0=0, y.0=1, y.inf=0.5, x.att=1)
+p.lin(x, y.0=1, y.inf=0.5, x.L=0, x.att=1)
 
-p.sphere.surf (x)
-
-p.sphere.vol (x)
-
-p.spheroid.surf (x, b=1)
-
-p.spheroid.vol (x, b=1)
-
-p.cylinder.surf (x, L=1)
-
-p.cylinder.vol (x, L=1)
+p.sig(x, y.0=1, y.inf=0.5, x.L=0, x.att=1)
 }
 
 \arguments{
   \item{x }{the x-values for which the property has to be calculated.
   }
-  \item{x.0 }{the x-offset; for \code{x <= x.0}, the value will be equal
-    to \code{y.0}.
+  \item{y.0 }{the y-value at the origin 
   }
-  \item{y.0 }{the y-value for \code{x <= x.0}.
+  \item{y.inf }{the y-value at infinity 
   }
-  \item{y.inf }{the y-value for \code{x} = infinite
+  \item{x.L }{the x-coordinate where the transition zone starts; for \code{x <= x.0}, the value will be equal
+    to \code{y.0}. For \code{x >> x.L + x.att} the value will be tend to \code{y.inf}
   }
-  \item{x.att }{the attenuation coefficient (exponential decrease value)
-  }
-  \item{b }{the ratio of long/short radius of the spheroid;
-    if b<1: the spheroid is oblate.
-  }
-  \item{L }{the length of the cylinder
+  \item{x.att }{attenuation coefficient in exponential decrease, or the size of the transition zone in the linear and sigmoid decrease
   }
 }
 
@@ -83,23 +62,13 @@ p.cylinder.vol (x, L=1)
 }
 
 \examples{
- x<- seq(0,20,len=100)
- plot(x, p.exp.increase(x),main="p.exp.increase")
- lines(x, p.exp.increase(x,x.0 = 5))
 
- x<- seq(0,20,len=100)
- plot(x, p.exp.decrease(x),main="p.exp.decrease")
- lines(x, p.exp.decrease(x,x.0 = 5))
-
- mf <- par(mfrow=c(3,2))
- plot(x, p.sphere.surf(x),main="p.sphere.surf")
- plot(x, p.sphere.vol(x),main="p.sphere.vol")
- plot(x, p.spheroid.surf(x,b=0.5),main="p.spheroid.surf")
- plot(x, p.spheroid.vol(x,b=0.5),main="p.spheroid.vol")
- plot(x, p.cylinder.surf(x,L=1),main="p.cylinder.surf")
- plot(x, p.cylinder.vol(x,L=1),main="p.cylinder.vol")
- par("mfrow"=mf)
+ x<- seq(0,5,len=100)
+ plot(x, p.exp(x,x.L=2),xlab="x.coordinate", ylab="y value",ylim=c(0,1))
+ lines(x, p.lin(x,x.L=2),col="blue")
+ lines(x, p.sig(x,x.L=2),col="red")
 }
+ 
 \keyword{utilities}
 
 

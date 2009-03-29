@@ -16,6 +16,8 @@ setup.compaction.1D <- function(v.0 = NULL, v.inf = NULL,
   if (is.null(v.0) && is.null(v.inf))
     stop("error in setup.advection: either the sedimentation velocity <v.0> or the burial velocity <v.inf> should be specified")
 
+## calculate velocities at infinity
+
   if (is.null(v.inf)) { # sedimentation velocity is specified
   	v.factor <-  v.0*(1-por.0)
   	v.inf <- v.factor/(1-por.inf)

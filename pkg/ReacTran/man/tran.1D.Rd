@@ -20,70 +20,66 @@
 tran.1D(C, C.up = C[1], C.down = C[length(C)],
   flux.up = NULL, flux.down = NULL, a.bl.up = NULL, C.bl.up = NULL,
   a.bl.down = NULL, C.bl.down = NULL,
-  D = 0, v = 0, AFDW = 1, VF = 1, A = 1,
-  dx = NULL, grid = NULL,
+  D = 0, v = 0, AFDW = 1, VF = 1, A = 1, dx = NULL,
   full.check = FALSE, full.output = FALSE)
 }
 
 \arguments{
-  \item{C }{concentration, expressed per unit volume, defined at the
-    centre of each grid cell. A vector of length N [M/L3].
+  \item{C }{concentration, expressed per unit of phase volume, defined at the
+    centre of each grid cell. A vector of length N [M/L3]
   }
-  \item{C.up }{concentration at upstream boundary. One value [M/L3].
+  \item{C.up }{concentration at upstream boundary. One value [M/L3]
   }
-  \item{C.down }{concentration at downstream boundary. One value [M/L3].
+  \item{C.down }{concentration at downstream boundary. One value [M/L3]
   }
   \item{flux.up }{flux across the upstream boundary, positive = INTO model
-    domain. One value [M/L2/T].
+    domain. One value [M/L2/T]
   }
   \item{flux.down }{flux across the downstream boundary, positive = OUT
-    of model domain. One value [M/L2/T].
+    of model domain. One value [M/L2/T]
   }
   \item{a.bl.up }{convective transfer coefficient across the upstream
-    boundary layer. \code{Flux = a.bl.up*(C.bl.up-C[1])}. One value [L/T].
+    boundary layer. \code{Flux = a.bl.up*(C.bl.up-C[1])}. One value [L/T]
   }
   \item{C.bl.up }{concentration at the upstream boundary layer.
-    One value [M/L3].
+    One value [M/L3]
   }
   \item{a.bl.down }{convective transfer coefficient across the downstream
-    boundary layer. \code{Flux = a.bl.down*(C[N]-C.bl.down)}. One value [L/T].
+    boundary layer. \code{Flux = a.bl.down*(C[N]-C.bl.down)}. One value [L/T]
   }
   \item{C.bl.down }{concentration at the downstream boundary layer.
-    One value [M/L3].
+    One value [M/L3]
   }
   \item{D }{diffusion coefficient, defined on grid cell interfaces.
-    One value, a vector of length N+1 [L2/T], or a \code{grid} list; the list
+    One value, a vector of length N+1 [L2/T], or a \code{1D property} list; the list
     contains at least the element \code{int} (see \code{\link{setup.prop.1D}})
-    [L2/T].
+    [L2/T]
   }
-  \item{v }{advective velocity in the x-axis direction, defined on grid cell
+  \item{v }{advective velocity in the x-axis direction, defined on the grid cell
     interfaces. Can be positive (downstream flow) or negative (upstream flow).
-    One value or a vector of length N+1 [L/T], or a \code{grid} list; the list
+    One value, a vector of length N+1 [L/T], or a \code{1D property} list; the list
     contains at least the element \code{int} (see \code{\link{setup.prop.1D}})
-    [L/T].
+    [L/T]
   }
   \item{AFDW }{weight used in the finite difference scheme for advection,
     defined on grid cell interfaces; backward = 1, centred = 0.5, forward = 0;
-    default is backward. One value or a vector of length N+1 [-], or a
-    \code{grid} list; the list contains at least the element \code{int}
-    (see \code{\link{setup.prop.1D}})
-    [-].
+    default is backward. One value, a vector of length N+1, or a
+    \code{1D property} list; the list contains at least the element \code{int}
+    (see \code{\link{setup.prop.1D}}) [-]
   }
-  \item{VF }{Volume fraction defined at the grid cell interfaces, one value
-    or a vector of length N+1 [-] or a \code{grid} list; the list
+  \item{VF }{Volume fraction defined at the grid cell interfaces. One value,
+    a vector of length N+1, or a \code{1D property} list; the list
     contains at least the elements \code{int} and \code{mid}
     (see \code{\link{setup.prop.1D}}) [-].
   }
-  \item{A }{Interface area defined at the grid cell interfaces, one value or
-    a vector of length N+1 [L2] or a \code{grid} list; the list
+  \item{A }{Interface area defined at the grid cell interfaces. One value,
+    a vector of length N+1, or a \code{1D grid property} list; the list
     contains at least the elements \code{int} and \code{mid}
     (see \code{\link{setup.prop.1D}}) [L2].
   }
   \item{dx }{distance between adjacent cell interfaces (thickness of grid
-    cells). One value or vector of length N [L].
-  }
-  \item{grid }{discretization grid, a list containing at least elements
-    \code{dx} and \code{dx.aux} (see \code{\link{setup.prop.1D}}) [L].
+    cells). One value, a vector of length N, or a \code{1D grid} list containing at least the elements
+    \code{dx} and \code{dx.aux} (see \code{\link{setup.grid.1D}}) [L].
   }
   \item{full.check }{logical flag enabling a full check of the consistency
     of the arguments (default = \code{FALSE}; \code{TRUE} slows down execution
@@ -96,7 +92,7 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
 
 \value{
   \item{dC }{the rate of change of the concentration C due to transport,
-    defined in the centre of each grid cell [M/L3/T].
+    defined in the centre of each grid cell. The rate of change is expressed per unit of phase volume [M/L3/T].
   }
   \item{C.up }{concentration at the upstream interface. One value [M/L3].
     only when (\code{full.output} = \code{TRUE})
@@ -144,7 +140,7 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
 
 O2.model <- function (t=0,O2,pars=NULL) {
   tran <- tran.1D(C=O2,C.up=C.ow.O2,D=D.grid,v=v.grid,
-  VF=por.grid,grid=grid)$dC
+  VF=por.grid,dx=grid)$dC
   reac <- - R.O2*(O2/(Ks+O2))
   return(list(dCdt = tran+reac))
 }
@@ -153,7 +149,7 @@ O2.model <- function (t=0,O2,pars=NULL) {
 
 OC.model <- function (t=0,OC,pars=NULL) {
   tran <- tran.1D(C=OC,flux.up=F.OC,D=Db.grid,v=v.grid,
-  VF=svf.grid,grid=grid)$dC
+  VF=svf.grid,dx=grid)$dC
   reac <- - k*OC
   return(list(dCdt = tran + reac))
 }
@@ -314,7 +310,7 @@ Aggregate.Model <- function(time,O2,pars) {
 
   tran <- tran.1D(C=O2, C.down=C.ow.O2,
     D=D.grid, A=A.grid,
-    VF=por.grid, grid=grid )$dC
+    VF=por.grid, dx=grid )$dC
 
   reac <- - R.O2*(O2/(Ks+O2))*(O2>0)
   return(list(dCdt = tran+reac))
@@ -396,19 +392,19 @@ legend ("bottomright",pch=c(1,18),lty=1,col=c("black"),
   the \emph{advective velocity} (\code{v}),
   the \emph{volume fraction} (VF), the \emph{interface surface} (\code{A}),
   and the \emph{advective finite difference weight} (\code{AFDW})
-  can be either be specified as one value, a vector or a grid property
-  (see \code{\link{setup.prop.1D}}).
+  can be either be specified as one value, a vector or a 1D property list
+  as generated by \code{\link{setup.prop.1D}}.
 
   When a vector, this vector must be of length N+1, defined at all grid
   cell interfaces, including upper and lower boundary.
 
-  The \bold{finite difference grid} (\code{grid}) is specified either as
-  a grid list, as generated by \code{\link{setup.grid.1D}} or 
-  by the parameter \code{dx} representing the thickness of the grid
-  cells (one value or a vector of length N+1)
+  The \bold{finite difference grid} (\code{dx}) is specified either as
+  one value, a vector or a 1D grid list, as generated by \code{\link{setup.grid.1D}}. 
 }
 \note{ 
-The advective-diffusion equation is not checked for mass conservation. Sometimes, this is not an issue, for instance when \code{v} represents a sinking velocity of particles or a swimming velocity of organisms. In others cases however, mass conservation needs to be accounted for. To ensure mass conservation, the advective velocity must obey certain continuity constraints: in essence the product of the volume fraction (VF), interface surface (A) and advective velocity (v) should be constant. In sediments, one can use \code{\link{setup.compaction.1D}} to ensure that the advective velocities for the pore water and solid phase meet these constraints. 
+The advective-diffusion equation is not checked for mass conservation. Sometimes, this is not an issue, for instance when \code{v} represents a sinking velocity of particles or a swimming velocity of organisms. In others cases however, mass conservation needs to be accounted for. To ensure mass conservation, the advective velocity must obey certain continuity constraints: in essence the product of the volume fraction (VF), interface surface area (A) and advective velocity (v) should be constant. In sediments, one can use \code{\link{setup.compaction.1D}} to ensure that the advective velocities for the pore water and solid phase meet these constraints. 
+
+In terms of the units of concentrations and fluxes we follow the convention in the geosciences. The concentration \code{C}, \code{C.up}, \code{C.down} as well at the rate of change of the concentration \code{dC} are always expressed per unit of phase volume (i.e. per unit volume of solid or liquid). Total concentrations (e.g. per unit volume of bulk sediment) are obtained by multiplication with the appropriate volume fraction. In contrast, fluxes are always expressed per unit of total interface area (so here the volume fraction is accounted for).     
 }
 \keyword{utilities}
 

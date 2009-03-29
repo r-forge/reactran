@@ -3,9 +3,9 @@
 export(fiadeiro, setup.compaction.1D, setup.grid.1D, setup.prop.1D,
       setup.grid.2D, setup.prop.2D, tran.1D, tran.volume.1D, tran.2D)
 
-export(p.exp.increase,p.exp.decrease,p.sphere.surf,p.sphere.vol,
-       p.spheroid.surf,p.spheroid.vol,p.cylinder.surf,p.cylinder.vol)
-
+export(p.exp,p.lin,p.sig,g.sphere,g.spheroid,g.cylinder)
 
 S3method("plot","grid.1D")
 S3method("plot","prop.1D")
+S3method("filled.contour","prop.2D")
+S3method("contour","prop.2D")
