@@ -85,10 +85,10 @@ setup.prop.1D <- function(func = NULL, value = NULL, xy = NULL,
 ##==============================================================================
 
 
-plot.prop.1D <- function(prop, grid, xyswap =FALSE, ...) {
+plot.prop.1D <- function(x, grid, xyswap =FALSE, ...) {
   if (xyswap)
-    plot(prop$int, grid$x.int, ylim = rev(range(grid$x.int)),
+    plot(x$int, grid$x.int, ylim = rev(range(grid$x.int)),
       xlab="prop",ylab="x",...)
   else
-    plot(grid$x.int,prop$int, ylab="prop",xlab="x",...)
+    plot(grid$x.int,x$int, ylab="prop",xlab="x",...)
 }

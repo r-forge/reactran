@@ -41,6 +41,11 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   } else if (length(VF.x) == 1) {
     VF.grid$x.int <- matrix(data=VF.x,nrow=(N+1),ncol=M)
     VF.grid$x.mid <- matrix(data=VF.x,nrow=N,ncol=M)
+  } else if (is.matrix(VF.x)) {
+    if (dim(VF.x) != c(N+1,M))
+      stop ("error: VF.x matrix not of correct dimensions" )
+    VF.grid$x.int <- VF.x
+    VF.grid$x.mid <- 0.5*(VF.x[1:N,]+VF.x[2:(N+1),])
   } else if (length(VF.x) != N+1) {
     stop("error: VF.x should be a vector of length 1 or N+1")
   } else {  # correct length
@@ -55,6 +60,11 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   } else if (length(VF.y) == 1) {
     VF.grid$y.int <- matrix(data=VF.y,nrow=N,ncol=(M+1))
     VF.grid$y.mid <- matrix(data=VF.y,nrow=N,ncol=M)
+  } else if (is.matrix(VF.y)) {
+    if (dim(VF.y) != c(N,M+1))
+      stop ("error: VF.y matrix not of correct dimensions")
+    VF.grid$y.int <- VF.y
+    VF.grid$y.mid <- 0.5*(VF.y[,1:M]+VF.y[,2:(M+1)])
   } else if (length(VF.y) != M+1) {
     stop("error: VF.y should be a vector of length 1 or M+1")
   } else {  # correct length
@@ -70,6 +80,11 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   } else if (length(A.x) == 1) {
     A.grid$x.int <- A.x
     A.grid$x.mid <- A.x
+  } else if (is.matrix(A.x)) {
+    if (sum(abs(dim(A.x) - c(N+1,M)))!=0)
+      stop ("error: A.x matrix not of correct dimensions" )
+    A.grid$x.int <- A.x
+    A.grid$x.mid <- 0.5*(A.x[1:N,]+A.x[2:(N+1),])
   } else if (length(A.x) != N+1) {
     stop("error: A.x should be a vector of length 1 or N+1")
   } else {  # has correct length, is vector
@@ -78,7 +93,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
                      nrow=N, ncol=M)
   }
 
-  AyCt  <- FALSE
+  AyCt  <- FALSE    # if a constant, then t(A.grid$int) makes no sense...
   if (is.list(A.y)) {
     A.grid$y.int <- matrix(data=A.y$int,nrow=N,ncol=(M+1))
     A.grid$y.mid <- matrix(data=A.y$mid, nrow=N, ncol=M)
@@ -86,6 +101,11 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     AyCt  <- TRUE
     A.grid$y.int <- A.y
     A.grid$y.mid <- A.y
+  } else if (is.matrix(A.y)) {
+    if (sum(abs(dim(A.y) - c(N,M+1)))!=0)
+      stop ("error: A.y matrix not of correct dimensions")
+    A.grid$y.int <- A.y
+    A.grid$y.mid <- 0.5*(A.y[,1:M]+A.y[,2:(M+1)])
   } else if (length(A.y) != M+1) {
     stop("error: A.y should be a vector of length 1 or M+1")
   } else {  # correct length

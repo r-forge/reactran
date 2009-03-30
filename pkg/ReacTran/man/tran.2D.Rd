@@ -103,18 +103,20 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     vector of length (M+1), or a \code{grid} list [-].
   }
   \item{VF.x }{Volume fraction at the grid cell interfaces in the x-direction.
-    One value or or a vector of length (N+1) or  a \code{grid} list  [-].
+    One value, or a vector of length (N+1), a matrix of dimension (N+1,M)
+    or a \code{grid} list  [-].
   }
   \item{VF.y }{Volume fraction at the grid cell interfaces in the y-direction.
-    One value, or a vector of length (M+1), or a \code{grid} list [-].
+    One value, a vector of length (M+1), a matrix of dimension (N,M+1),
+    or a \code{grid} list [-].
   }
   \item{A.x }{Interface area defined at the grid cell interfaces in
-    the x-direction, one value or a vector of length N+1 [L2] or
-    a \code{grid} list.
+    the x-direction, one value, or a vector of length N+1, a matrix
+    of dimension (N+1,M) or  a \code{grid} list [L2].
   }
   \item{A.y }{Interface area defined at the grid cell interfaces in
-    the y-direction, one value or a vector of length M+1 [L2] or
-    a \code{grid} list.
+    the y-direction, one value, a vector of length M+1, a matrix of
+    dimension (N,M+1), or a \code{grid} list [L2].
   }
   \item{dx }{distance between adjacent cell interfaces in the x-direction
     (thickness of grid cells). One value or vector of length N [L].

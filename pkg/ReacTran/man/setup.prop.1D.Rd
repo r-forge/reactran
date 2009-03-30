@@ -25,7 +25,7 @@
 setup.prop.1D(func=NULL, value=NULL, xy=NULL,
   interpolate="spline", grid, ...)
 
-\method{plot}{prop.1D}(prop, grid, xyswap = FALSE, \dots)
+\method{plot}{prop.1D}(x, grid, xyswap = FALSE, \dots)
 
 }
 
@@ -44,7 +44,7 @@ setup.prop.1D(func=NULL, value=NULL, xy=NULL,
   \item{grid }{list specifying the 1D grid characteristics, see
     \code{\link{setup.grid.1D}} for details on the structure of this list
   }
-  \item{prop }{the object of class \code{prop.1D} that needs plotting
+  \item{x }{the object of class \code{prop.1D} that needs plotting
   }
   \item{xyswap }{if \code{TRUE}, then x- and y-values are swapped and
     the y-axis is oriented from top to bottom. Useful for drawing

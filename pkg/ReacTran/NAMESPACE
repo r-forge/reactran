@@ -7,5 +7,4 @@ export(p.exp,p.lin,p.sig,g.sphere,g.spheroid,g.cylinder)
 
 S3method("plot","grid.1D")
 S3method("plot","prop.1D")
-S3method("filled.contour","prop.2D")
 S3method("contour","prop.2D")

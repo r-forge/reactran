@@ -1,6 +1,5 @@
 \name{setup.prop.2D}
 \alias{setup.prop.2D}
-\alias{filled.contour.prop.2D}
 \alias{contour.prop.2D}
 \title{
   Attaches a property to a two-dimensional grid
@@ -22,8 +21,7 @@
 \usage{
 setup.prop.2D(func = NULL, value = NULL, grid,...)
 
-\method{filled.contour}{prop.2D}(prop, grid, xyswap = FALSE, \dots)
-\method{contour}{prop.2D}(prop, grid, xyswap = FALSE, \dots)
+\method{contour}{prop.2D}(x, grid, xyswap = FALSE, filled = FALSE, \dots)
 }
 
 \arguments{
@@ -34,7 +32,9 @@ setup.prop.2D(func = NULL, value = NULL, grid,...)
   \item{grid }{list specifying the 2D grid characteristics, see
     \code{\link{setup.grid.2D}} for details on the structure of this list
   }
-  \item{prop }{the object of class \code{prop.1D} that needs plotting
+  \item{x }{the object of class \code{prop.1D} that needs plotting
+  }
+  \item{filled }{if \code{TRUE}, uses \code{filled.contour}, else \code{contour}
   }
   \item{xyswap }{if \code{TRUE}, then x- and y-values are swapped and
     the y-axis is oriented from top to bottom. Useful for drawing
