@@ -131,7 +131,7 @@ options(width=75)
   \subsection{Boundary conditions in 1-D}
   The boundaries can be one of the following types:
   \begin{itemize}
-    \item A concentration boundary, e.g. $C |_{x=0}=C_0}$
+    \item A concentration boundary, e.g. $C |_{x=0}=C_0$
     \item A diffusive + advective flux boundary $J_{x=0}=J_0$
     \item A boundary layer convective exchange flux boundary
       $J_{x=0} = a_{bl}\cdot(C_{bl}-C_0)$
