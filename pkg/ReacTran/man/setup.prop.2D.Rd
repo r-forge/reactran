@@ -11,7 +11,7 @@
 
   Two possibilities are available: either specifying a mathematical function
   (\code{func}) that describes the spatial dependency of the property, or
-  asssuming a constant value (\code{value}).
+  asssuming a constant value (\code{value}). To allow for anisotropy, the spatial dependency can be different in the x and y direction.
 
   For example, in a sediment model, the routine can be used to specify the
   porosity, the mixing intensity or other parameters over the grid of the
@@ -19,15 +19,19 @@
 }
 
 \usage{
-setup.prop.2D(func = NULL, value = NULL, grid,...)
+setup.prop.2D(func = NULL, y.func = func, value = NULL, y.value = value, grid,...)
 
 \method{contour}{prop.2D}(x, grid, xyswap = FALSE, filled = FALSE, \dots)
 }
 
 \arguments{
-  \item{func }{function that describes the spatial dependency
+  \item{func }{function that describes the spatial dependency in the x-direction
   }
-  \item{value }{constant value given to the property (no spatial dependency)
+  \item{y.func }{function that describes the spatial dependency in the y-direction. By default the same as in the x-direction.
+  }
+  \item{value }{constant value given to the property in the x-direction
+  }
+  \item{y.value }{constant value given to the property in the y-direction. By default the same as in the x-direction.
   }
   \item{grid }{list specifying the 2D grid characteristics, see
     \code{\link{setup.grid.2D}} for details on the structure of this list
@@ -47,12 +51,14 @@ setup.prop.2D(func = NULL, value = NULL, grid,...)
 
 \value{
   A list of type \code{prop.2D} containing:
-  \item{mid }{property values at the middle of the grid cells; NxM matrix
+  \item{x.mid }{property value in the x-direction defined at the middle of the grid cells; NxM matrix
   }
-  \item{x.int }{property values at the horizontal interfaces of the grid cells;
+  \item{y.mid }{property value in the y-direction at the middle of the grid cells; NxM matrix
+  }
+  \item{x.int }{property value in the x-direction defined at the (horizontal) x-interfaces of the grid cells;
     (N+1)xM matrix
   }
-  \item{y.int }{property values at the vertical interfaces of the grid cells;
+  \item{y.int }{property value in the y-direction at the (vertical) y-interfaces of the grid cells;
     Nx(M+1) matrix
   }
 }
@@ -78,5 +84,15 @@ grid2D <- setup.grid.2D(x.grid,y.grid)
 contour(log(twoD$x.int))
 }
 
+\details{
+  \itemize{
+    \item {The x-axis is taken in the vertical pointing downwards (N grid cells).}
+    \item {The y-axis is taken in the horizontal pointing to the right (M grid cells).}
+  }
+  \itemize{
+    \item {When the property is isotropic, the \code{x.mid} and \code{y.mid} values are identical. This is for example the case for the porosity.}
+    \item {When the property is anisotropic, the \code{x.mid} and \code{y.mid} values can differ. This can be for example the case for the velocity, where in general, the value will differ between the x and y direction.} 
+  }
+}
 \keyword{utilities}
 

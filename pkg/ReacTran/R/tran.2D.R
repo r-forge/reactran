@@ -8,8 +8,10 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   flux.x.up=NULL, flux.x.down=NULL, flux.y.up=NULL, flux.y.down=NULL,
   a.bl.x.up=NULL, C.bl.x.up=NULL, a.bl.x.down=NULL, C.bl.x.down=NULL,
   a.bl.y.up=NULL, C.bl.y.up=NULL, a.bl.y.down=NULL, C.bl.y.down=NULL,
-  D.x=NULL, D.y=D.x, v.x=0, v.y=0, AFDW.x=1, AFDW.y=AFDW.x,
-  VF.x=1, VF.y=VF.x, A.x=1, A.y=1, dx=NULL, dy=NULL, grid=NULL,
+  D.grid=NULL, D.x=NULL, D.y=D.x, v.grid=NULL, v.x=0, v.y=0, 
+  AFDW.grid=NULL, AFDW.x=1, AFDW.y=AFDW.x,
+  VF.grid=NULL,VF.x=1, VF.y=VF.x, A.grid=NULL, 
+  A.x=1, A.y=1, dx=NULL, dy=NULL, grid=NULL,
   full.check = FALSE, full.output = FALSE)
 											
 {
@@ -19,6 +21,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
 
 # DEFAULT INFILLING OF GRID PARAMETERS
 
+# infilling of 2D grid
   if (is.null(grid))
     grid <- list(dx=rep(dx,length.out=N),
                  dx.aux=0.5*(c(0,rep(dx,length.out=N))+
@@ -26,104 +29,138 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
                  dy=rep(dy,length.out=M),
                  dy.aux=0.5*(c(0,rep(dy,length.out=M))+
                              c(rep(dy,length.out=M),0)))
-  if (is.list(AFDW.x))AFDW.x <- AFDW.x$int
-  if (is.list(AFDW.y))AFDW.y <- AFDW.y$int
-  if (is.list(D.x))   D.x <- D.x$int
-  if (is.list(D.y))   D.y <- D.y$int
-  if (is.list(v.x))   v.x <- v.x$int
-  if (is.list(v.y))   v.y <- v.y$int
-
-  VF.grid <- list()
   
-  if (is.list(VF.x)) {
-    VF.grid$x.int <- matrix(data=VF.x$int,nrow=(N+1),ncol=M)
-    VF.grid$x.mid <- matrix(data=VF.x$mid, nrow=N, ncol=M)
-  } else if (length(VF.x) == 1) {
-    VF.grid$x.int <- matrix(data=VF.x,nrow=(N+1),ncol=M)
-    VF.grid$x.mid <- matrix(data=VF.x,nrow=N,ncol=M)
-  } else if (is.matrix(VF.x)) {
-    if (dim(VF.x) != c(N+1,M))
-      stop ("error: VF.x matrix not of correct dimensions" )
-    VF.grid$x.int <- VF.x
-    VF.grid$x.mid <- 0.5*(VF.x[1:N,]+VF.x[2:(N+1),])
-  } else if (length(VF.x) != N+1) {
-    stop("error: VF.x should be a vector of length 1 or N+1")
-  } else {  # correct length
-    VF.grid$x.int <- matrix(data=VF.x,nrow=(N+1),ncol=M)
-    VF.grid$x.mid <- matrix(data=0.5*(VF.x[1:N]  +VF.x[2:(N+1)]),
+# infilling of VF.grid
+  if (is.null(VF.grid)) {
+    VF.grid <- list()
+    # infilling of x-matrix    
+    if (is.matrix(VF.x)) {
+      if (dim(VF.x) != c(N+1,M))
+      stop ("error: VF.x matrix does not have correct (N+1)xM dimensions" )
+      VF.grid$x.int <- VF.x
+      VF.grid$x.mid <- 0.5*(VF.x[1:N,]+VF.x[2:(N+1),])
+    } else if (class(VF.x)=="prop.1D") {
+      VF.grid$x.int <- matrix(data=VF.x$int,nrow=(N+1),ncol=M)
+      VF.grid$x.mid <- matrix(data=VF.x$mid, nrow=N, ncol=M)
+    } else if (length(VF.x) == 1) {
+      VF.grid$x.int <- matrix(data=VF.x,nrow=(N+1),ncol=M)
+      VF.grid$x.mid <- matrix(data=VF.x,nrow=N,ncol=M)
+    } else if (length(VF.x) != N+1) {
+      stop("error: VF.x should be a vector of length 1 or N+1")
+    } else {  # correct length
+      VF.grid$x.int <- matrix(data=VF.x,nrow=(N+1),ncol=M)
+      VF.grid$x.mid <- matrix(data=0.5*(VF.x[1:N]  +VF.x[2:(N+1)]),
                      nrow=N, ncol=M)
-  }
+    }
+    # infilling of y-matrix    
+    if (is.matrix(VF.y)) {
+      if (dim(VF.y) != c(N,M+1))
+        stop ("error: VF.y matrix does not have the correct Nx(M+1) dimensions")
+      VF.grid$y.int <- VF.y
+      VF.grid$y.mid <- 0.5*(VF.y[,1:M]+VF.y[,2:(M+1)])
+    } else if (class(VF.y)=="prop.1D") {
+      VF.grid$y.int <- matrix(data=VF.y$int,nrow=N,ncol=(M+1))
+      VF.grid$y.mid <- matrix(data=VF.y$mid, nrow=N, ncol=M)
+    } else if (length(VF.y) == 1) {
+      VF.grid$y.int <- matrix(data=VF.y,nrow=N,ncol=(M+1))
+      VF.grid$y.mid <- matrix(data=VF.y,nrow=N,ncol=M)
+    } else if (length(VF.y) != M+1) {
+      stop("error: VF.y should be a vector of length 1 or M+1")
+    } else {  # correct length
+      VF.grid$y.int <- matrix(data=VF.y,nrow=N,ncol=(M+1))
+      VF.grid$y.mid <- matrix(data=0.5*(VF.y[1:N]  +VF.y[2:(N+1)]),
+                     nrow=N, ncol=M)
+    }
+  }  
 
-  if (is.list(VF.y)) {
-    VF.grid$y.int <- matrix(data=VF.y$int,nrow=N,ncol=(M+1))
-    VF.grid$y.mid <- matrix(data=VF.y$mid, nrow=N, ncol=M)
-  } else if (length(VF.y) == 1) {
-    VF.grid$y.int <- matrix(data=VF.y,nrow=N,ncol=(M+1))
-    VF.grid$y.mid <- matrix(data=VF.y,nrow=N,ncol=M)
-  } else if (is.matrix(VF.y)) {
-    if (dim(VF.y) != c(N,M+1))
-      stop ("error: VF.y matrix not of correct dimensions")
-    VF.grid$y.int <- VF.y
-    VF.grid$y.mid <- 0.5*(VF.y[,1:M]+VF.y[,2:(M+1)])
-  } else if (length(VF.y) != M+1) {
-    stop("error: VF.y should be a vector of length 1 or M+1")
-  } else {  # correct length
-    VF.grid$y.int <- matrix(data=VF.y,nrow=N,ncol=(M+1))
-    VF.grid$y.mid <- matrix(data=0.5*(VF.y[1:N]  +VF.y[2:(N+1)]),
-                     nrow=N, ncol=M)
+# infilling of A.grid
+  if (is.null(A.grid)) {
+    A.grid <- list()
+    # infilling of x-matrix    
+    if (is.matrix(A.x)) {
+      if (sum(abs(dim(A.x) - c(N+1,M)))!=0)
+        stop ("error: A.x matrix not of correct dimensions" )
+      A.grid$x.int <- A.x
+      A.grid$x.mid <- 0.5*(A.x[1:N,]+A.x[2:(N+1),])
+    } else if (class(A.x)=="prop.1D") {
+      A.grid$x.int <- matrix(data=A.x$int,nrow=(N+1),ncol=M)
+      A.grid$x.mid <- matrix(data=A.x$mid, nrow=N, ncol=M)
+    } else if (length(A.x) == 1) {
+      A.grid$x.int <- matrix(data=A.x,nrow=(N+1),ncol=M)
+      A.grid$x.mid <- matrix(data=A.x,nrow=N,ncol=M)
+    } else if (length(A.x) != N+1) {
+      stop("error: A.x should be a vector of length 1 or N+1")
+    } else {  # correct length
+      A.grid$x.int <- matrix(data=A.x,nrow=(N+1),ncol=M)
+      A.grid$x.mid <- matrix(data=0.5*(A.x[1:N]  +A.x[2:(N+1)]),
+                      nrow=N, ncol=M)
+    }
+    # infilling of y-matrix    
+    if (is.matrix(A.y)) {
+      if (sum(abs(dim(A.y) - c(N,M+1)))!=0)
+        stop ("error: A.y matrix not of correct dimensions")
+      A.grid$y.int <- A.y
+      A.grid$y.mid <- 0.5*(A.y[,1:M]+A.y[,2:(M+1)])
+    } else if (class(A.y)=="prop.1D") {
+      A.grid$y.int <- matrix(data=A.y$int,nrow=N,ncol=(M+1))
+      A.grid$y.mid <- matrix(data=A.y$mid,nrow=N,ncol=M)
+    } else if (length(A.y) == 1) {
+      A.grid$y.int <- matrix(data=A.y,nrow=N,ncol=(M+1))
+      A.grid$y.mid <- matrix(data=A.y,nrow=N,ncol=M)
+    } else if (length(A.y) != M+1) {
+       stop("error: A.y should be a vector of length 1 or M+1")
+    } else {  # correct length
+      A.grid$y.int <- matrix(data=A.y,nrow=N,ncol=(M+1))
+      A.grid$y.mid <- matrix(data=0.5*(A.y[1:N]  +A.y[2:(N+1)]),
+                      nrow=N, ncol=M)
+    }
   }
-  A.grid <- list()
+  
+# infilling of AFDW.grid
+  if (is.null(AFDW.grid)) {
+    AFDW.grid <- list()
+    if (class(AFDW.x)=="prop.1D") {
+      AFDW.grid$x.int <- matrix(data=AFDW.x$int,nrow=(N+1),ncol=M)
+    } else if (is.matrix(AFDW.x) || is.vector(AFDW.x)) { 
+      AFDW.grid$x.int <- matrix(data=AFDW.x,nrow=(N+1),ncol=M)
+    }  
+    if (class(AFDW.y)=="prop.1D") {
+      AFDW.grid$y.int <- matrix(data=AFDW.y$int,nrow=N,ncol=(M+1))
+    } else if (is.matrix(AFDW.x) || is.vector(AFDW.x)) { 
+      AFDW.grid$y.int <- matrix(data=AFDW.y,nrow=N,ncol=(M+1))
+    }  
+  }  
 
-  if (is.list(A.x)) {
-    A.grid$x.int <- matrix(data=A.x$int,nrow=(N+1),ncol=M)
-    A.grid$x.mid <- matrix(data=A.x$mid, nrow=N, ncol=M)
-  } else if (length(A.x) == 1) {
-    A.grid$x.int <- A.x
-    A.grid$x.mid <- A.x
-  } else if (is.matrix(A.x)) {
-    if (sum(abs(dim(A.x) - c(N+1,M)))!=0)
-      stop ("error: A.x matrix not of correct dimensions" )
-    A.grid$x.int <- A.x
-    A.grid$x.mid <- 0.5*(A.x[1:N,]+A.x[2:(N+1),])
-  } else if (length(A.x) != N+1) {
-    stop("error: A.x should be a vector of length 1 or N+1")
-  } else {  # has correct length, is vector
-    A.grid$x.int <- matrix(data=A.x,nrow=(N+1),ncol=M)
-    A.grid$x.mid <- matrix(data=0.5*(A.x[1:N]  +A.x[2:(N+1)]),
-                     nrow=N, ncol=M)
-  }
+# infilling of D.grid
+  if (is.null(D.grid)) {
+    D.grid <- list()
+    if (class(D.x)=="prop.1D") {
+      D.grid$x.int <- matrix(data=D.x$int,nrow=(N+1),ncol=M)
+    } else if (is.matrix(D.x) || is.vector(D.x)) { 
+      D.grid$x.int <- matrix(data=D.x,nrow=(N+1),ncol=M)
+    }  
+    if (class(D.y)=="prop.1D") {
+      D.grid$y.int <- matrix(data=D.y$int,nrow=N,ncol=(M+1))
+    } else if (is.matrix(D.x) || is.vector(D.x)) { 
+      D.grid$y.int <- matrix(data=D.y,nrow=N,ncol=(M+1))
+    }  
+  }  
 
-  AyCt  <- FALSE    # if a constant, then t(A.grid$int) makes no sense...
-  if (is.list(A.y)) {
-    A.grid$y.int <- matrix(data=A.y$int,nrow=N,ncol=(M+1))
-    A.grid$y.mid <- matrix(data=A.y$mid, nrow=N, ncol=M)
-  } else if (length(A.y) == 1) {
-    AyCt  <- TRUE
-    A.grid$y.int <- A.y
-    A.grid$y.mid <- A.y
-  } else if (is.matrix(A.y)) {
-    if (sum(abs(dim(A.y) - c(N,M+1)))!=0)
-      stop ("error: A.y matrix not of correct dimensions")
-    A.grid$y.int <- A.y
-    A.grid$y.mid <- 0.5*(A.y[,1:M]+A.y[,2:(M+1)])
-  } else if (length(A.y) != M+1) {
-    stop("error: A.y should be a vector of length 1 or M+1")
-  } else {  # correct length
-    A.grid$y.int <- matrix(data=A.y,nrow=N,ncol=(M+1))
-    A.grid$y.mid <- matrix(data=0.5*(A.y[1:N]  +A.y[2:(N+1)]),
-                     nrow=N, ncol=M)
-  }
-  AFDW.grid <- list(x.int=matrix(data=AFDW.x,nrow=(N+1),ncol=M),
-                    y.int=matrix(data=AFDW.y,nrow=N,ncol=(M+1)))
-  D.grid <- list(x.int=matrix(data=D.x,nrow=(N+1),ncol=M),
-                 y.int=matrix(data=D.y,nrow=N,ncol=(M+1)))
-  v.grid <- list(x.int=matrix(data=v.x,nrow=(N+1),ncol=M),
-                 y.int=matrix(data=v.y,nrow=N,ncol=(M)+1))
-#  if (is.null(VF.grid))
-#    VF.grid <- list(x.int=matrix(data=VF.x,nrow=(N+1),ncol=M),
-#                    y.int=matrix(data=VF.y,nrow=N,ncol=(M+1)),
-#                    x.mid=matrix(data=VF.x,nrow=N,ncol=M),
-#                    y.mid=matrix(data=VF.y,nrow=N,ncol=M))
+# infilling of v.grid
+  if (is.null(v.grid)) {
+    v.grid <- list()
+    if (class(v.x)=="prop.1D") {
+      v.grid$x.int <- matrix(data=v.x$int,nrow=(N+1),ncol=M)
+    } else if (is.matrix(v.x) || is.vector(v.x)) { 
+      v.grid$x.int <- matrix(data=v.x,nrow=(N+1),ncol=M)
+    }  
+    if (class(v.y)=="prop.1D") {
+      v.grid$y.int <- matrix(data=v.y$int,nrow=N,ncol=(M+1))
+    } else if (is.matrix(v.x) || is.vector(v.x)) { 
+      v.grid$y.int <- matrix(data=v.y,nrow=N,ncol=(M+1))
+    }  
+  }  
+
 
 #==============================================================================
 # INPUT CHECKS  
@@ -268,11 +305,30 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
 
 ## check input of VF.grid
 
+    gn <- names(VF.grid)
+    if (! "x.int" %in% gn)
+      stop("error: VF.grid should be a list that contains 'x.int'")
+    if (! "y.int" %in% gn)
+      stop("error: VF.grid should be a list that contains 'y.int'")
+    if (! "x.mid" %in% gn)
+      stop("error: VF.grid should be a list that contains 'x.mid'")
+    if (! "y.mid" %in% gn)
+      stop("error: VF.grid should be a list that contains 'y.mid'")
     if (is.null(VF.grid$x.int) || is.null(VF.grid$y.int) || is.null(VF.grid$x.mid) || is.null(VF.grid$y.mid))
      stop("error: VF should contain (numeric) values")
     if (any (VF.grid$x.int < 0) || any (VF.grid$y.int < 0) || any (VF.grid$x.mid < 0) || any (VF.grid$y.mid < 0))
       stop("error: the VF values should always be positive")
 
+## check input of A.grid
+    gn <- names(A.grid)
+    if (! "x.int" %in% gn)
+      stop("error: A.grid should be a list that contains 'x.int'")
+    if (! "y.int" %in% gn)
+      stop("error: A.grid should be a list that contains 'y.int'")
+    if (! "x.mid" %in% gn)
+      stop("error: A.grid should be a list that contains 'x.mid'")
+    if (! "y.mid" %in% gn)
+      stop("error: A.grid should be a list that contains 'y.mid'")
     if (is.null(A.grid$x.int) || is.null(A.grid$y.int) || is.null(A.grid$x.mid) || is.null(A.grid$y.mid))
      stop("error: the VF should contain (numeric) values")
     if (any (A.grid$x.int < 0) || any (A.grid$y.int < 0) || any (A.grid$x.mid < 0) || any (A.grid$y.mid < 0))
@@ -281,7 +337,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   }
 ## FUNCTION BODY: CALCULATIONS
 
-## Impose boundary flux at upper boundary when needed
+## Impose boundary flux at upstream x-boundary when needed
 ## Default boundary condition is no gradient
   if (! is.null (flux.x.up[1])) {
     nom <- flux.x.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1] +
@@ -291,7 +347,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     C.x.up <- nom/denom
   }
 
-## Impose boundary flux at lower boundary when needed
+## Impose boundary flux at downstream x-boundary when needed
 ## Default boundary condition is no gradient
   if (! is.null (flux.x.down[1])) {
   	nom <- flux.x.down - VF.grid$x.int[(N+1),]*(D.grid$x.int[(N+1),]/
@@ -301,7 +357,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     C.x.down <- nom/denom
   }
 
-# Impose boundary flux at upper boundary when needed
+# Impose boundary flux at upstream y-boundary when needed
 # Default boundary condition is no gradient
   if (! is.null (flux.y.up[1])) {
     nom <- flux.y.up + VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[1] +
@@ -311,7 +367,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     C.y.up <- nom/denom
   }
 
-# Impose boundary flux at lower boundary when needed
+# Impose boundary flux at downstream y-boundary when needed
 # Default boundary condition is no gradient
   if (! is.null (flux.y.down[1]))  {
 	  nom <- flux.y.down - VF.grid$y.int[,(M+1)]*(D.grid$y.int[,(M+1)]/
@@ -418,10 +474,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
 
 ## Calculate rate of change = flux gradient
   dFdx <- - (diff(A.grid$x.int*x.flux) / A.grid$x.mid/grid$dx ) / VF.grid$x.mid
-  if (!AyCt)
-    dFdy <- -t(diff(t(A.grid$y.int*y.flux))/t(A.grid$y.mid)/grid$dy) / VF.grid$y.mid
-  else
-    dFdy <- -t(diff(t(A.grid$y.int*y.flux))/A.grid$y.mid/grid$dy) / VF.grid$y.mid
+  dFdy <- -t(diff(t(A.grid$y.int*y.flux))/t(A.grid$y.mid)/grid$dy) / VF.grid$y.mid
 
 
   if (!full.output) {

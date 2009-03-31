@@ -3,7 +3,7 @@
 ## Attaches a property to a 2D grid
 ##==============================================================================
 
-setup.prop.2D <- function(func = NULL, value = NULL, grid, ...) {
+setup.prop.2D <- function(func = NULL, y.func = func, value = NULL, y.value = value, grid, ...) {
 
   ## check input
   gn <- names(grid)
@@ -18,29 +18,40 @@ setup.prop.2D <- function(func = NULL, value = NULL, grid, ...) {
 
   if (is.null(func) && is.null(value))
     stop("error in setup.prop: function and value should not be both NULL")
+  if (is.null(y.func) && is.null(y.value))
+    stop("error in setup.prop: y.function and y.value should not be both NULL")
 
   if (!is.null(value)) { # profile specification via value
     x.int <- matrix(nrow=length(grid$x.int),ncol=length(grid$y.mid),data=value)
-    y.int <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.int),data=value)
-    mid <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.mid),data=value)
+    y.int <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.int),data=y.value)
+    x.mid <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.mid),data=value)
+    y.mid <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.mid),data=y.value)
   }
 
   if (!is.null(func)) { # profile specification via function
     x.int <- matrix(nrow=length(grid$x.int),ncol=length(grid$y.mid))
-    y.int <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.int))
-    mid <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.mid))
+    x.mid <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.mid))
 
     for (i in 1:length(grid$x.int))
       x.int[i,] <- func(grid$x.int[i],grid$y.mid,...)
     for (i in 1:length(grid$x.mid))
-      y.int[i,] <- func(grid$x.mid[i],grid$y.int,...)
-    for (i in 1:length(grid$x.mid))
-      mid[i,] <- func(grid$x.mid[i],grid$y.mid,...)
+      x.mid[i,] <- func(grid$x.mid[i],grid$y.mid,...)
   }
 
-  Res <- list(mid  = mid,
-              x.int  = x.int,
-              y.int =  y.int)
+  if (!is.null(y.func)) { # profile specification via function
+    y.int <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.int))
+    y.mid <- matrix(nrow=length(grid$x.mid),ncol=length(grid$y.mid))
+
+    for (i in 1:length(grid$x.mid))
+      y.int[i,] <- y.func(grid$x.mid[i],grid$y.int,...)
+    for (i in 1:length(grid$x.mid))
+      y.mid[i,] <- y.func(grid$x.mid[i],grid$y.mid,...)
+  }
+  
+  Res <- list(x.mid = x.mid,
+              y.mid = y.mid, 
+              x.int = x.int,
+              y.int = y.int)
   class(Res) <- "prop.2D"
   return(Res)
 }
@@ -52,13 +63,13 @@ setup.prop.2D <- function(func = NULL, value = NULL, grid, ...) {
 contour.prop.2D <- function(x, grid, xyswap = FALSE, filled = FALSE, ...) {
   if (! filled) {
   if (xyswap)
-    contour(x=grid$y.mid,y=rev(-grid$x.mid),z=t(x$mid),...)
+    contour(x=grid$y.mid,y=rev(-grid$x.mid),z=t(x$x.mid),...)
   else
-    contour(x=grid$x.mid,y=grid$y.mid,z=x$mid,...)
+    contour(x=grid$x.mid,y=grid$y.mid,z=x$x.mid,...)
   } else {
     if (xyswap)
-      filled.contour(x=grid$y.mid,y=rev(-grid$x.mid),z=t(x$mid),...)
+      filled.contour(x=grid$y.mid,y=rev(-grid$x.mid),z=t(x$x.mid),...)
     else
-      filled.contour(x=grid$x.mid,y=grid$y.mid,z=x$mid,...)
+      filled.contour(x=grid$x.mid,y=grid$y.mid,z=x$x.mid,...)
   }
 }

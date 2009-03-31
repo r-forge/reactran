@@ -15,8 +15,10 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   flux.x.up=NULL, flux.x.down=NULL, flux.y.up=NULL, flux.y.down=NULL,
   a.bl.x.up=NULL, C.bl.x.up=NULL, a.bl.x.down=NULL, C.bl.x.down=NULL,
   a.bl.y.up=NULL, C.bl.y.up=NULL, a.bl.y.down=NULL, C.bl.y.down=NULL,
-  D.x=NULL, D.y=D.x, v.x=0, v.y=0, AFDW.x=1, AFDW.y=AFDW.x,
-  VF.x=1, VF.y=VF.x, A.x=1, A.y=1, dx=NULL, dy=NULL, grid=NULL,
+  D.grid=NULL, D.x=NULL, D.y=D.x, v.grid=NULL, v.x=0, v.y=0,
+  AFDW.grid=NULL, AFDW.x=1, AFDW.y=AFDW.x,
+  VF.grid=NULL,VF.x=1, VF.y=VF.x, A.grid=NULL, A.x=1, A.y=1,
+  dx=NULL, dy=NULL, grid=NULL,
   full.check = FALSE, full.output = FALSE)
 }
 
@@ -31,10 +33,10 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     vector of length M [M/L3].
   }
   \item{C.y.up }{concentration at upstream boundary in y-direction;
-    vector of length M [M/L3].
+    vector of length N [M/L3].
   }
   \item{C.y.down }{concentration at downstream boundary in y-direction;
-    vector of length M [M/L3].
+    vector of length N [M/L3].
   }
   \item{flux.x.up }{flux across the upstream boundary in x-direction,
     positive = INTO model domain; vector of length M [M/L2/T].
@@ -43,10 +45,10 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     positive = OUT of model domain; vector of length M [M/L2/T].
   }
   \item{flux.y.up }{flux across the upstream boundary in y-direction,
-    positive = INTO model domain; vector of length M [M/L2/T].
+    positive = INTO model domain; vector of length N [M/L2/T].
   }
   \item{flux.y.down }{flux across the downstream boundary in y-direction,
-    positive = OUT of model domain; vector of length M [M/L2/T].
+    positive = OUT of model domain; vector of length N [M/L2/T].
   }
   \item{a.bl.x.up }{transfer coefficient across the upstream boundary layer.
      in x-direction \code{Flux=a.bl.x.up*(C.bl.x.up-C[1,])}. One value [L/T].
@@ -65,58 +67,62 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
      in y-direction \code{Flux=a.bl.y.up*(C.bl.y.up-C[,1])}. One value [L/T].
   }
   \item{C.bl.y.up }{concentration at the upstream boundary layer
-    in y-direction; vector of length M  [M/L3].
+    in y-direction; vector of length N  [M/L3].
   }
   \item{a.bl.y.down }{transfer coefficient across the downstream boundary
     layer in y-direction; \code{Flux=a.bl.y.down*(C[,N]-C.bl.y.down)}.
     One value [L/T].
   }
   \item{C.bl.y.down }{concentration at the downstream boundary layer
-    in x-direction ; vector of length M  [M/L3].
+    in x-direction ; vector of length N  [M/L3].
+  }
+  \item{D.grid }{diffusion coefficient defined on all grid cell
+    interfaces. A \code{prop.2D} list created by \code{\link{setup.prop.2D}} [L2/T].
   }
   \item{D.x }{diffusion coefficient in x-direction, defined on grid cell
-    interfaces. One value, or a vector of length (N+1) or
-    a \code{grid} list [L2/T].
+    interfaces. One value, a vector of length (N+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a (N+1)xM matrix [L2/T].
   }
   \item{D.y }{diffusion coefficient in y-direction, defined on grid cell
-    interfaces. One value, or a vector of length (M+1), or
-    a \code{grid} list [L2/T].
+    interfaces. One value, a vector of length (M+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a Nx(M+1) matrix [L2/T].
+  }
+  \item{v.grid }{advective velocity defined on all grid cell
+    interfaces. Can be positive (downstream flow) or negative (upstream flow). A \code{prop.2D} list created by \code{\link{setup.prop.2D}} [L/T].
   }
   \item{v.x }{advective velocity in the x-direction, defined on grid cell
     interfaces. Can be positive (downstream flow) or negative (upstream flow).
-    One value or a  or a vector of length (N+1) or
-    a \code{grid} list  [L/T].
+    One value, a vector of length (N+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a (N+1)xM matrix [L/T].
   }
   \item{v.y }{advective velocity in the y-direction, defined on grid cell
     interfaces. Can be positive (downstream flow) or negative (upstream flow).
-    One value, or a vector of length (M+1), or
-    a \code{grid} list [L/T].
+    One value, a vector of length (M+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a Nx(M+1) matrix [L/T].
+  }
+  \item{AFDW.grid }{weight used in the finite difference scheme for advection
+    in the x-direction, defined on grid cell interfaces; backward = 1,
+    centred = 0.5, forward = 0; default is backward.  A \code{prop.2D} list created by \code{\link{setup.prop.2D}} [-].
   }
   \item{AFDW.x }{weight used in the finite difference scheme for advection
     in the x-direction, defined on grid cell interfaces; backward = 1,
-    centred = 0.5, forward = 0; default is backward. One value or a
-    vector of length (N+1) or a \code{grid} list [-].
+    centred = 0.5, forward = 0; default is backward. One value, a vector of length (N+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a (N+1)xM matrix [-].
   }
   \item{AFDW.y }{weight used in the finite difference scheme for advection
     in the y-direction, defined on grid cell interfaces; backward = 1,
-    centred = 0.5, forward = 0; default is backward. One value, or a
-    vector of length (M+1), or a \code{grid} list [-].
+    centred = 0.5, forward = 0; default is backward. One value, a vector of length (M+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a Nx(M+1) matrix [-].
+  }
+  \item{VF.grid }{Volume fraction. A \code{prop.2D} list created by \code{\link{setup.prop.2D}} [-].
   }
   \item{VF.x }{Volume fraction at the grid cell interfaces in the x-direction.
-    One value, or a vector of length (N+1), a matrix of dimension (N+1,M)
-    or a \code{grid} list  [-].
+    One value, a vector of length (M+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a Nx(M+1) matrix  [-].
   }
   \item{VF.y }{Volume fraction at the grid cell interfaces in the y-direction.
-    One value, a vector of length (M+1), a matrix of dimension (N,M+1),
-    or a \code{grid} list [-].
+    One value, a vector of length (N+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a (N+1)xM matrix [-].
+  }
+  \item{A.grid }{Interface area. A \code{prop.2D} list created by \code{\link{setup.prop.2D}} [L2].
   }
   \item{A.x }{Interface area defined at the grid cell interfaces in
-    the x-direction, one value, or a vector of length N+1, a matrix
-    of dimension (N+1,M) or  a \code{grid} list [L2].
+    the x-direction. One value, a vector of length (N+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a (N+1)xM matrix [L2].
   }
   \item{A.y }{Interface area defined at the grid cell interfaces in
-    the y-direction, one value, a vector of length M+1, a matrix of
-    dimension (N,M+1), or a \code{grid} list [L2].
+    the y-direction. One value, a vector of length (M+1), a \code{prop.1D} list created by \code{\link{setup.prop.1D}}, or a Nx(M+1) matrix [L2].
   }
   \item{dx }{distance between adjacent cell interfaces in the x-direction
     (thickness of grid cells). One value or vector of length N [L].
