@@ -23,7 +23,7 @@
 
 \usage{
 tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
-   C.lat=0, F.up=NULL, F.down=NULL, F.lat=NULL,
+   C.lat=C, F.up=NULL, F.down=NULL, F.lat=NULL,
    Disp=NULL,	flow = 0, flow.lat=NULL, AFDW = 1,
    V=NULL, full.check = FALSE, full.output = FALSE)
 
@@ -39,10 +39,11 @@ tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
   }
   \item{C.lat }{tracer concentration in the lateral input, defined at
     grid cell centres. One value, a vector of length N, or a
-    list as defined by \code{\link{setup.prop.1D}} [M/L3]. Note that \code{C.lat=0}, together with a positive
-    \code{F.lat} will lead to dilution of the tracer concentration in the
-    grid cells. In some cases it may be more realistic to set \code{C.lat = C}
-    (a zero-gradient condition).
+    list as defined by \code{\link{setup.prop.1D}} [M/L3].
+    The default is  \code{C.lat = C}, (a zero-gradient condition).
+    Setting \code{C.lat=0}, together with a positive \code{F.lat} will
+    lead to dilution of the tracer concentration in the
+    grid cells.
   }
   \item{F.up }{total tracer input at the upstream interface. One value [M/T].
   }

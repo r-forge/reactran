@@ -36,16 +36,17 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
     domain. One value [M/L2/T]
   }
   \item{flux.down }{flux across the downstream boundary, positive = OUT
-    of model domain. One value [M/L2/T]
+    of model domain. One value, epxressed per unit of total surface [M/L2/T]
   }
   \item{a.bl.up }{convective transfer coefficient across the upstream
-    boundary layer. \code{Flux = a.bl.up*(C.bl.up-C[1])}. One value [L/T]
+    boundary layer. \code{Flux = a.bl.up*(C.bl.up-C0)}. One value [L/T]
   }
   \item{C.bl.up }{concentration at the upstream boundary layer.
     One value [M/L3]
   }
   \item{a.bl.down }{convective transfer coefficient across the downstream
-    boundary layer. \code{Flux = a.bl.down*(C[N]-C.bl.down)}. One value [L/T]
+    boundary layer (L). \code{Flux = a.bl.down*(CL-C.bl.down)}.
+    One value [L/T]
   }
   \item{C.bl.down }{concentration at the downstream boundary layer.
     One value [M/L3]
@@ -78,7 +79,8 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
     (see \code{\link{setup.prop.1D}}) [L2].
   }
   \item{dx }{distance between adjacent cell interfaces (thickness of grid
-    cells). One value, a vector of length N, or a \code{1D grid} list containing at least the elements
+    cells). One value, a vector of length N, or a \code{1D grid} list containing
+    at least the elements
     \code{dx} and \code{dx.aux} (see \code{\link{setup.grid.1D}}) [L].
   }
   \item{full.check }{logical flag enabling a full check of the consistency
@@ -92,7 +94,8 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
 
 \value{
   \item{dC }{the rate of change of the concentration C due to transport,
-    defined in the centre of each grid cell. The rate of change is expressed per unit of phase volume [M/L3/T].
+    defined in the centre of each grid cell. The rate of change is expressed
+    per unit of phase volume [M/L3/T].
   }
   \item{C.up }{concentration at the upstream interface. One value [M/L3].
     only when (\code{full.output} = \code{TRUE})
