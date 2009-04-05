@@ -62,8 +62,8 @@ tran.1D <- function(C, C.up=C[1], C.down=C[length(C)],
       stop("error: D should be a list that contains 'int', the D values at the interface of the grid cell ")
     if (is.null(D$int))
       stop("error: D is NULL, should contain (numeric) values")
-    if (!is.null(D)) {
-      if (!((length(D)==1) || (length(D)==(N+1))))
+    if (!is.null(D$int)) {
+      if (!((length(D$int)==1) || (length(D$int)==(N+1))))
         stop("error: D should be a vector of length 1 or N+1")
     }
     if (any(D$int < 0))
