@@ -214,9 +214,9 @@ legend=c("backward diff","centred diff","Fiadeiro&Veronis")
   The Fiadeiro and Veronis (1977) scheme takes this into account: it uses
   central differencing when possible (when physical dispersion is high enough),
   and switches to backward differing when needed (when advection dominates).
-  The switching is detrmined by the Peclet number 
+  The switching is determined by the Peclet number
   
-  code{Pe = abs(v)*dx.aux/D}.
+  \code{Pe = abs(v)*dx.aux/D}.
   
   \itemize{
     \item the higher the diffusion \code{D} (\code{Pe > 1}), the closer the

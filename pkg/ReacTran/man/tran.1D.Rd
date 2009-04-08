@@ -377,7 +377,7 @@ legend ("bottomright",pch=c(1,18),lty=1,col=c("black"),
 }
 
 \details{
-  The \bold {boundary conditions} are either
+  The \bold{boundary conditions} are either
   \itemize{
     \item (1) zero-gradient.
     \item (2) fixed concentration.
