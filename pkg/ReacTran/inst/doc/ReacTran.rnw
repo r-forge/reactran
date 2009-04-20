@@ -71,7 +71,7 @@ The Netherlands
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% R/Sweave specific LaTeX commands.
 %% need no \usepackage{Sweave}
-%\VignetteIndexEntry{R-package marelac: utilities for the MArine, Riverine, Estuarine, LAcustrine and Coastal sciences}
+%\VignetteIndexEntry{R-package ReacTran: reactive transport modelling in R}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Begin of the document
 \begin{document}
@@ -1065,7 +1065,6 @@ print(system.time(
 ))
 @
 <<label=twod5,include=FALSE>>=
-par (mfrow=c(2,2))
 mat  <-  matrix(nr=n,nc=n,out2[5,-1])
 filled.contour(mat,zlim=c(0,Bc), color=femmecol,main="after 20 time units")
 @
@@ -1081,7 +1080,6 @@ irrigation model, after 20 time units - see text for \R-code}
 \label{fig:twod}
 \end{figure}
 <<label=twodst,include=FALSE>>=
-par (mfrow=c(2,2))
 mat  <-  matrix(nr=n,nc=n,std$y)
 filled.contour(mat,zlim=c(0,Bc), color=femmecol,main="steady-state")
 @

@@ -22,14 +22,19 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
 # DEFAULT INFILLING OF GRID PARAMETERS
 
 # infilling of 2D grid
-  if (is.null(grid))
-    grid <- list(dx=rep(dx,length.out=N),
-                 dx.aux=0.5*(c(0,rep(dx,length.out=N))+
-                             c(rep(dx,length.out=N),0)),
-                 dy=rep(dy,length.out=M),
-                 dy.aux=0.5*(c(0,rep(dy,length.out=M))+
-                             c(rep(dy,length.out=M),0)))
-  
+  if (is.null(grid)) {
+     DX    <-  if (is.list(dx)) dx$dx else rep(dx,length.out=N)
+     DXaux <-  if (is.list(dx)) dx$dx.aux else 0.5*(c(0,rep(dx,length.out=N))+
+                                  c(rep(dx,length.out=N),0))
+     DY    <-  if (is.list(dy)) dy$dx else rep(dy,length.out=M)
+     DYaux <-  if (is.list(dy)) dy$dx.aux else 0.5*(c(0,rep(dy,length.out=M))+
+                                  c(rep(dy,length.out=M),0))
+
+    grid <- list(
+      dx    = DX,  dx.aux= DXaux,
+      dy    = DY,  dy.aux= DYaux
+                 )
+   }
 # infilling of VF.grid
   if (is.null(VF.grid)) {
     VF.grid <- list()
