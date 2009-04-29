@@ -7,10 +7,13 @@ tran.1D <- function(C, C.up=C[1], C.down=C[length(C)],
      flux.up=NULL, flux.down=NULL, a.bl.up=NULL, C.bl.up=NULL,
 		 a.bl.down=NULL, C.bl.down=NULL,
      D=0, v=0, AFDW=1, VF=1, A=1,
-     dx=NULL, full.check = FALSE, full.output = FALSE) {
+     dx, full.check = FALSE, full.output = FALSE) {
 
 
 ### INPUT CHECKS
+  if (is.null(dx))
+    stop("error: dx should be inputted ")
+
   N <- length(C)
   if (N == 0)
     stop("C should be a vector with numeric values")

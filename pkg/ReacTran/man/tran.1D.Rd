@@ -20,7 +20,7 @@
 tran.1D(C, C.up = C[1], C.down = C[length(C)],
   flux.up = NULL, flux.down = NULL, a.bl.up = NULL, C.bl.up = NULL,
   a.bl.down = NULL, C.bl.down = NULL,
-  D = 0, v = 0, AFDW = 1, VF = 1, A = 1, dx = NULL,
+  D = 0, v = 0, AFDW = 1, VF = 1, A = 1, dx,
   full.check = FALSE, full.output = FALSE)
 }
 

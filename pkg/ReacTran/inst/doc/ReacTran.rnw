@@ -475,7 +475,7 @@ which can be plotted as follows:
     tran.1D(C, C.up = C[1], C.down = C[length(C)],
       flux.up = NULL, flux.down = NULL, a.bl.up = NULL, C.bl.up = NULL,
       a.bl.down = NULL, C.bl.down = NULL,
-      D = 0, v = 0, AFDW = 1, VF = 1, A = 1, dx = NULL, 
+      D = 0, v = 0, AFDW = 1, VF = 1, A = 1, dx,
       full.check = FALSE, full.output = FALSE)
   \end{verbatim}
   with the following arguments:
@@ -498,7 +498,7 @@ which can be plotted as follows:
     \item \code{VF}, the volume fractions (-).
     \item \code{A} the surface areas ($L^2$)
     \item \code{dx}, the distances between cell interfaces (L), the
-      discretization grid.
+      discretization grid. Must be specified.
     \item \code{full.check}, when \code{TRUE}, the consistency of the
       input is checked.
     \item \code{full.output}, when \code{TRUE} full output is returned.
@@ -961,7 +961,7 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   AFDW.grid=NULL, AFDW.x=1, AFDW.y=AFDW.x,
   VF.grid=NULL,VF.x=1, VF.y=VF.x,
   A.grid=NULL, A.x=1, A.y=1,
-  dx=NULL, dy=NULL, grid=NULL,
+  grid=NULL, dx=NULL, dy=NULL,
   full.check = FALSE, full.output = FALSE)
 
 }
