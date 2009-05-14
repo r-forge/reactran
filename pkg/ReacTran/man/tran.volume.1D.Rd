@@ -24,7 +24,7 @@
 \usage{
 tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
    C.lat=C, F.up=NULL, F.down=NULL, F.lat=NULL,
-   Disp=NULL,	flow = 0, flow.lat=NULL, AFDW = 1,
+   Disp,	flow = 0, flow.lat=NULL, AFDW = 1,
    V=NULL, full.check = FALSE, full.output = FALSE)
 
 }

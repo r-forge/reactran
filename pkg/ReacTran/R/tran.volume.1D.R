@@ -4,7 +4,7 @@
 
 tran.volume.1D <- function(C, C.up=C[1], C.down=C[length(C)],
    C.lat=C, F.up=NULL, F.down=NULL, F.lat=NULL,
-	 Disp=NULL, flow=0, flow.lat=NULL, AFDW = 1, V=NULL,
+	 Disp, flow=0, flow.lat=NULL, AFDW = 1, V=NULL,
    full.check = FALSE, full.output = FALSE)
 
 {
@@ -48,7 +48,7 @@ tran.volume.1D <- function(C, C.up=C[1], C.down=C[length(C)],
     if (any(AFDW$int < 0)||any(AFDW$int > 1))
 	    stop("error: AFDW values should always range between 0 and 1")
 
-## check input of Disp
+## check input of V
     gn <- names(V)
     if (! "mid" %in% gn)
       stop("error: V should be a list that contains 'mid'")
