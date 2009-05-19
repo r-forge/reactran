@@ -119,15 +119,25 @@ tran.volume.1D <- function(C, C.up=C[1], C.down=C[length(C)],
     flow$int <- c(f1,f1+cumsum(flow.lat$mid))
   }
 
-## Calculate the lateral mass input 
+## Calculate the lateral mass input  - IF OUTPUT: C is transported instead.
 
   if (is.null (F.lat$mid)) {
     if (is.null (C.lat$mid))
       stop ("C.lat and F.lat cannot be both NULL")
-    F.lat$mid <- C.lat$mid * flow.lat$mid
- } else {
+    v1 <- flow.lat$mid
+    F.lat$mid <- 0
+
+    if (any(flow.lat$mid>0)) {
+      v1[v1<0] <- 0
+      F.lat$mid <- C.lat$mid * v1
+    }
+    if (any(flow.lat$mid < 0)) {
+      ii <- which (flow.lat$mid<0)
+      F.lat$mid[ii] <- C[ii]*flow.lat$mid[ii]
+    }
+  } else {
     C.lat$mid <- F.lat$mid / flow.lat$mid
- }
+  }
  
 ## Calculate diffusive part of the mass flow F
 
