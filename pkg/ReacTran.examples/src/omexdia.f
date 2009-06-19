@@ -153,25 +153,7 @@
  
       end
        
-!==========================================================================
-! put parameter values in a vector - NOT USED
-!==========================================================================
-
-      subroutine getparms(Np,is,yout)
-       integer, parameter :: N=100
-       integer,parameter ::nc = 2*N + 3*(N+1) + 25
-       integer np,is,i,j
-       character(len=80) msg
-       
-       double precision parms(nc),yout(*)
-       common /myparms/parms
-       j=1
-       do i = is,np+is-1
-         yout(j) = parms(i)
-         j=j+1
-       enddo
-       end
-      
+     
 !==========================================================================
 ! from ordered per species to ordered per slice
 !==========================================================================
@@ -255,11 +237,11 @@
          do i =2,N+1
            Flux(i) = Flux(i) + 0.5*v*porfac(i)*y(i-1)
          enddo
-           Flux(1) = Flux(1) + 0.5*v*porfac(1)*yup
+         Flux(1) = Flux(1) + 0.5*v*porfac(1)*yup
          do i =1,N
            Flux(i) = Flux(i)     + 0.5*v*porfac(i)*y(i)
          enddo
-           Flux(N+1) = Flux(N+1) + 0.5*v*porfac(N+1)*ydown
+         Flux(N+1) = Flux(N+1) + 0.5*v*porfac(N+1)*ydown
               
 ! rate of change = flux gradient, corrected for surface (porosity) changes 
        do i =1,N

@@ -20,13 +20,13 @@
 }
 
 \usage{
-OMEXDIAmodel ( pars = list(), grid, porgrid, Db, Dyna=TRUE)}
+OMEXDIAmodel ( pars = list(), grid, porosity, Db, Dyna=TRUE)}
 \arguments{
   \item{pars }{ The model parameters, a list - see details}
   \item{grid }{ The discretisation grid, e.g. generated with
     \code{\link[ReacTran]{setup.grid.1D}}; should contain 100 boxes.
   }
-  \item{porgrid }{ The porosity grid, e.g. generated with
+  \item{porosity }{ The porosity grid, e.g. generated with
     \code{\link[ReacTran]{setup.prop.1D}}; should contain 100 boxes
     and be consistent with \code{grid}.
   }
@@ -225,6 +225,35 @@ mtext(outer=TRUE,side=3,line=1,cex=1.5,"OMEXDIAmodel")
   The execution speed of this version of the model is similar to the
   original application where all code was in Fortran; it is
   almost two orders of magnitude faster than the implementation in \R.
+
+  The parameter vector contains the following parameters (with default values):
+  \itemize{
+    \item MeanFlux = 20000/12*100/365, nmol/cm2/d , Carbon deposition
+    \item rFast    = 0.01            , /day       , decay rate fast decay detritus
+    \item rSlow    = 0.00001         , /day        , decay rate slow decay detritus
+    \item pFast    = 0.9             , -           , fraction fast detritus in flux
+    \item w        = 0.1/1000/365    , cm/d       , advection rate
+    \item NCrFdet  = 0.16            , molN/molC  , NC ratio fast decay detritus
+    \item NCrSdet  = 0.13            , molN/molC  , NC ratio slow decay detritus
+    \item bwO2            = 300      , mmol/m3    , Oxygen conc in bottom water
+    \item bwNO3           = 10       , mmol/m3
+    \item bwNH3           = 1        , mmol/m3
+    \item bwODU           = 0        , mmol/m3
+    \item NH3Ads          = 1.3      , -          , Adsorption coeff ammonium
+    \item rnit            = 20.      , /d         , Max nitrification rate
+    \item ksO2nitri       = 1.       , umolO2/m3  , half-sat O2 in nitrification
+    \item rODUox          = 20.      , /d         , Max rate oxidation of ODU
+    \item ksO2oduox       = 1.       , mmolO2/m3  , half-sat O2 in oxidation of ODU
+    \item ksO2oxic        = 3.       , mmolO2/m3  , half-sat O2 in oxic mineralisation
+    \item ksNO3denit      = 30.      , mmolNO3/m3 , half-sat NO3 in denitrification
+    \item kinO2denit      = 1.       , mmolO2/m3  , half-sat O2 inhib denitrification
+    \item kinNO3anox      = 1.       , mmolNO3/m3 , half-sat NO3 inhib anoxic degr
+    \item kinO2anox       = 1.       , mmolO2/m3  , half-sat O2 inhib anoxic min
+    \item DispO2          = 0.955    +10*0.0386   ,  cm2/d, diffusion coefficient (at 10dg)
+    \item DispNO3         = 0.844992 +10*0.0336    ,
+    \item DispNH3         = 0.84672  +10*0.0336    ,
+    \item DispODU         = 0.8424   +10*0.0242)
+  }
 }
 
 \keyword{misc}

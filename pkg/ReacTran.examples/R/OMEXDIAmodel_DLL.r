@@ -8,9 +8,9 @@
 # Model equations    #
 #====================#
 
-OMEXDIAmodel <- function (pars,
+OMEXDIAmodel <- function (pars= list(),
                           grid,
-                          porgrid,
+                          porosity,
                           Db,
                           Dyna = TRUE)  {
   N <- grid$N
@@ -18,16 +18,16 @@ OMEXDIAmodel <- function (pars,
     stop("Db should contain 101 values")
   if (grid$N != 100)
     stop("grid should contain 100 boxes")
-  if (length(porgrid$mid) != 100)
+  if (length(porosity$mid) != 100)
     stop("porosity grid should contain 100 boxes")
   if (is.null(grid$dx))
     stop("'grid$dx' should be present")
   if (is.null(grid$dx.aux))
     stop("'grid$dx.aux' should be present")
-  if (is.null(porgrid$mid))
-    stop("'porgrid$mid' should be present")
-  if (is.null(porgrid$int))
-    stop("'porgrid$int' should be present")
+  if (is.null(porosity$mid))
+    stop("'porosity$mid' should be present")
+  if (is.null(porosity$int))
+    stop("'porosity$int' should be present")
 
 ## The parameters
 ## the default parameter values
@@ -84,7 +84,7 @@ OMEXDIAmodel <- function (pars,
   OC   <- rep(10,6*N)
   DIA  <- steady.band(y=OC,fun="omexdiamod",initfun="initomexdia",
                      initpar=c(Parms,grid$dx,grid$dx.aux,
-                     porgrid$mid,porgrid$int,Db),nspec=6,
+                     porosity$mid,porosity$int,Db),nspec=6,
                      dllname="ReacTran.examples",nout=8,positive=TRUE)
   steady <-DIA$y
 
@@ -101,7 +101,7 @@ OMEXDIAmodel <- function (pars,
     out   <- ode.band (y=DIA$y, times=times, fun="omexdiamod",
                        initfun="initomexdia",method="lsode",
                        parms=c(Parms,grid$dx,grid$dx.aux,
-                       porgrid$mid,porgrid$int,Db),
+                       porosity$mid,porosity$int,Db),
                        nspec=6,nout=8,dllname="ReacTran.examples")
 
     ## final simulation
@@ -109,7 +109,7 @@ OMEXDIAmodel <- function (pars,
     out   <- ode.band (y=CONC, times=times, fun="omexdiamod",
                        initfun="initomexdia",method="lsode",
                        parms=c(Parms,grid$dx,grid$dx.aux,
-                       porgrid$mid,porgrid$int,Db),
+                       porosity$mid,porosity$int,Db),
                        nspec=6,nout=8,dllname="ReacTran.examples")
     ## remove time
     out      <- out [,-1]
