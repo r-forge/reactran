@@ -31,8 +31,8 @@
          y = y_{inf}
         }{y=y0 ; y=y0-(y0-yinf)(x-xl)/xatt ; y = yinf}
         
-    for $0 \leq x \leq x_L$, $x_L \leq x \leq x_L + x_{att}$ and
-     $(x \geq x_L + x.att )$ respectively.
+    for \eqn{0 \leq x \leq x_L}, \eqn{x_L \leq x \leq x_L + x_{att}} and
+     \eqn{(x \geq x_L + x.att )} respectively.
      
     \item \code{p.sig}: sigmoidal decreasing transition
       \deqn{
