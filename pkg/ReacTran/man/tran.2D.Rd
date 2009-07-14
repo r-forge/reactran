@@ -1,7 +1,7 @@
 \name{tran.2D}
 \alias{tran.2D}
 \title{
-  General two-dimensional advective-diffusive transport
+  General Two-Dimensional Advective-Diffusive Transport
 }
 
 \description{
@@ -53,26 +53,34 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
     positive = OUT of model domain; vector of length Nx [M/L2/T].
   }
   \item{a.bl.x.up }{transfer coefficient across the upstream boundary layer.
-     in x-direction \code{Flux=a.bl.x.up*(C.bl.x.up-C[1,])}. One value [L/T].
+     in x-direction;
+
+     \code{Flux=a.bl.x.up*(C.bl.x.up-C[1,])}. One value [L/T].
   }
   \item{C.bl.x.up }{concentration at the upstream boundary layer
     in x-direction; vector of length Ny  [M/L3].
   }
   \item{a.bl.x.down }{transfer coefficient across the downstream boundary
-    layer in x-direction; \code{Flux=a.bl.x.down*(C[Nx,]-C.bl.x.down)}.
+    layer in x-direction;
+
+    \code{Flux=a.bl.x.down*(C[Nx,]-C.bl.x.down)}.
     One value [L/T].
   }
   \item{C.bl.x.down }{concentration at the downstream boundary layer
     in x-direction ; vector of length Ny  [M/L3].
   }
   \item{a.bl.y.up }{transfer coefficient across the upstream boundary layer.
-     in y-direction \code{Flux=a.bl.y.up*(C.bl.y.up-C[,1])}. One value [L/T].
+     in y-direction;
+
+     \code{Flux=a.bl.y.up*(C.bl.y.up-C[,1])}. One value [L/T].
   }
   \item{C.bl.y.up }{concentration at the upstream boundary layer
     in y-direction; vector of length Nx  [M/L3].
   }
   \item{a.bl.y.down }{transfer coefficient across the downstream boundary
-    layer in y-direction; \code{Flux=a.bl.y.down*(C[,Ny]-C.bl.y.down)}.
+    layer in y-direction;
+
+    \code{Flux=a.bl.y.down*(C[,Ny]-C.bl.y.down)}.
     One value [L/T].
   }
   \item{C.bl.y.down }{concentration at the downstream boundary layer
@@ -214,6 +222,9 @@ tran.2D ( C, C.x.up=C[1,], C.x.down=C[nrow(C),],
 }
 
 \examples{
+## =============================================================================
+## Testing the functions
+## =============================================================================
 # Parameters
 F        <- 100             # input flux [micromol cm-2 yr-1]
 por      <- 0.8             # constant porosity
@@ -354,8 +365,8 @@ par("mfrow"=pm )
 }
 
 \references{
-  Soetaert and Herman, a practical guide to ecological modelling - using R as
-  a simulation platform, 2009. Springer
+  Soetaert and Herman, 2009. a practical guide to ecological modelling -
+  using R as a simulation platform. Springer
 }
 
 \details{

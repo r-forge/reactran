@@ -1,7 +1,7 @@
 \name{tran.volume.1D}
 \alias{tran.volume.1D}
 \title{
-  1-D volumetric advective-diffusive transport in an aquatic system
+  1-D Volumetric Advective-Diffusive Transport in an Aquatic System
 }
 
 \description{
@@ -99,16 +99,19 @@ tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
     of length N+1 [M/T]. Only provided when (\code{full.output} = \code{TRUE}
   }
   \item{flow.up }{water flow across the upstream boundary, positive = INTO
-    model domain. One value [L3/T]. Only provided when (\code{full.output} = \code{TRUE}
+    model domain. One value [L3/T]. Only provided when
+    (\code{full.output} = \code{TRUE})
   }
   \item{flow.down }{water flow across the downstream boundary, positive = OUT
-    of model domain. One value [L3/T]. Only provided when (\code{full.output} = \code{TRUE}
+    of model domain. One value [L3/T]. Only provided when
+    (\code{full.output} = \code{TRUE})
   }
   \item{F.lat }{lateral water input on each volume box, positive = INTO model
-    domain. A vector of length N [L3/T]. Only provided when (\code{full.output} = \code{TRUE}
+    domain. A vector of length N [L3/T]. Only provided when
+    (\code{full.output} = \code{TRUE})
   }
   \item{F }{water flow across at the interface of each grid cell. A vector
-    of length N+1 [M/T]. Only provided when (\code{full.output} = \code{TRUE}
+    of length N+1 [M/T]. Only provided when (\code{full.output} = \code{TRUE})
   }
 }
 
@@ -119,9 +122,9 @@ tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
 
 \examples{
 
-##################################################################
-#  EXAMPLE : organic carbon (OC) decay in a widening river       #
-##################################################################
+## =============================================================================
+##  EXAMPLE : organic carbon (OC) decay in a widening river
+## =============================================================================
 
 # Two scenarios are simulated: the baseline includes only input 
 # of organic matter upstream. The second scenario simulates the 

@@ -1,8 +1,8 @@
 \name{setup.compaction.1D}
 \alias{setup.compaction.1D}
 \title{
-  Calculates the advective velocities of the pore water and the solid phase
-  in a water saturated sediment assuming steady state compaction
+  Calculates Advective Velocities of the Pore Water and Solid Phase
+  in a Water Saturated Sediment assuming Steady State Compaction
 }
 
 \description{

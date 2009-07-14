@@ -452,7 +452,7 @@ which can be plotted as follows:
 \label{fig:prop}
 \end{figure}
 \clearpage
- \section{dimensional reactive-transport modelling in ReacTran}
+ \section{one-dimensional reactive-transport modelling in ReacTran}
  Implementing a reactive-transport model in \rt proceeds in several steps.
  
  \begin{itemize}
@@ -575,8 +575,8 @@ tran.1D(C=1:20, D=0, flux.up = 1, v=1, dx=1, full.output=TRUE)
 
 @
 
-  Note the use of \code{with (as.list(parms),...} which makes available the
-  previously defined model parameters (\code{parms}) within the function.
+  Note the use of \code{with (as.list(parms),...} which allows to access by
+  name the previously defined model parameters (\code{parms}) within the function.
 
   \subsection{Solving a 1-D reaction transport model}
   In \R, 1-D models consisting of ordinary differential equations can
@@ -596,10 +596,10 @@ tran.1D(C=1:20, D=0, flux.up = 1, v=1, dx=1, full.output=TRUE)
 @
   Function \code{steady.1D} estimates the steady-state iteratively and
   requires an initial guess of the state variables. For most cases, the
-  initial values are not important.
-  
-  The initial guess of the state variables in the above example consists
-  simply of 25 uniformly distributed random numbers ([0,1]);
+  exact values are not important; the initial guess of the state variables
+  in the above example consists simply of 25 uniformly distributed random
+  numbers ([0,1]);
+
   we specify that the model comprises only one species (\code{nspec} and
   that we are interested only in a solution consisting of positive numbers
   (\code{positive=TRUE}), as negative concentrations do not exist (in the
@@ -610,7 +610,8 @@ tran.1D(C=1:20, D=0, flux.up = 1, v=1, dx=1, full.output=TRUE)
   consumption rate and the fluxes at the upper and lower boundary as
   defined in function \code{advModel}. In addition,
   attribute \code{precis} gives a measure of how far the system is from
-  steady-tate at each iteration of the steady-state solver.
+  steady-tate at each iteration of the steady-state solver; only two
+  iterations were needed.
 
 <<>>=
 out
@@ -634,13 +635,16 @@ plot (out$y ,type="l",xlab="x", ylab="Conc")
 
   It is good modelling practice to test mass conservation of a model,
   i.e. as a check that mass is not created or destroyed by numerical
-  means (programming or modelling error). For this simple example, it
-  is clear that mass is conserved, but we will test it to exemplify
+  means (programming or modelling error).
+
+  For this simple example, it
+  is obvious that mass is conserved, but we will test it to exemplify
   the procedures.
 
   If mass is conserved and the system is at steady-state, then the net
   input by transport in the system should equal the total net consumption.
-  For our system, the net input is given by \code{flux.up - flux.down}, while
+  For our model, the net input to the system is given by
+  \code{flux.up - flux.down}, while
   the total consumption is simply the sum of the consumption in each box.
 <<>>=
 with (out, print(sum(Consumption)-(flux.up-flux.down)))
@@ -651,8 +655,8 @@ with (out, print(sum(Consumption)-(flux.up-flux.down)))
 \subsection{example: 1-D transport in a porous spherical body}
   This, somewhat more complex example models oxygen consumption in a
   spherical aggregate. The example is more complex because it assumes
-  that both the surface area and the volume fraction (the "porosity")
-  vary along the spatial axis.
+  that both the surface area (\code{A}) and the volume fraction (\code{VF})
+  (here the "porosity") vary along the spatial axis.
   
   We start by formulating the model function (\code{Aggregate.Model}).
 
@@ -750,7 +754,7 @@ legend ("bottomright",pch=c(1,18),lty=1,col=c("black"),
   AND correct for the porosity effect.
   
   The volume in each spherical layer is simply equal to the surface at the
-  centre of the layer (\code{A.grid$mid})times the grid size (\code{grid$dx}).
+  centre of the layer (\code{A.grid$mid}) times the grid size (\code{grid$dx}).
   
 <<>>=
  Volume <- A.grid$mid * grid$dx
@@ -805,6 +809,7 @@ legend ("bottomright",pch=c(1,18),lty=1,col=c("black"),
   in \code{tran.1D}.
 
   \code{tran.volume.1D} implements this in \rt.
+
   The \code{tran.volume.1D} routine is particularly suited for modelling
   channels (like rivers, estuaries) where the cross-sectional area changes,
   but where this area change is not explicitly modelled (as a function of time).
@@ -850,7 +855,7 @@ legend ("bottomright",pch=c(1,18),lty=1,col=c("black"),
 river.model <- function (t=0,OC,pars=NULL)
 {
   tran <- tran.volume.1D(C=OC,F.up=F.OC,F.lat=F.lat,Disp=Disp,
-  flow=flow,V=Volume)
+      flow=flow,V=Volume)
   reac <- - k*OC
 
   return(list(dCdt = tran$dC + reac,
@@ -946,7 +951,7 @@ sol$F.up + sol$F.lat - sol$F.down - sum(sol$y*k*Volume)
 \clearpage
   \section{Transport in two dimensions}
   
-  Tthe function that performs transport in two
+  The function that performs transport in two
   dimensions is similar to its 1-D equivalent.
   
   Here is its default input
@@ -1043,7 +1048,8 @@ Diff2D <- function (t, y, parms, N)
     \item \code{steady.2D} solves the steady-state condition
     \item \code{ode.2D} runs the model dynamically
   \end{itemize}
-  We print the time it takes to obtain these solutions.
+  The model consists of 100*100 = 10000 equations.
+  We print the time it takes to obtain these solutions (in seconds).
   
   Note that for both these methods, we need to pass the dimension of the
   problem (e.g. the number of boxes in x and y-direction), and the work-

@@ -1,7 +1,7 @@
 \name{fiadeiro}
 \alias{fiadeiro}
 \title{
-  Advective finite difference weights
+  Advective Finite Difference Weights
 }
 
 \description{
@@ -48,9 +48,9 @@ fiadeiro(v, D, dx.aux=NULL, grid=list(dx.aux=dx.aux))
 }
 
 \examples{
-#=============================================================================
-# Model formulation (set of differential equations)
-#=============================================================================
+#============================================
+# Model formulation (differential equations)
+#============================================
 
 # This is a test model to evaluate the different finite difference schemes 
 # and evaluate their effect on munerical diffusion. The model describes the
@@ -61,9 +61,9 @@ model <- function (time,OC,pars,AFDW=1)
 dOC <- tran.1D(OC,flux.up=F_OC,D=D.eddy,v=v.sink,AFDW=AFDW,dx=dx)$dC - k*OC
 return(list(dOC))
 }
-#=============================================================================
+#============================================
 # Parameter set
-#=============================================================================
+#============================================
 
 L <- 1000         # water depth model domain [m]
 x.att <- 200      # attenuation depth of the sinking velocity [m]
@@ -72,9 +72,9 @@ D.eddy <- 10      # eddy diffusion coefficient [m2 d-1]
 F_OC <- 10        # particle flux [mol m-2 d-1]
 k <- 0.1          # decay coefficient [d-1]
 
-#=============================================================================
-# Model solution for a coarse grid (10 grid cells)
-#=============================================================================
+## =============================================================================
+## Model solution for a coarse grid (10 grid cells)
+## =============================================================================
 
 # Setting up the grid
 N <- 10                              # number of grid layers 
@@ -132,9 +132,9 @@ legend=c("backward diff","centred diff","Fiadeiro&Veronis")
 ,col=c(1:3),lty=c(1:3),pch=c(16,16,16))
 
 
-#=============================================================================
-# Model solution for a fine grid (1000 grid cells)
-#=============================================================================
+## =============================================================================
+## Model solution for a fine grid (1000 grid cells)
+## =============================================================================
 
 # Setting up the grid
 N <- 1000                            # number of grid layers 
@@ -189,7 +189,7 @@ legend=c("backward diff","centred diff","Fiadeiro&Veronis")
 
 \details{
   The Fiadeiro and Veronis (1977) scheme adapts the differencing method to
-  the situation at hand (checks for advection or diffusion dominance).
+  the local situation (checks for advection or diffusion dominance).
 
   Finite difference schemes are based on following rationale:
   \itemize{

@@ -4,23 +4,22 @@
 \alias{g.cylinder}
 
 \title{
-  Surface area and volume of geometrical objectes
+  Surface Area and Volume of Geometrical Objects
 }
 
 \description{
   \itemize{
     \item \code{g.sphere} the surface and volume of a sphere
     \item \code{g.spheroid} the surface and volume of a spheroid
-    \item \code{g.cylinder} the surface and volume of a cylinder; note that the surface are calculation ignores the top and bottom.
+    \item \code{g.cylinder} the surface and volume of a cylinder;
+      note that the surface area calculation ignores the top and bottom.
   }
 }
 
 \usage{
 
 g.sphere(x)
-
 g.spheroid (x, b=1)
-
 g.cylinder (x, L=1)
 
 }

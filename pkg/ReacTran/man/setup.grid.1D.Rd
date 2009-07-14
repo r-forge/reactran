@@ -2,24 +2,31 @@
 \alias{setup.grid.1D}
 \alias{plot.grid.1D}
 \title{
-  Creates a one-dimensional finite difference grid
+  Creates a One-Dimensional Finite Difference Grid
 }
 \description{
   Subdivides the one-dimensional model domain into one or more zones that
-  are each sub-divided into grid cells. The resulting grid structure can be used in the other \code{ReacTran}
-  functions.
+  are each sub-divided into grid cells. The resulting grid structure can be
+  used in the other \code{ReacTran} functions.
 
   The grid structure is characterized by the position of the middle of
-  the grid cells (\code{x.mid}) and the position of the interfaces between grid cells (\code{x.int}).
+  the grid cells (\code{x.mid}) and the position of the interfaces between
+  grid cells (\code{x.int}).
 
   Distances are calculated between the interfaces (\code{dx}), i.e. the
-  thickness of the grid cells. An auxiliary set of distances (\code{dx.aux}) is calculated between the
-  points where the concentrations are specified (at the center of each grid
-  cell and the two external interfaces).
+  thickness of the grid cells. An auxiliary set of distances (\code{dx.aux})
+  is calculated between the points where the concentrations are specified
+  (at the center of each grid cell and the two external interfaces).
 
   A more complex grid consisting of multiple zones can be constructed when
-  specifying the endpoints of ech zone (\code{x.down}), the interval length (\code{L}), and the number of layers in each zone (\code{N}) as vectors. In each zone, one can control the grid resolution near the upstream and downstream boundary.
-  The grid resolution at the upstream interface changes according to the power law relation \code{dx[i+1] = min(max.dx.1,p.dx.1*dx[i])}, where \code{p.dx.1} determines the rate of increase and \code{max.dx.1} puts an upper limit on the grid cell size.
+  specifying the endpoints of ech zone (\code{x.down}), the interval length
+  (\code{L}), and the number of layers in each zone (\code{N}) as vectors.
+  In each zone, one can control the grid resolution near the upstream and
+  downstream boundary.
+  The grid resolution at the upstream interface changes according to the
+  power law relation \code{dx[i+1] = min(max.dx.1,p.dx.1*dx[i])},
+  where \code{p.dx.1} determines the rate of increase and \code{max.dx.1}
+  puts an upper limit on the grid cell size.
 
   A similar formula controls the resolution at the downstream interface.
   This allows refinement of the grid near the interfaces.

@@ -1,12 +1,12 @@
 \name{setup.grid.2D}
 \alias{setup.grid.2D}
 \title{
-  Creates a finite difference grid over a two-dimensional rectangular domain
+  Creates a Finite Difference Grid over a Two-Dimensional Rectangular Domain
 }
 \description{
   Creates a finite difference grid over a rectangular two-dimensional model
   domain starting from two separate one-dimensional grids (as created by
-  \code{\link{setup.grid.1D}}). The x-direction is taken as vertical, the y-direction as horizontal. 
+  \code{\link{setup.grid.1D}}).
 }
 
 \usage{
@@ -24,45 +24,49 @@ setup.grid.2D(x.grid=NULL, y.grid=NULL)
 
 \value{
   a list of type \code{grid.2D} containing:
-  \item{x.up }{vertical position of the horizontal upstream interface (i.e. the upper boundary); one value
+  \item{x.up }{position of the upstream interface in x-direction
+    (i.e. if x is vertical, the upper boundary); one value
   }
-  \item{x.down }{vertical position of the horizontal downstream interface (i.e. the lower boundary); one value
+  \item{x.down }{position of the downstream interface in x-direction
+    (i.e. if x is vertical, the lower boundary); one value
   }
-  \item{x.mid }{vertical position of the middle of the grid cells; vector of
-    length \code{x.N}
+  \item{x.mid }{position of the middle of the grid cells in x-direction;
+    vector of length \code{x.N}
   }
-  \item{x.int }{vertical position of the horizontal interfaces of the grid
-    cells; vector of length \code{x.N+1}
+  \item{x.int }{position of the interfaces of the grid cells in x-direction;
+    vector of length \code{x.N+1}
   }
-  \item{dx }{distance between adjacent cell interfaces (thickness of grid
-    cells); vector of length \code{x.N}
+  \item{dx }{distance between adjacent cell interfaces in x-direction
+    (thickness of grid cells); vector of length \code{x.N}
   }
   \item{dx.aux }{auxiliary vector containing the distance between adjacent
     cell centers; at the upstream and downstream boundary calculated as
     (\code{x[1]-x.up}) and (\code{x.down-x[x.N]}) respectively;
     vector of length \code{x.N+1}
   }
-  \item{x.N }{total number of grid cells in the vertical direction; one value
+  \item{x.N }{total number of grid cells in the x direction; one value
   }
-  \item{y.left }{horizontal position of the vertical upstream interface (i.e. the left boundary); one value
+  \item{y.left }{position of the upstream interface in y-direction
+    (i.e. if y us the horizontal, the left boundary); one value
   }
-  \item{y.right }{horizontal position of the vertical downstream interface (i.e. the right boundary); one value
+  \item{y.right }{position of the downstream interface in y-direction
+    (i.e. if y us the horizontal, the right boundary); one value
   }
-  \item{y.mid }{horizontal position of the middle of the grid cells; vector of
-    length \code{y.N}
+  \item{y.mid }{position of the middle of the grid cells in y-direction;
+    vector of length \code{y.N}
   }
-  \item{y.int }{horizontal position of the vertical interfaces of the grid
-    cells; vector of length \code{y.N+1}
+  \item{y.int }{position of the interfaces of the grid cells in y-direction;
+    vector of length \code{y.N+1}
   }
-  \item{dy }{distance between adjacent cell interfaces (thickness of grid
-    cells); vector of length \code{y.N}
+  \item{dy }{distance between adjacent cell interfaces in y-direction
+    (thickness of grid cells); vector of length \code{y.N}
   }
   \item{dy.aux }{auxiliary vector containing the distance between adjacent
     cell centers; at the upstream and downstream boundary calculated as
     (\code{y[1]-y.up}) and (\code{y.down-y[y.N]}) respectively;
     vector of length \code{y.N+1}
   }
-  \item{y.N }{total number of grid cells in the horizontal direction;
+  \item{y.N }{total number of grid cells in the y direction;
     one value
     }
 }

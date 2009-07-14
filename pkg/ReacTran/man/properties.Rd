@@ -4,8 +4,7 @@
 \alias{p.sig}
 
 \title{
-  Common dependencies of one-dimensional properties with distance,
-  to be used with setup.prop.1D
+  Common Properties with Distance,to be used with setup.prop.1D
 }
 
 \description{
@@ -45,9 +44,7 @@
 
 \usage{
 p.exp(x, y.0=1, y.inf=0.5, x.L=0, x.att=1)
-
 p.lin(x, y.0=1, y.inf=0.5, x.L=0, x.att=1)
-
 p.sig(x, y.0=1, y.inf=0.5, x.L=0, x.att=1)
 }
 

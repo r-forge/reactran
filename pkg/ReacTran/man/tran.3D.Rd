@@ -1,7 +1,7 @@
 \name{tran.3D}
 \alias{tran.3D}
 \title{
-  General three-dimensional advective-diffusive transport
+  General Three-Dimensional Advective-Diffusive Transport
 }
 
 \description{
@@ -72,39 +72,51 @@ tran.3D (C, C.x.up=C[1,,], C.x.down=C[dim(C)[1],,],
     positive = OUT of model domain; matrix of dimensions Nx*Ny [M/L2/T].
   }
   \item{a.bl.x.up }{transfer coefficient across the upstream boundary layer.
-     in x-direction \code{Flux=a.bl.x.up*(C.bl.x.up-C[1,,])}. One value [L/T].
+     in x-direction
+
+     \code{Flux=a.bl.x.up*(C.bl.x.up-C[1,,])}. One value [L/T].
   }
   \item{C.bl.x.up }{concentration at the upstream boundary layer
     in x-direction; matrix of dimensions Ny*Nz [M/L3].
   }
   \item{a.bl.x.down }{transfer coefficient across the downstream boundary
-    layer in x-direction; \code{Flux=a.bl.x.down*(C[Nx,,]-C.bl.x.down)}.
+    layer in x-direction;
+
+    \code{Flux=a.bl.x.down*(C[Nx,,]-C.bl.x.down)}.
     One value [L/T].
   }
   \item{C.bl.x.down }{concentration at the downstream boundary layer
     in x-direction ; matrix of dimensions Ny*Nz  [M/L3].
   }
   \item{a.bl.y.up }{transfer coefficient across the upstream boundary layer.
-     in y-direction \code{Flux=a.bl.y.up*(C.bl.y.up-C[,1,])}. One value [L/T].
+     in y-direction
+
+     \code{Flux=a.bl.y.up*(C.bl.y.up-C[,1,])}. One value [L/T].
   }
   \item{C.bl.y.up }{concentration at the upstream boundary layer
     in y-direction; matrix of dimensions Nx*Nz [M/L3].
   }
   \item{a.bl.y.down }{transfer coefficient across the downstream boundary
-    layer in y-direction; \code{Flux=a.bl.y.down*(C[,Ny,]-C.bl.y.down)}.
+    layer in y-direction;
+
+    \code{Flux=a.bl.y.down*(C[,Ny,]-C.bl.y.down)}.
     One value [L/T].
   }
   \item{C.bl.y.down }{concentration at the downstream boundary layer
     in y-direction ; matrix of dimensions Nx*Nz  [M/L3].
   }
   \item{a.bl.z.up }{transfer coefficient across the upstream boundary layer.
-     in y-direction \code{Flux=a.bl.y.up*(C.bl.y.up-C[,,1])}. One value [L/T].
+     in y-direction
+
+     \code{Flux=a.bl.y.up*(C.bl.y.up-C[,,1])}. One value [L/T].
   }
   \item{C.bl.z.up }{concentration at the upstream boundary layer
     in z-direction; matrix of dimensions Nx*Ny [M/L3].
   }
   \item{a.bl.z.down }{transfer coefficient across the downstream boundary
-    layer in z-direction; \code{Flux=a.bl.z.down*(C[,,Nz]-C.bl.z.down)}.
+    layer in z-direction;
+
+    \code{Flux=a.bl.z.down*(C[,,Nz]-C.bl.z.down)}.
     One value [L/T].
   }
   \item{C.bl.z.down }{concentration at the downstream boundary layer
@@ -114,7 +126,7 @@ tran.3D (C, C.x.up=C[1,,], C.x.down=C[dim(C)[1],,],
     interfaces.
     Should contain elements x.int, y.int, z.int, arrays with the values on the
     interfaces in x, y and z-direction, and with dimensions
-    (Nx+1)*Ny*nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively. [L2/T].
+    (Nx+1)*Ny*Nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively. [L2/T].
   }
   \item{D.x }{diffusion coefficient in x-direction, defined on grid cell
     interfaces. One value, a vector of length (Nx+1),
@@ -132,7 +144,7 @@ tran.3D (C, C.x.up=C[1,,], C.x.down=C[dim(C)[1],,],
     interfaces. Can be positive (downstream flow) or negative (upstream flow).
     Should contain elements x.int, y.int, z.int, arrays with the values on the
     interfaces in x, y and z-direction, and with dimensions
-    (Nx+1)*Ny*nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively.  [L/T].
+    (Nx+1)*Ny*Nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively.  [L/T].
   }
   \item{v.x }{advective velocity in the x-direction, defined on grid cell
     interfaces. Can be positive (downstream flow) or negative (upstream flow).
@@ -154,7 +166,7 @@ tran.3D (C, C.x.up=C[1,,], C.x.down=C[dim(C)[1],,],
     centred = 0.5, forward = 0; default is backward.
     Should contain elements x.int, y.int, z.int, arrays with the values on the
     interfaces in x, y and z-direction, and with dimensions
-    (Nx+1)*Ny*nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively. [-].
+    (Nx+1)*Ny*Nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively. [-].
   }
   \item{AFDW.x }{weight used in the finite difference scheme for advection
     in the x-direction, defined on grid cell interfaces; backward = 1,
@@ -180,7 +192,7 @@ tran.3D (C, C.x.up=C[1,,], C.x.down=C[dim(C)[1],,],
   \item{VF.grid }{Volume fraction. A list.
     Should contain elements x.int, y.int, z.int, arrays with the values on the
     interfaces in x, y and z-direction, and with dimensions
-    (Nx+1)*Ny*nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively. [-].
+    (Nx+1)*Ny*Nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively. [-].
   }
   \item{VF.x }{Volume fraction at the grid cell interfaces in the x-direction.
     One value, a vector of length (Nx+1),
@@ -200,7 +212,7 @@ tran.3D (C, C.x.up=C[1,,], C.x.down=C[dim(C)[1],,],
   \item{A.grid }{Interface area, a list.
     Should contain elements x.int, y.int, z.int, arrays with the values on the
     interfaces in x, y and z-direction, and with dimensions
-    (Nx+1)*Ny*nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively. [L2].
+    (Nx+1)*Ny*Nz, Nx*(Ny+1)*Nz and Nx*Ny*(Nz+1) respectively. [L2].
   }
   \item{A.x }{Interface area defined at the grid cell interfaces in
     the x-direction. One value, a vector of length (Nx+1),
@@ -298,9 +310,9 @@ tran.3D (C, C.x.up=C[1,,], C.x.down=C[dim(C)[1],,],
 }
 
 \examples{
-#############################################################
-# Diffusion in 3-D; imposed boundary conditions
-#############################################################
+## =============================================================================
+## Diffusion in 3-D; imposed boundary conditions
+## =============================================================================
 diffusion3D <- function(t,Y,par) {
   yy    <- array(dim=c(n,n,n),data=Y)  # vector to 3-D array
   dY   <- -r*yy        # consumption

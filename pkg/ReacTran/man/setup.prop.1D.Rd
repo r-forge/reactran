@@ -2,12 +2,13 @@
 \alias{setup.prop.1D}
 \alias{plot.prop.1D}
 \title{
-  Attaches a property to a one-dimensional grid
+  Attaches a Property to a One-Dimensional Grid
 }
 
 \description{
   This routine calculates the value of a given property at the middle of
-  the grid cells (\code{mid}) and at the interfaces of the grid cells (\code{int}).
+  the grid cells (\code{mid}) and at the interfaces of the grid cells
+  (\code{int}).
 
   Two possibilities are available: either specifying a mathematical function
   (\code{func}) that describes the spatial dependency of the property,
@@ -18,7 +19,7 @@
   specify the porosity, the mixing intensity or some other parameter over
   the one-dimensional grid. Similarly, in a vertical water column model, \code{setup.prop.1D} can be
   used to specify the sinking velocity of particles or other model parameters
-  change with water depth.
+  changing with water depth.
 }
 
 \usage{
@@ -36,7 +37,7 @@ setup.prop.1D(func=NULL, value=NULL, xy=NULL,
   }
   \item{xy }{a two-column data matrix where the first column (\code{x}) provides
     the position, and the second column (\code{y}) provides the values that
-    need interpolation over the grid
+    needs interpolation over the grid
   }
   \item{interpolate }{specifies how the interpolation should be done, one
     of "spline" or "linear"; only used when \code{xy} is present
@@ -51,7 +52,7 @@ setup.prop.1D(func=NULL, value=NULL, xy=NULL,
     vertical depth profiles
   }
   \item{... }{additional arguments that are passed on to \code{func} or
-    to the method
+    to the S3 method
   }
 }
 

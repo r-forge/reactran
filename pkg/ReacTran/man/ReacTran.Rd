@@ -3,15 +3,16 @@
 \alias{ReacTran}
 \docType{package}
 \title{
-  Reactive transport modelling in 1D, 2-D and 3-D
+  Reactive Transport Modelling in 1D, 2-D and 3-D
 }
 \description{
   
-  The R-package ReacTran contains routines that enable the development of
+  R-package ReacTran contains routines that enable the development of
   reactive transport models in aquatic
   systems (rivers, lakes), porous media (floc aggregates, sediments,...) and
-  even idealized organisms (spherical cells, cylindrical worms,...). The
-  geometry of the model domain is either one-dimensional, two-dimensional
+  even idealized organisms (spherical cells, cylindrical worms,...).
+
+  The geometry of the model domain is either one-dimensional, two-dimensional
   or three-dimensional.
   
   It contains:
@@ -41,6 +42,7 @@
 }
 \examples{
 \dontrun{
+
 ## show examples (see respective help pages for details)
 example(tran.1D)
 example(tran.2D)
@@ -49,6 +51,11 @@ example(tran.volume.1D)
 
 ## open the directory with documents
 browseURL(paste(system.file(package="ReacTran"), "/doc", sep=""))
+
+## show package vignette with how to use ReacTran
+## + source code of the vignette
+vignette("ReacTran")
+edit(vignette("ReacTran"))
 
 }
 }
