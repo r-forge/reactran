@@ -72,14 +72,12 @@ The Netherlands
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% R/Sweave specific LaTeX commands.
 %% need no \usepackage{Sweave}
 %\VignetteIndexEntry{R-package ReacTran: reactive transport modelling in R}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Begin of the document
 \begin{document}
 \SweaveOpts{engine=R,eps=FALSE}
 \SweaveOpts{keep.source=TRUE}
 
 <<preliminaries,echo=FALSE,results=hide>>=
-library("diagram")
 library("ReacTran")
 options(prompt = "> ")
 options(width=75)
@@ -178,142 +176,25 @@ options(width=75)
   The 1-D spatial discretization grid can best be generated with \rt function
   \code{setup.grid.1D}.
 
-%%% This part of the code will not be visible, but it will insert a figure
-
-<<label =phase, include=FALSE, echo = FALSE>>=
-################################################
-# Adapted from Soetaert and Herman, 2009
-# Fig. 3.9  porous media
-################################################
-
-par(mar=c(0,0,0,1),mfrow=c(1,1))
-emptyplot(c(0,1),c(0,1.2),asp=FALSE)
-
-rect(0.5,0.2,1.0,1.1,col=grey(0.95))
-ngrain <- 3000
-pos <- matrix(ncol=2,data=runif(2*ngrain))
-expd <- rexp(ngrain,1.5)
-ii   <- which(expd<1)
-pos[ii,2] <-expd[ii]
-pos[,1] <- 0.52+pos[,1]*0.46
-pos[,2] <- 0.22+pos[,2]*0.87
-angle <- 360*runif(ngrain)
-dcol <- 0.1
-bcol <- 0.4
-siz  <- 0.012#5
-for (i in 1:ngrain) filledrectangle(mid=pos[i,],wx=siz,wy=siz,angle=angle[i],
-                    col=grey(bcol+runif(1)*dcol))
-
-rect(0.10,0.05,0.30,0.15,col=grey(0.95))
-    for (i in 1:100) filledrectangle(mid=c(0.11,0.06)+runif(2)*c(0.18,0.08),
-                     wx=0.015,wy=0.015,angle=angle[i],
-                     col=grey(bcol+runif(1)*dcol))
-
-rect(0.45,0.05,0.65,0.15,col=grey(0.95))
-rect(0.80,0.05,1.0,0.15,col=grey(bcol))
-    for (i in 1:100) filledrectangle(mid=c(0.81,0.06)+runif(2)*c(0.18,0.08),
-                     wx=0.015,wy=0.015,angle=angle[i],
-                     col=grey(bcol+runif(1)*dcol))
-
-text(0.2,0.02,"bulk")
-text(0.55,0.02,"phase 1")
-text(0.9,0.02,"phase 2")
-
-dd <- seq(0,4,0.1)
-x <- c(0.72+0.28*exp(-1*dd))-0.55
-y <- c(seq(1.1,0.2,length.out=length(x)))
-lines(x,y,lwd=2)
-
-x <- 0.6 -x
-lines(x,y,lwd=2)
-
-rect(0.15,0.2,0.48,1.1)
-text((0.15+0.48)*0.5,1.15,"Volume fraction")
-
-
-text(0.21,0.25,"VF1")
-text(0.45,0.25,"VF2")
-
-@
 \setkeys{Gin}{width=0.5\textwidth}
 \begin{figure}
 \begin{center}
-<<label=phase,fig=TRUE,echo=FALSE>>=
-<<phase>>
-@
+\includegraphics{reactran-phase}
 \end{center}
 \caption{An example of multiple phases in \rt, adapted from figure 3.9
  from Soetaert and Herman, 2009}
 \label{fig:fig1}
 \end{figure}
 
-<<label=fig1,include=FALSE,echo=FALSE>>=
-# numerical approximations
-  doublearr <- function(x=0.325,y)
-  {
-   straightarrow(basemid+c(x,y[1]),basemid+c(x,y[2]),arr.pos=1,
-              arr.type="triangle",arr.adj=1,arr.length=0.22)
-   straightarrow(basemid+c(x,y[2]),basemid+c(x,y[1]),arr.pos=1,
-              arr.type="triangle",arr.adj=1,arr.length=0.22)
-  }
-
-par(las=0)
-par(mar=c(2,2,2,1))
-emptyplot(asp=NA)
-box(col="grey")
-basemid <-  c(0.5,0.1)
-dy <- 0.1
-TXT <- c(expression(dx[1]),expression(dx[2]),expression(dx[3]),
-         expression(dx[4]),expression(dx[5]),expression(dx[6]),
-         expression(dx[7]),expression(dx[8]),expression(dx[9]))
-
-for (i in 1:9) {
-  filledrectangle(wx=0.5,wy=dy,mid=basemid+c(0,(i-1)*dy),col="grey",lcol="black")
-  points(basemid[1]-0.175,basemid[2]+(i-1)*dy,pch=16)#10-i)
-  text(basemid[1]-0.1,basemid[2]+(i-1)*dy,eval(paste("x.mid[",(10-i),"]",sep="")))#10-i)
-  doublearr(x=0.05,y=c((i-1.45)*dy,(i-0.55)*dy) )
-
-  text(basemid[1]+0.1,basemid[2]+(i-1)*dy,eval(paste("dx[",(10-i),"]",sep="")))
-  yy <- basemid[2]+(i-0.5)*dy
-  segments(basemid[1]-0.2,yy,basemid[1]-0.3,yy,lty=2)
-
-  text(basemid[1]-0.35,basemid[2]+(i-0.5)*dy,eval(paste("x.int[",(10-i),"]",sep="")),)
-
-  }
-
-  doublearr(y=c(3*dy,4*dy) )
-  text(basemid[1]+0.34,basemid[2]+(3.5)*dy,"dx.aux[5]",adj=0)
-  yy <- basemid[2]+3.*dy
-  segments(basemid[1]+0.25,yy,basemid[1]+0.32,yy,lty=2)
-  yy <- basemid[2]+4.*dy
-  segments(basemid[1]+0.25,yy,basemid[1]+0.32,yy,lty=2)
-
-  doublearr(y=c(8*dy,8.5*dy))
-  text(basemid[1]+0.34,basemid[2]+(8.25)*dy,"dx.aux[1]",adj=0)
-  yy <- basemid[2]+8.*dy
-  segments(basemid[1]+0.25,yy,basemid[1]+0.32,yy,lty=2)
-  yy <- basemid[2]+8.5*dy
-  segments(basemid[1]+0.25,yy,basemid[1]+0.32,yy,lty=2)
-
-  yy <- 0.95
-  segments(basemid[1]-0.3,yy,basemid[1]+0.3,yy,lwd=3)
-  title("Spatial discretization in 1D")
-par(mar=c(5.1,4.1,4.1,2.1))
-
-@
 
 \setkeys{Gin}{width=0.5\textwidth}
 \begin{figure}
 \begin{center}
-<<label=fig1,fig=TRUE,echo=FALSE>>=
-<<fig1>>
-@
+\includegraphics{reactran-fig1}
 \end{center}
 \caption{Nomenclature for the spatial discretization grid in \code{grid.1D}}
 \label{fig:fig1}
 \end{figure}
-
-%%% end of the invisible code...
 
 
   Function \code{setup.grid.1D} creates a grid, which can comprise several
