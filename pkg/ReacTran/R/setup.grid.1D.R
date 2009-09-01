@@ -19,7 +19,7 @@ setup.grid.1D <- function(x.up=0,	x.down=NULL, L=NULL,
 
   if (is.null(x.down[1])) {
     if (any(L<0)) stop (paste("Error in setup.grid.1D! L[",which(L<0),"] < 0",sep=""))
-    x.down <- cumsum(L)
+    x.down <- x.up + cumsum(L)
   }
   
 ## If the interval lengths are given, create the end points of each zone 
