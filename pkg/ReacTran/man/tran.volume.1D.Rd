@@ -123,7 +123,7 @@ tran.volume.1D(C, C.up=C[1], C.down=C[length(C)],
 \examples{
 
 ## =============================================================================
-##  EXAMPLE : organic carbon (OC) decay in a widening river
+##  EXAMPLE : organic carbon (OC) decay in a widening estuary
 ## =============================================================================
 
 # Two scenarios are simulated: the baseline includes only input 
