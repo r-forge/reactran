@@ -152,15 +152,14 @@ c        negative speed
 
            end if
 
-c        the flux-factor phi
-           x    =  one6th*(1.-2.0*c)
-           Phi  =  (0.5+x)+(0.5-x)*r
-
 c        limit the flux according to different suggestions
            select case (method)
              case (UPSTREAM)
                limit=0.d0
              case ((P2),(P2_PDM))
+c        the flux-factor phi
+               x    =  one6th*(1.-2.0*c)
+               Phi  =  (0.5+x)+(0.5-x)*r
                if (method.eq.P2) then
                   limit=Phi
                else
@@ -403,15 +402,15 @@ c        negative speed
 
            end if
 
-c        the flux-factor phi
-           x    =  one6th*(1.d0-2.d0*c)
-           Phi  =  (0.5d0+x)+(0.5d0-x)*r
-
 c        limit the flux according to different suggestions
            select case (method)
              case (UPSTREAM)
                limit=0.d0
              case ((P2),(P2_PDM))
+c        the flux-factor phi
+               x    =  one6th*(1.d0-2.d0*c)
+               Phi  =  (0.5d0+x)+(0.5d0-x)*r
+
                if (method.eq.P2) then
                   limit=Phi
                else

@@ -13,10 +13,10 @@
   The interfaces between grid cells can have a variable cross-sectional area,
   e.g. when modelling spherical or cylindrical geometries (see example).
   
-  Slope limiters ensure monotonic and positive schemes in the presence of strong
-  gradients. 
+  TVD (total variation diminishing) slope limiters ensure monotonic and 
+  positive schemes in the presence of strong gradients. 
   
-  \code{1-D advection}: uses finite differences.
+  \code{advection.1-D}: uses finite differences.
    
   This implies the use of velocity (length per time) and fluxes 
   (mass per unit of area per unit of time). 
@@ -36,6 +36,7 @@ advection.1D(C, C.up = C[1], C.down = C[length(C)],
   flux.up = NULL, flux.down = NULL, v, VF = 1, A = 1, dx, 
   adv.method = c("quick","muscl","super","p3","up"), 
   full.check = FALSE)
+
 advection.volume.1D(C, C.up = C[1], C.down = C[length(C)],
   F.up = NULL, F.down = NULL, flow, V, 
   adv.method = c("quick","muscl","super","p3","up"), 
@@ -147,89 +148,112 @@ advection.volume.1D(C, C.up = C[1], C.down = C[length(C)],
 ## =============================================================================
 ## EXAMPLE 1: Testing the various methods - moving a square pulse  
 ## use of advection.1D
+## The tests as in Pietrzak 
 ## =============================================================================
 
 #--------------------#
 # Model formulation  #
 #--------------------#
-model <- function (t,y,parms,...) {
+model <- function (t, y, parms,...) {
 
-  adv <- advection.1D(y, v = v, dx = dx, C.up = 0, C.down = 0, ...)
+  adv <- advection.1D(y, v = v, dx = dx, 
+     C.up = y[n], C.down = y[1], ...)  # out on one side -> in at other
   return(list(adv$dC))
+
 }
 
 #--------------------#
 # Parameters         #
 #--------------------#
 
-n     <- 50
+n     <- 100
 dx    <- 100/n
-y     <- c(rep(0,5),rep(1,5),rep(0,n-10))
+y     <- c(rep(1,5),rep(2,20),rep(1,n-25))
 v     <- 1.0
-times <- 0:50
+times <- 0:300   # 3 times out and in
 
 #--------------------#
 # model solution     #
 #--------------------#
 
-pm   <- par(mfrow=c(2,3))
+pm   <- par(mfrow=c(3,3))
 
-## simple upstream differencing
-out <- ode.1D(y=y, times=times, func=model, parms = 0, nspec=1, 
+## simple upstream differencing, first using euler - explicit
+out <- euler(y=y, times=times, func=model, parms = 0, 
   adv.method = "up")
 
 plot(out[1,-1], type="l", col="red", 
-  ylab="y", xlab="x", main = "upstream")
+  ylab="y", xlab="x", main = "upstream, euler")
 lines(out[nrow(out)/2,2:(1+n)])
 lines(out[nrow(out),2:(1+n)])
 
 ## third-order ustream-biased polynomial
-out2 <- ode.1D(y=y, times=times, func=model, parms = 0, nspec=1, 
+out2 <- euler(y=y, times=times, func=model, parms = 0, 
   adv.method = "p3")
 
 plot(out2[1,-1],type="l",col="red", 
-  ylab="y", xlab="x", main = "p3")
-lines(out2[nrow(out)/2,2:(1+n)])
+  ylab="y", xlab="x", main = "p3, euler")
 lines(out2[nrow(out),2:(1+n)])
 
 ## third order TVD, superbee limiter
-out3 <- ode.1D(y=y, times=times, func=model, parms = 0, nspec=1, 
+out3 <- euler(y=y, times=times, func=model, parms = 0,  
   adv.method = "super")
 
 plot(out3[1,-1],type="l",col="red", 
-  ylab="y", xlab="x", main = "superbee")
-lines(out3[nrow(out3)/2,2:(1+n)])
+  ylab="y", xlab="x", main = "superbee, euler")
 lines(out3[nrow(out3),2:(1+n)])
 
 ## third order TVD, muscl limiter
+out4 <- euler(y=y, times=times, func=model, parms = 0, 
+  adv.method = "muscl")
+
+plot(out4[1,-1],type="l",col="red", 
+  ylab="y", xlab="x", main = "muscl, euler")
+lines(out4[nrow(out4),2:(1+n)])
+
+## third order TVD, quickest limiter
+out5 <- euler(y=y, times=times, func=model, parms = 0,  
+  adv.method = "quick")
+
+plot(out5[1,-1],type="l",col="red", 
+  ylab="y", xlab="x", main = "quickest, euler")
+lines(out5[nrow(out5),2:(1+n)])
+
+## Now upstrem, quickest scheme and muscle, using ode.1D 
+## variable time step, implicit
+
+out <- ode.1D(y=y, times=times, func=model, parms = 0, nspec=1, 
+  adv.method = "up")
+
+plot(out[1,-1], type="l", col="red", 
+  ylab="y", xlab="x", main = "upstream, implicit")
+lines(out[nrow(out),2:(1+n)])
+
 out4 <- ode.1D(y=y, times=times, func=model, parms = 0, nspec=1, 
   adv.method = "muscl")
 
 plot(out4[1,-1],type="l",col="red", 
-  ylab="y", xlab="x", main = "muscl")
-lines(out4[nrow(out4)/2,2:(1+n)])
+  ylab="y", xlab="x", main = "muscl, implicit")
 lines(out4[nrow(out4),2:(1+n)])
 
-## third order TVD, quickest limiter
 out5 <- ode.1D(y=y, times=times, func=model, parms = 0, nspec=1, 
   adv.method = "quick")
 
 plot(out5[1,-1],type="l",col="red", 
-  ylab="y", xlab="x", main = "quickest")
-lines(out5[nrow(out5)/2,2:(1+n)])
+  ylab="y", xlab="x", main = "quickest, implicit")
 lines(out5[nrow(out5),2:(1+n)])
 
-
 ## Now quickest scheme, velocity against x-axis
-y     <- rev(c(rep(0,5),rep(1,5),rep(0,n-10)))
+y     <- rev(c(rep(0,5),rep(1,20),rep(0,n-25)))
 v     <- -1.0
 out6 <- ode.1D(y=y, times=times, func=model, parms = 0, nspec=1, 
-  adv.method = "quick")
+  adv.method = "muscl")
 
 plot(out6[1,-1],type="l",col="red", 
-  ylab="y", xlab="x", main = "quickest, reversed velocity")
-lines(out6[nrow(out6)/2,2:(1+n)])
+  ylab="y", xlab="x", main = "muscl, reversed velocity")
 lines(out6[nrow(out6),2:(1+n)])
+
+
 par(mfrow=pm)
 
 
@@ -305,6 +329,34 @@ Conc[,2:(1+nbox)]->CC
 t(CC)*Volume->MASS
 colSums(MASS)
 
+## =============================================================================
+## EXAMPLE 3: A steady-state solution 
+## use of advection.volume.1D
+## =============================================================================
+
+Sink <- function (t, y, parms) {
+  C1 <- y[1:N]
+  C2 <- y[(N+1):(2*N)]
+
+  Flux <- sink * c(100 ,C1)     
+  # Rate of change= Flux gradient and first-order consumption
+  dC1  <- -diff(Flux)/dx - decay*C1
+
+  dC2  <- advection.1D(C2, v = sink, dx = dx, 
+        C.up = 100, adv.method = "p3")$dC -
+           decay*C2
+  list(c(dC1, dC2))
+}
+
+dx    <- 10                          # thickness of boxes
+sink  <- 500
+decay <- 0.1
+N     <- 500
+out <- steady.1D(runif(2*N),func=Sink, names=c("C1","C2"),
+        parms=NULL, nspec=2, bandwidth=2)
+          
+plot(out)
+
 }
 \references{
 Pietrzak J (1998) The use of TVD limiters for forward-in-time
@@ -369,6 +421,9 @@ Tech Rep EUR 18745 EN. European Commission
   split step Courant numbers are just smaller than 1. The maximal number of such
   iterations is set to 100.
   
+  These limiters are supposed to work with explicit methods (\link{euler}). However, 
+  they will also work with implicit methods, although less effectively.
+  Integrate \link{ode.1D} only if the model is stiff (see first example).
 }
 \note{ 
 The advective equation is not checked for mass conservation. Sometimes, this is 
