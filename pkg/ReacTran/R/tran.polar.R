@@ -1,17 +1,19 @@
 
 ##==============================================================================
-## Diffusive transport in polar coordinates (x, phi)
+## Diffusive transport in polar coordinates (x, theta)
 ##==============================================================================
 
 tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL, 
-                        C.phi.up=NULL,  C.phi.down=NULL, 
+                        C.theta.up=NULL,  C.theta.down=NULL, 
                         
                         flux.r.up=NULL,   flux.r.down=NULL, 
-                        flux.phi.up=NULL, flux.phi.down=NULL, 
+                        flux.theta.up=NULL, flux.theta.down=NULL, 
                         
-                        D.r=1, D.phi=D.r,
-                        
-                        r=NULL, phi=NULL,
+                        cyclicBnd = NULL,
+                                                
+                        D.r=1, D.theta=D.r,
+
+                        r=NULL, theta=NULL,
                         
                         full.check = FALSE, full.output = FALSE )
 											
@@ -21,31 +23,31 @@ tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL,
 # ------------------------------------------------------------------------------
 
 # a function to check the dimensionality of the system
-  checkDim <- function (dr, dphi, nx="dr", nphi="dphi") {
+  checkDim <- function (dr, dtheta, nx="dr", ntheta="dtheta") {
     if (length(dr) != 1 )
       stop (nx,", should have length 1")
-    if (length(dphi) != 1)
-       stop (nphi,", should have length 1")
+    if (length(dtheta) != 1)
+       stop (ntheta,", should have length 1")
   }
 
-  checkDim2 <- function (dr,dphi,nx="dr",nphi="dphi") {
+  checkDim2 <- function (dr,dtheta,nx="dr",ntheta="dtheta") {
     if (length(dr) != dimC[1]+1)
       stop (nx,", should have length equal to dim(C)[1]+1 = ",dimC[1]+1," it is ",length(dr))
  
-    if (length(dphi) != dimC[2]+1)
-       stop (nphi,", should have length equal to dim(C)[2]+1 = ",dimC[2]+1," it is ",length(dphi))
+    if (length(dtheta) != dimC[2]+1)
+       stop (ntheta,", should have length equal to dim(C)[2]+1 = ",dimC[2]+1," it is ",length(dtheta))
   }
 
   dimC <- dim (C) 
   Type <- 2
 
-  if (max(phi)> 2*pi)
-     stop ("phi should be < 2pi")
-  if (min(phi)< 0)
-     stop ("phi should be > 0 ")
+  if (max(theta)> 2*pi)
+     stop ("theta should be < 2pi")
+  if (min(theta)< 0)
+     stop ("theta should be > 0 ")
   
-  checkDim2(r, phi,"r, the grid in x-direction",
-                   "phi, the grid in phi-direction")
+  checkDim2(r, theta,"r, the grid in x-direction",
+                   "theta, the grid in theta-direction")
   # central values
   Nr       <- dimC[1]
   r.c      <- 0.5*(r[-1]+r[-(Nr+1)])
@@ -54,52 +56,53 @@ tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL,
   divr     <- 1/r
   divr[is.na(divr)] <- 0
   
-  Nphi <- dimC[2]
-  phi.c    <- 0.5*(phi[-1]+phi[-(Nphi +1)])
-  dphi     <- diff(phi)
-  dphiint  <- c(phi.c[1]-phi[1],diff(phi.c),phi[Nphi+1]-phi.c[Nphi])
+  Ntheta     <- dimC[2]
+  theta.c    <- 0.5*(theta[-1]+theta[-(Ntheta +1)])
+  dtheta     <- diff(theta)
+  dthetaint  <- c(theta.c[1]-theta[1],diff(theta.c),theta[Ntheta+1]-theta.c[Ntheta])
 
-  checkDim (D.r,D.phi,"D.r, the diffusion in x-direction ",
-                      "D.phi, the diffusion in phi-direction ")
+  checkDim (D.r,D.theta,"D.r, the diffusion in x-direction ",
+                      "D.theta, the diffusion in theta-direction ")
   
-    
-# check the dimensionality of the boundaries of system
-
+# check the dimensionality of the boundaries  
+    if (! is.null(cyclicBnd)) {
+# check if other boundaries not prescribed in this direction
+    }
     if (! is.null(C.r.up)){ 
-     if( length(C.r.up) != 1 && length(C.r.up) != Nphi)
-       stop ("'C.r.up' should have length 1 or equal to ", Nphi)
+     if( length(C.r.up) != 1 && length(C.r.up) != Ntheta)
+       stop ("'C.r.up' should have length 1 or equal to ", Ntheta)
     } else if (! is.null(flux.r.up)) { 
-     if( length(flux.r.up) != 1 && length(flux.r.up) != Nphi)
-      stop ("'flux.r.up' should have length 1 or equal to ", Nphi)
-    } else  
+     if( length(flux.r.up) != 1 && length(flux.r.up) != Ntheta)
+      stop ("'flux.r.up' should have length 1 or equal to ", Ntheta)
+    } else if (!1 %in% cyclicBnd) 
       stop ("'flux.r.up' OR 'C.r.up' should be specified")
 
     if (! is.null(C.r.down)) {
-     if( length(C.r.down) != 1 && length(C.r.down) != Nphi)
-      stop ("'C.r.down' should have length 1 or equal to ", Nphi)
+     if( length(C.r.down) != 1 && length(C.r.down) != Ntheta)
+      stop ("'C.r.down' should have length 1 or equal to ", Ntheta)
     } else if (! is.null(flux.r.down)){
-     if(length(flux.r.down) != 1 && length(flux.r.down) != Nphi)
-      stop ("'flux.r.down' should have length 1 or equal to ", Nphi)
-    } else  
+     if(length(flux.r.down) != 1 && length(flux.r.down) != Ntheta)
+      stop ("'flux.r.down' should have length 1 or equal to ", Ntheta)
+    } else if (!1 %in% cyclicBnd)
       stop ("'flux.r.down' OR 'C.r.down' should be specified")
 
-    if (! is.null(C.phi.up)) {
-     if ( length(C.phi.up) != 1 && length(C.phi.up) != Nr)
-      stop ("'C.phi.up' should have length 1 or equal to ", Nr)
-    } else if (! is.null(flux.phi.up)){
-     if (length(flux.phi.up) != 1 && length(flux.phi.up) != Nr)
-       stop ("'flux.phi.up' should have length 1 or equal to ", Nr)
-    } else  
-      stop ("'flux.phi.up' OR 'C.phi.up' should be specified")
+    if (! is.null(C.theta.up)) {
+     if ( length(C.theta.up) != 1 && length(C.theta.up) != Nr)
+      stop ("'C.theta.up' should have length 1 or equal to ", Nr)
+    } else if (! is.null(flux.theta.up)){
+     if (length(flux.theta.up) != 1 && length(flux.theta.up) != Nr)
+       stop ("'flux.theta.up' should have length 1 or equal to ", Nr)
+    } else if (!2 %in% cyclicBnd) 
+      stop ("'flux.theta.up' OR 'C.theta.up' should be specified")
 
-    if (! is.null(C.phi.down)) { 
-     if(length(C.phi.down) != 1 && length(C.phi.down) != Nr)
-      stop ("'C.phi.down' should have length 1 or equal to ", Nr)
-    } else if (! is.null(flux.phi.down)) {
-      if( length(flux.phi.down) != 1 && length(flux.phi.down) != Nr)
-       stop ("'flux.phi.down' should have length 1 or equal to ", Nr)
-    } else  
-      stop ("'flux.phi.down' OR 'C.phi.down' should be specified")
+    if (! is.null(C.theta.down)) { 
+     if(length(C.theta.down) != 1 && length(C.theta.down) != Nr)
+      stop ("'C.theta.down' should have length 1 or equal to ", Nr)
+    } else if (! is.null(flux.theta.down)) {
+      if( length(flux.theta.down) != 1 && length(flux.theta.down) != Nr)
+       stop ("'flux.theta.down' should have length 1 or equal to ", Nr)
+    } else if (!2 %in% cyclicBnd) 
+      stop ("'flux.theta.down' OR 'C.theta.down' should be specified")
 
 
 # ------------------------------------------------------------------------------
@@ -108,56 +111,63 @@ tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL,
 
 ## Initialise 'fluxes' in all directions
   Flux.r <- 0
-  Flux.phi <- 0
+  Flux.theta <- 0
 
 ## First rewrite boundary values as "concentration"
 ## then perform diffusive transport
-
-
+   if (1 %in% cyclicBnd) {
+     C.r.up   <- (C[1,]*drint[Nr+1] + C[Nr,]*drint[1]) /(drint[1]+drint[Nr+1])
+     C.r.down <- C.r.up
+   }
    if (is.null(C.r.up))
      C.r.up <-  flux.r.up / D.r * drint[1]+ C[1,]
    if (is.null(C.r.down))
      C.r.down <- - flux.r.down / D.r * drint[Nr+1] + C[Nr,]
   
    Flux.r <- D.r * (rbind(C.r.up,C, deparse.level = 0) -
-                     rbind(C,C.r.down, deparse.level = 0))/drint  
+                    rbind(C,C.r.down, deparse.level = 0))/drint  
 
-   if (is.null(C.phi.up))
-     C.phi.up <- flux.phi.up/D.phi * dphiint[1]*r.c + C[,1]
-   if (is.null(C.phi.down))
-     C.phi.down <- - flux.phi.down /D.phi * dphiint[Nphi+1]*r.c + C[,Nphi]
+   if (2 %in% cyclicBnd) {
+     C.theta.up   <- (C[,1]*dthetaint[Ntheta+1] + C[,Ntheta]*dthetaint[1]) /
+        (dthetaint[1]+dthetaint[Ntheta+1])
+     C.theta.down <- C.theta.up
+   }
+   if (is.null(C.theta.up))
+     C.theta.up <- flux.theta.up/D.theta * dthetaint[1]*r.c + C[,1]
+   if (is.null(C.theta.down))
+     C.theta.down <- - flux.theta.down /D.theta * dthetaint[Ntheta+1]*r.c + C[,Ntheta]
 
    
-   Flux.phi <- D.phi * (cbind(C.phi.up,C,deparse.level = 0) - 
-                        cbind(C,C.phi.down, deparse.level = 0))/
-                matrix(data= dphiint,nrow=Nr,ncol=(Nphi+1),byrow=TRUE) /r.c
+   Flux.theta <- D.theta * (cbind(C.theta.up,C,deparse.level = 0) - 
+                        cbind(C,C.theta.down, deparse.level = 0))/
+                matrix(data= dthetaint,nrow=Nr,ncol=(Ntheta+1),byrow=TRUE) /r.c
 
 ## Calculate rate of change = flux gradient 
 
-  dFdphi <- 0.
+  dFdtheta <- 0.
   dFdr   <- -diff(Flux.r * r)/dr/r.c
-  dFdphi <- -t(diff(t(Flux.phi))/dphi)/r.c
+  dFdtheta <- -t(diff(t(Flux.theta))/dtheta)/r.c
 
  if (full.output)
-  return (list (dC = dFdr + dFdphi ,                  # Rate of change due to advective-diffuisve transport in each grid cell
+  return (list (dC = dFdr + dFdtheta ,                  # Rate of change
                 C.r.up     = C.r.up,
                 C.r.down   = C.r.down,
-                C.phi.up   = C.phi.up,
-                C.phi.down = C.phi.down,
+                C.theta.up   = C.theta.up,
+                C.theta.down = C.theta.down,
                 r.flux   = Flux.r,                 
-                phi.flux = Flux.phi,
+                theta.flux = Flux.theta,
                 flux.r.up = Flux.r[1,],
                 flux.r.down = Flux.r[Nr+1,],
-                flux.phi.up = Flux.phi[,1],
-                flux.phi.down = Flux.phi[,Nphi+1]
+                flux.theta.up = Flux.theta[,1],
+                flux.theta.down = Flux.theta[,Ntheta+1]
                 
                 ))  
  else
-  return (list (dC = dFdr + dFdphi ,                  # Rate of change due to advective-diffuisve transport in each grid cell
+  return (list (dC = dFdr + dFdtheta ,                 
                 flux.r.up = Flux.r[1,],
                 flux.r.down = Flux.r[Nr+1,],
-                flux.phi.up = Flux.phi[,1],
-                flux.phi.down = Flux.phi[,Nphi+1]
+                flux.theta.up = Flux.theta[,1],
+                flux.theta.down = Flux.theta[,Ntheta+1]
                 ))  
  
 } # end tran.polar

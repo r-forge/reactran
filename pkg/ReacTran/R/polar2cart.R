@@ -1,5 +1,5 @@
 ## =============================================================================
-## Maps a matrix u from (x,y) to (x2,y2)
+## Maps a matrix u from (x,y) to (x2,y2) by 2-D linear interpolation
 ## =============================================================================
 mapxy <- function(x, y, x2, y2, u) {
   Nx <- length(x)
@@ -45,7 +45,7 @@ outer(x2, y2, FUN = Transf, u = u)
 ## From polar to cartesian coordinates
 ## =============================================================================
 
-polar2cart <- function(out, r, phi, x = NULL, y = NULL)
+polar2cart <- function(out, r, theta, x = NULL, y = NULL)
 {
   classout <- class(out)[1]
   if (!classout %in% c("steady2D", "deSolve"))
@@ -56,18 +56,18 @@ polar2cart <- function(out, r, phi, x = NULL, y = NULL)
     stop ("input should be 2-dimensional")
 
   Nr   <- length(r)  -1
-  Np   <- length(phi)-1
+  Np   <- length(theta)-1
   maxr   <- max(r)
-  maxphi <- max(phi)
+  maxtheta <- max(theta)
   minr   <- min(r)
-  minphi <- min(phi)
+  mintheta <- min(theta)
 
   # add leftmost boundary
   r    <- c(r[1],   0.5*(r[-1]+r[-(Nr+1)]), r[Nr+1])
-  phi  <- c(phi[1], 0.5*(phi[-1]+phi[-(Np+1)]), phi[Np+1])
+  theta  <- c(theta[1], 0.5*(theta[-1]+theta[-(Np+1)]), theta[Np+1])
                                                 # check dimensions...
   dr   <- c(diff(r),1)       # 1= for last value: no interpolation
-  dphi <- c(diff(phi),1)
+  dtheta <- c(diff(theta),1)
 
   if (is.null (x))
     if (! is.null(y)) x<-y
@@ -83,23 +83,23 @@ polar2cart <- function(out, r, phi, x = NULL, y = NULL)
     if (Du[1] != Nr)
       stop("u and r not compatible")
     if (Du[2] != Np)
-      stop("u and phi not compatible")
+      stop("u and theta not compatible")
   # augment u with boundary values
     u    <- rbind(c(u[1,1],u[1,], u[1,Np]) , 
                   cbind(u[,1],u, u[,Np]),
                   c(u[Nr,1],u[Nr,], u[Nr,Np]) )
 
     R   <- sqrt(x^2+y^2)
-    Phi <- atan(y/x)
-    Phi[x<0] <- Phi[x<0] + pi
-    Phi[x>0 & y < 0]   <-   Phi[x > 0 & y < 0] + 2*pi
-    Phi[x==0 & y > 0]  <- pi/2
-    Phi[x==0 & y < 0]  <- 3*pi/2
-    Phi[x==0 & y == 0] <- 0
+    Theta <- atan(y/x)
+    Theta[x<0]           <- Theta[x < 0] + pi
+    Theta[x>0 & y < 0]   <- Theta[x > 0 & y < 0] + 2*pi
+    Theta[x==0 & y > 0]  <- pi/2
+    Theta[x==0 & y < 0]  <- 3*pi/2
+    Theta[x==0 & y == 0] <- 0
 
   # find embracing values : interval location
     iR <- findInterval(R, r )
-    iP <- findInterval(Phi,phi)
+    iP <- findInterval(Theta,theta)
     iR [iR == 0]   <- NA
     iR [iR > Nr+1] <- NA
     iP [iP == 0]   <- NA
@@ -111,7 +111,7 @@ polar2cart <- function(out, r, phi, x = NULL, y = NULL)
 
   # interpolation factor
     iRfac <- (R-r[iR])/dr[iR]
-    iPfac <- (Phi-phi[iP])/dphi[iP]
+    iPfac <- (Theta-theta[iP])/dtheta[iP]
 
   # interpolate inbetween 4 values
     (1-iPfac)*((1-iRfac)*u[cbind(iR,iP)]+iRfac*u[cbind(iRp1,iP)]) +

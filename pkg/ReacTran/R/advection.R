@@ -1,14 +1,14 @@
 advection.1D <- function (C, C.up = C[1], C.down = C[length(C)],
                        flux.up = NULL, flux.down=NULL,
                        v, VF=1, A =1,  dx,
-                       adv.method = c("quick","muscl","super","p3","up"),
+                       adv.method = c("muscl","super","quick","p3","up"),
                        full.check = FALSE) {
 
   # number of compartments
   n <- as.integer(length(C))
 
   adv.method <- match.arg(adv.method)
-  advmet <- pmatch(adv.method,c("quick","muscl","super","p3","up"))
+  advmet <- pmatch(adv.method,c("muscl","super","quick","p3","up"))
   if (is.na(advmet))
     stop ("'adv.method' not known: ",adv.method)
     
@@ -35,17 +35,32 @@ advection.1D <- function (C, C.up = C[1], C.down = C[length(C)],
 
   # velocity, grid sizes, volume fractions, surface areas
   v     <- rep(v, length.out = n+1)
-  dx    <- rep(dx,length.out = n)
-  dx.aux<- 0.5*(c(0,rep(dx,length.out=n))+
-                 c(rep(dx,length.out=n),0))
-
-  VFint <- rep(VF,length.out=(n+1))
-  VFmid <- 0.5*(rep(VF,length.out=(n+1))[1:n]+
-                rep(VF,length.out=(n+1))[2:(n+1)])
-  Aint  <- rep(A,length.out=(n+1))
-  Amid  <- 0.5*(rep(A,length.out=(length(C)+1))[1:n]+
-              rep(A,length.out=(n+1))[2:(n+1)])
-
+  
+  if (is.list(dx)) {
+    dx.aux <- dx$dx.aux
+    dx <- dx$dx
+  } else { 
+    dx    <- rep(dx,length.out = n)
+    dx.aux<- 0.5*(c(0,rep(dx,length.out=n))+
+                  c(rep(dx,length.out=n),0))
+  }
+  
+  if (is.list(VF)) {
+    VFint <- VF$int
+    VFmid <- VF$mid
+  } else { 
+    VFint <- rep(VF,length.out=(n+1))
+    VFmid <- 0.5*(rep(VF,length.out=(n+1))[1:n]+
+                  rep(VF,length.out=(n+1))[2:(n+1)])
+  }
+  if (is.list(A)) {
+    Aint <- A$int
+    Amid <- A$mid
+  } else { 
+    Aint  <- rep(A,length.out=(n+1))
+    Amid  <- 0.5*(rep(A,length.out=(length(C)+1))[1:n]+
+                  rep(A,length.out=(n+1))[2:(n+1)])
+  }
   storage.mode(dx) <- storage.mode(dx.aux) <- "double"
   storage.mode(VFint) <- storage.mode(VFmid) <- "double"
   storage.mode(Aint) <- storage.mode(Amid) <- "double"
@@ -71,13 +86,13 @@ advection.1D <- function (C, C.up = C[1], C.down = C[length(C)],
 advection.volume.1D <- function (C, C.up = C[1], C.down = C[length(C)],
                        F.up = NULL, F.down=NULL,
                        flow, V,
-                       adv.method = c("quick","muscl","super","p3","up"),
+                       adv.method = c("muscl","super","quick","p3","up"),
                        full.check = FALSE) {
 
   # number of compartments
   n <- as.integer(length(C))
   adv.method <- match.arg(adv.method)
-  advmet <- pmatch(adv.method,c("quick","muscl","super","p3","up"))
+  advmet <- pmatch(adv.method,c("muscl","super","quick","p3","up"))
   if (is.na(advmet))
     stop ("'adv.method' not known: ",adv.method)
     

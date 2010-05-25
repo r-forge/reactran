@@ -9,18 +9,13 @@ c to a Lax-Wendroff scheme.
 c slope-delimeters are applied to obtain monotonic and positive schemes
 c also in the presence of large gradients. 
 c there are 5 different slope delimeters; method =1: first-order upstream, 
-c 2, second order upstream, 3, 3rd order upstream-biased polynomial 
-c 4, 3rd order with superbee delimiter, 5 3rd order with MUSCL limiter
+c 3rd order upstream-biased polynomial, 3rd order with superbee delimiter, 
+c 3rd order with MUSCL limiter
 c as described in Pietrzak 98
 
 c Karline: made changes to make it work for negative ww...
 c          added volume fraction, and surface area; is generally = 1.
-c          
-c For volumetric transport:
-c     use Qadv   = v*A rather than v
-c         volume = h*A rather than h
-c         hint  ???  -> c(volume(1),volume) ... for now
-c-----------------------------------------------------------------------------------------
+cc-----------------------------------------------------------------------------------------
 
       IMPLICIT NONE
 c  number of vertical layers, time step
@@ -402,12 +397,12 @@ c        negative speed
 
            end if
 
-c        limit the flux according to different suggestions
+c        limit the flux according to different suggestions, phi = flux-factor
            select case (method)
              case (UPSTREAM)
                limit=0.d0
              case ((P2),(P2_PDM))
-c        the flux-factor phi
+c         - for quickest
                x    =  one6th*(1.d0-2.d0*c)
                Phi  =  (0.5d0+x)+(0.5d0-x)*r
 
@@ -484,7 +479,7 @@ c     the advection step
              Y(k)=Y(k)-1.d0/dble(it)*dt*((cu(k)- cu(k-1))/ V(k)                &
      &          -Y(k)*(flow(k)-flow(k-1))/V(k))
            enddo
-        else                ! conservative
+        else                ! conservative - this is actually used
            do k=1,N
              Y(k)=Y(k)-1.d0/dble(it)*dt*((cu(k)- cu(k-1))/V(k))
            enddo

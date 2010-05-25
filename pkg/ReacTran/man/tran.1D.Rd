@@ -17,8 +17,8 @@
 
 \usage{
 tran.1D(C, C.up = C[1], C.down = C[length(C)],
-  flux.up = NULL, flux.down = NULL, a.bl.up = NULL, C.bl.up = NULL,
-  a.bl.down = NULL, C.bl.down = NULL,
+  flux.up = NULL, flux.down = NULL, 
+  a.bl.up = NULL, a.bl.down = NULL, 
   D = 0, v = 0, AFDW = 1, VF = 1, A = 1, dx,
   full.check = FALSE, full.output = FALSE)
 }
@@ -42,17 +42,11 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
     a concentration or a convective transfer boundary.
   }
   \item{a.bl.up }{convective transfer coefficient across the upstream
-    boundary layer. \code{Flux = a.bl.up*(C.bl.up-C0)}. One value [L/T]
-  }
-  \item{C.bl.up }{concentration at the upstream boundary layer.
-    One value [M/L3]
+    boundary layer. \code{Flux = a.bl.up*(C.up-C0)}. One value [L/T]
   }
   \item{a.bl.down }{convective transfer coefficient across the downstream
-    boundary layer (L). \code{Flux = a.bl.down*(CL-C.bl.down)}.
+    boundary layer (L). \code{Flux = a.bl.down*(CL-C.down)}.
     One value [L/T]
-  }
-  \item{C.bl.down }{concentration at the downstream boundary layer.
-    One value [M/L3]
   }
   \item{D }{diffusion coefficient, defined on grid cell interfaces.
     One value, a vector of length N+1 [L2/T], or a \code{1D property} list; the list

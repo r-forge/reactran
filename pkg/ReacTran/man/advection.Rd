@@ -34,12 +34,12 @@
 \usage{
 advection.1D(C, C.up = C[1], C.down = C[length(C)],
   flux.up = NULL, flux.down = NULL, v, VF = 1, A = 1, dx, 
-  adv.method = c("quick","muscl","super","p3","up"), 
+  adv.method = c("muscl","super","quick","p3","up"), 
   full.check = FALSE)
 
 advection.volume.1D(C, C.up = C[1], C.down = C[length(C)],
   F.up = NULL, F.down = NULL, flow, V, 
-  adv.method = c("quick","muscl","super","p3","up"), 
+  adv.method = c("muscl","super","quick","p3","up"), 
   full.check = FALSE)
 }
 
@@ -362,10 +362,23 @@ plot(out)
 Pietrzak J (1998) The use of TVD limiters for forward-in-time
   upstream-biased advection schemes in ocean modeling. Monthly
   Weather Review 126: 812 .. 830
+
+Hundsdorfer W and Verwer JG (2003)
+ Numerical Solution of Time-Dependent Advection-Diffusion-Reaction Equations. 
+ Springer Series in Computational Mathematics, Springer-Verlag, Berlin, 471 pages
   
 Burchard H, Bolding K, Villarreal MR (1999) GOTM, a general
 ocean turbulence model. Theory, applications and test cases.
 Tech Rep EUR 18745 EN. European Commission  
+
+Leonard BP (1988) Simple high accuracy resolution program for convective modeling
+       of discontinuities. Int. J. Numer. Meth.Fluids 8: 1291--1318.
+
+Roe PL (1985) Some contributions to the modeling of discontinuous flows.
+       Lect. Notes Appl. Math. 22: 163-193.
+
+van Leer B. (1979) Towards the ultimate conservative difference scheme V. A second 
+               order sequel to Godunov's method. J. Comput. Phys. 32: 101-136
 }
 
 \details{
@@ -400,14 +413,16 @@ Tech Rep EUR 18745 EN. European Commission
   
   Several slope limiters are implemented to obtain monotonic and positive 
   schemes also in the presence of strong gradients, i.e. to reduce the effect
-  of numerical dispersion. The methods are (Pietrzak, 1989):
+  of numerical dispersion. The methods are (Pietrzak, 1989, Hundsdorfer and 
+  Verwer, 2003):
   \itemize{
     \item "quick": third-order scheme (TVD) with ULTIMATE QUICKEST limiter 
      (quadratic upstream interpolation for convective kinematics with 
-     estimated stream terms)
+     estimated stream terms) (Leonard, 1988)
     \item "muscl": third-order scheme (TVD) with MUSCL limiter (monotonic upstream 
-      centered schemes for conservation laws).
+      centered schemes for conservation laws) (van Leer, 1797).
     \item "super": third-order scheme (TVD) with Superbee limiter (method=Superbee)
+      (Roe, 1985)
     \item "p3": third-order upstream-biased polynomial scheme (method=P3)
     \item "up": first-order upstream ( method=UPSTREAM)
   }

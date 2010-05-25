@@ -7,8 +7,7 @@
 tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   C.y.up=C[,1],  C.y.down=C[,ncol(C)],
   flux.x.up=NULL, flux.x.down=NULL, flux.y.up=NULL, flux.y.down=NULL,
-  a.bl.x.up=NULL, C.bl.x.up=NULL, a.bl.x.down=NULL, C.bl.x.down=NULL,
-  a.bl.y.up=NULL, C.bl.y.up=NULL, a.bl.y.down=NULL, C.bl.y.down=NULL,
+  a.bl.x.up=NULL, a.bl.x.down=NULL, a.bl.y.up=NULL, a.bl.y.down=NULL, 
   D.grid=NULL, D.x=NULL, D.y=D.x, v.grid=NULL, v.x=0, v.y=0, 
   AFDW.grid=NULL, AFDW.x=1, AFDW.y=AFDW.x,
   VF.grid=NULL,VF.x=1, VF.y=VF.x,
@@ -38,14 +37,27 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
                                   c(rep(dy,length.out=Ny),0))
 
     grid <- list(
-      dx    = DX,  dx.aux= DXaux,
-      dy    = DY,  dy.aux= DYaux
+      dx    = matrix(nrow=Nx, ncol=Ny, data = DX),  
+      dx.aux= matrix(nrow=Nx+1, ncol=Ny, data = DXaux),
+      dy    = matrix(nrow=Nx, ncol=Ny, data = DY, byrow=TRUE),  
+      dy.aux= matrix(nrow=Nx, ncol=Ny+1, data = DYaux, byrow=TRUE)
                  )
+   } else if (class(grid) !="grid.2D") {
+   # KS: changed the next statement, -> everywhere dx, dy is a MATRIX
+    if (length(grid$dx) != Nx*Ny)         
+       grid$dx <- matrix(nrow=Nx, ncol=Ny, grid$dx)
+    if (length(grid$dx.aux) != (Nx+1)*Ny) 
+       grid$dx.aux <- matrix(nrow=Nx+1, ncol=Ny, grid$dx.aux)
+    if (length(grid$dy) != Nx*Ny)         
+       grid$dy <- matrix(nrow=Nx, ncol=Ny, data = grid$dy, byrow=TRUE)
+    if (length(grid$dy.aux) != Nx*(Ny+1)) 
+       grid$dy.aux <- matrix(nrow=Nx, ncol=Ny+1, grid$dy.aux, byrow=TRUE)
    }
+   
 #==============================================================================
 # infilling of grids with x.int, y.int, x.mid, y.mid needed
 #==============================================================================
-  gridFill <- function(G.x,G.y,Name)    # define a function first
+  gridFill <- function(G.x,G.y,Name)    
   {
   
     # check if G.x and G.y is not NULL
@@ -171,26 +183,6 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
         stop("error: C.y.down should be a vector of length 1 or nrow(C)")
     }
 
-    if (!is.null(C.bl.x.up)) {
-      if (!((length(C.bl.x.up)==1) || (length(C.bl.x.up)==(Ny))))
-        stop("error: C.bl.x.up should be a vector of length 1 or ncol(C)")
-   }
-
-    if (!is.null(C.bl.x.down)) {
-      if (!((length(C.bl.x.down)==1) || (length(C.bl.x.down)==(Ny))))
-        stop("error: C.bl.x.down should be a vector of length 1 or ncol(C)")
-    }
-
-    if (!is.null(C.bl.y.up)) {
-      if (!((length(C.bl.y.up)==1) || (length(C.bl.y.up)==(Nx))))
-        stop("error: C.bl.y.up should be a vector of length 1 or nrow(C)")
-    }
-
-    if (!is.null(C.bl.y.down)) {
-      if (!((length(C.bl.y.down)==1) || (length(C.bl.y.down)==(Nx))))
-        stop("error: C.bl.y.down should be a vector of length 1 or nrow(C)")
-    }
-
 # check dimensions of input fluxes
 
     if (!is.null(flux.x.up)) {
@@ -310,16 +302,6 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
       stop("error: the A values should always be positive")
 
   }
-
-# KS: changed the next statement, -> everywhere dx, dy is a MATRIX
-    if (length(grid$dx) != Nx*Ny)         
-       grid$dx <- matrix(nrow=Nx, ncol=Ny, grid$dx)
-    if (length(grid$dx.aux) != (Nx+1)*Ny) 
-       grid$dx.aux <- matrix(nrow=Nx+1, ncol=Ny, grid$dx.aux)
-    if (length(grid$dy) != Nx*Ny)         
-       grid$dy <- matrix(nrow=Nx, ncol=Ny, data = grid$dy, byrow=TRUE)
-    if (length(grid$dy.aux) != Nx*(Ny+1)) 
-       grid$dy.aux <- matrix(nrow=Nx, ncol=Ny+1, grid$dy.aux, byrow=TRUE)
       
 ## FUNCTION BODY: CALCULATIONS
 
@@ -364,8 +346,8 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   }
 
 ## when upper boundary layer is present, calculate new C.x.up
-  if (!is.null(a.bl.x.up) & !is.null(C.bl.x.up[1])) {
-	  nom <- a.bl.x.up*C.bl.x.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/
+  if (!is.null(a.bl.x.up) & !is.null(C.x.up[1])) {
+	  nom <- a.bl.x.up*C.x.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/
            grid$dx.aux[1,] + (1-AFDW.grid$x.int[1,])*v.grid$x.int[1,])*C[1,]
     denom <- a.bl.x.up + VF.grid$x.int[1,]*(D.grid$x.int[1,]/grid$dx.aux[1,]+
              AFDW.grid$x.int[1,]*v.grid$x.int[1,])
@@ -373,8 +355,8 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   }
 
 ## when lower boundary layer is present, calculate new C.x.down
-  if (!is.null(a.bl.x.down) & !is.null(C.bl.x.down[1])) {
-	  nom <- a.bl.x.down*C.bl.x.down + VF.grid$x.int[(Nx+1),]*(D.grid$x.int[(Nx+1),]/
+  if (!is.null(a.bl.x.down) & !is.null(C.x.down[1])) {
+	  nom <- a.bl.x.down*C.x.down + VF.grid$x.int[(Nx+1),]*(D.grid$x.int[(Nx+1),]/
            grid$dx.aux[(Nx+1),] + (1-AFDW.grid$x.int[(Nx+1),])*
            v.grid$x.int[(Nx+1),])*C[Nx,]
     denom <- a.bl.x.down + VF.grid$x.int[(Nx+1),]*(D.grid$x.int[(Nx+1),]/
@@ -383,8 +365,8 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   }
 
 ## when upper y boundary layer is present, calculate new C.y.up
-  if (!is.null(a.bl.y.up) & !is.null(C.bl.y.up[1])) {
-	  nom <- a.bl.y.up*C.bl.y.up + VF.grid$y.int[,1]*(D.grid$y.int[,1]/
+  if (!is.null(a.bl.y.up) & !is.null(C.y.up[1])) {
+	  nom <- a.bl.y.up*C.y.up + VF.grid$y.int[,1]*(D.grid$y.int[,1]/
            grid$dy.aux[,1] + (1-AFDW.grid$y.int[,1])*v.grid$y.int[,1])*C[,1]
     denom <- a.bl.y.up + VF.grid$y.int[,1]*(D.grid$y.int[,1]/grid$dy.aux[,1]+
              AFDW.grid$y.int[,1]*v.grid$y.int[,1])
@@ -392,8 +374,8 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
   }
 
 ## when lower y boundary layer is present, calculate new C.y.down
-  if (!is.null(a.bl.y.down) & !is.null(C.bl.y.down[1]))   {
-	  nom <- a.bl.y.down*C.bl.y.down + VF.grid$y.int[,(Ny+1)]*
+  if (!is.null(a.bl.y.down) & !is.null(C.y.down[1]))   {
+	  nom <- a.bl.y.down*C.y.down + VF.grid$y.int[,(Ny+1)]*
            (D.grid$y.int[,(Ny+1)]/grid$dy.aux[,(Ny+1)] +
            (1-AFDW.grid$y.int[,(Ny+1)])*v.grid$y.int[,(Ny+1)])*C[,Ny]
     denom <- a.bl.y.down + VF.grid$y.int[,(Ny+1)]*(D.grid$y.int[,(Ny+1)]/
