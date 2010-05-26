@@ -2,7 +2,7 @@
 \alias{advection.1D}
 \alias{advection.volume.1D}
 \title{
-  one-dimensional advection equation
+  One-Dimensional Advection Equation
 }
 
 \description{
@@ -45,11 +45,11 @@ advection.volume.1D(C, C.up = C[1], C.down = C[length(C)],
 
 \arguments{
   \item{C }{concentration, expressed per unit of phase volume, defined at the
-    centre of each grid cell. A vector of length N [M/L3]
+    centre of each grid cell. A vector of length N [M/L3].
   }
-  \item{C.up }{concentration at upstream boundary. One value [M/L3]
+  \item{C.up }{concentration at upstream boundary. One value [M/L3].
   }
-  \item{C.down }{concentration at downstream boundary. One value [M/L3]
+  \item{C.down }{concentration at downstream boundary. One value [M/L3].
   }
   \item{flux.up }{flux across the upstream boundary, positive = INTO model
     domain. One value, expressed per unit of total surface [M/L2/T]. 
@@ -82,61 +82,61 @@ advection.volume.1D(C, C.up = C[1], C.down = C[length(C)],
   }
   \item{flow }{water flow rate, defined on grid cell interfaces. 
     One value, a vector of length N+1, or a list as defined by 
-    \code{setup.prop.1D} [L3/T]. 
+    \code{setup.prop.1D} [L^3/T]. 
     Used with \code{advection.volume.1D}.
   }
   \item{VF }{Volume fraction defined at the grid cell interfaces. One value,
     a vector of length N+1, or a \code{1D property} list; the list
     contains at least the elements \code{int} and \code{mid}
-    (see \code{\link{setup.prop.1D}}) [-]
+    (see \code{\link{setup.prop.1D}}) [-].
   }
   \item{A }{Interface area defined at the grid cell interfaces. One value,
     a vector of length N+1, or a \code{1D grid property} list; the list
     contains at least the elements \code{int} and \code{mid}
-    (see \code{\link{setup.prop.1D}}) [L2]
+    (see \code{\link{setup.prop.1D}}) [L^2].
   }
   \item{dx }{distance between adjacent cell interfaces (thickness of grid
     cells). One value, a vector of length N, or a \code{1D grid} list containing
     at least the elements
-    \code{dx} and \code{dx.aux} (see \code{\link{setup.grid.1D}}) [L]
+    \code{dx} and \code{dx.aux} (see \code{\link{setup.grid.1D}}) [L].
   }
-  \item{V }{volume of cells. One value, or a vector of length N [L^3]
+  \item{V }{volume of cells. One value, or a vector of length N [L^3].
   }
   \item{adv.method }{the advection method, slope limiter used to reduce the 
     numerical dispersion. One of "quick","muscl","super","p3","up" - see details.
   }
   \item{full.check }{logical flag enabling a full check of the consistency
     of the arguments (default = \code{FALSE}; \code{TRUE} slows down execution
-    by 50 percent)
+    by 50 percent).
   }
 }
 
 \value{
   \item{dC }{the rate of change of the concentration C due to advective 
     transport, defined in the centre of each grid cell. 
-    The rate of change is expressed per unit of (phase) volume [M/L3/T]
+    The rate of change is expressed per unit of (phase) volume [M/L^3/T].
   }
   \item{adv.flux }{advective flux across at the interface of each grid cell.
-    A vector of length N+1 [M/L2/T] - only for \code{advection.1D}
+    A vector of length N+1 [M/L2/T] - only for \code{advection.1D}.
   }
   \item{flux.up }{flux across the upstream boundary, positive = INTO model
-    domain. One value [M/L2/T] - only for \code{advection.1D}
+    domain. One value [M/L2/T] - only for \code{advection.1D}.
   }
   \item{flux.down }{flux across the downstream boundary, positive = OUT of
-    model domain. One value [M/L2/T] - only for \code{advection.1D}
+    model domain. One value [M/L2/T] - only for \code{advection.1D}.
   }
-  \item{it }{number of split time iterations that were necessary
+  \item{it }{number of split time iterations that were necessary,
   }
   \item{adv.F }{advective mass flow across at the interface of each grid cell.
-    A vector of length N+1 [M/T] - only for \code{advection.volume.1D}
+    A vector of length N+1 [M/T] - only for \code{advection.volume.1D}.
   }
   \item{F.up }{mass flow across the upstream boundary, positive = INTO model
-    domain. One value [M/T] - only for \code{advection.volume.1D}
+    domain. One value [M/T] - only for \code{advection.volume.1D}.
   }
   \item{F.down }{flux across the downstream boundary, positive = OUT of
-    model domain. One value [M/T] - only for \code{advection.volume.1D}
+    model domain. One value [M/T] - only for \code{advection.volume.1D}.
   }
-  \item{it }{number of split time iterations that were necessary
+  \item{it }{number of split time iterations that were necessary.
   }  
 }
 \author{
@@ -420,7 +420,7 @@ van Leer B. (1979) Towards the ultimate conservative difference scheme V. A seco
      (quadratic upstream interpolation for convective kinematics with 
      estimated stream terms) (Leonard, 1988)
     \item "muscl": third-order scheme (TVD) with MUSCL limiter (monotonic upstream 
-      centered schemes for conservation laws) (van Leer, 1797).
+      centered schemes for conservation laws) (van Leer, 1979).
     \item "super": third-order scheme (TVD) with Superbee limiter (method=Superbee)
       (Roe, 1985)
     \item "p3": third-order upstream-biased polynomial scheme (method=P3)
