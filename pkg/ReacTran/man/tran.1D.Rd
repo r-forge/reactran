@@ -428,5 +428,14 @@ multiplication with the appropriate volume fraction. In contrast, fluxes are
 always expressed per unit of total interface area (so here the volume fraction 
 is accounted for).     
 }
+\seealso{
+  \code{\link{tran.volume.1D}} for a discretisation the transport equation using finite volumes.
+
+  \code{\link{tran.2D}},   \code{\link{tran.3D}}
+
+  \code{\link{advection.1D}}, for more sophisticated advection schemes
+
+}
+
 \keyword{utilities}
 

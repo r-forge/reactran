@@ -8,7 +8,7 @@
 
 \description{
   Estimates the transport term (i.e. the rate of change of a concentration
-  due to diffusion) in a polar(r, theta)  coordinates
+  due to diffusion) in a polar (r, theta)  coordinate system
 }
 
 \usage{
@@ -16,7 +16,7 @@ tran.polar (C, C.r.up = NULL, C.r.down = NULL, C.theta.up = NULL,
   C.theta.down = NULL, flux.r.up = NULL, flux.r.down = NULL, 
   flux.theta.up = NULL, flux.theta.down = NULL, cyclicBnd = NULL,
   D.r = 1, D.theta = D.r, r = NULL, theta = NULL,
-  full.check = FALSE , full.output = FALSE)
+  full.output = FALSE)
 
 polar2cart (out, r, theta, x = NULL, y = NULL)
 
@@ -24,13 +24,13 @@ polar2cart (out, r, theta, x = NULL, y = NULL)
 
 \arguments{
   \item{C }{concentration, expressed per unit volume, defined at the centre
-    of each grid cell; Nr*Nphi matrix [M/L3].
+    of each grid cell; Nr*Nteta matrix [M/L3].
   }
   \item{C.r.up }{concentration at upstream boundary in r(x)-direction;
-    vector of length Nphi [M/L3].
+    vector of length Nteta [M/L3].
   }
   \item{C.r.down }{concentration at downstream boundary in r(x)-direction;
-    vector of length Nphi [M/L3].
+    vector of length Nteta [M/L3].
   }
   \item{C.theta.up }{concentration at upstream boundary in theta-direction;
     vector of length Nr [M/L3].
@@ -58,7 +58,7 @@ polar2cart (out, r, theta, x = NULL, y = NULL)
   \item{D.r }{diffusion coefficient in r-direction, defined on grid cell
     interfaces. One value, a vector of length (Nr+1),
     a \code{prop.1D} list created by \code{\link{setup.prop.1D}},
-    or a (Nr+1)* Nphi matrix [L2/T].
+    or a (Nr+1)* Nteta matrix [L2/T].
   }
   \item{D.theta }{diffusion coefficient in theta-direction, defined on grid cell
     interfaces. One value, a vector of length (Ntheta+1),
@@ -69,11 +69,7 @@ polar2cart (out, r, theta, x = NULL, y = NULL)
     A vector of length Nr+1 [L].
   }
   \item{theta }{position of adjacent cell interfaces in the theta-direction.
-    A vector of length Ntheta+1 [L].
-  }
-  \item{full.check }{logical flag enabling a full check of the consistency
-    of the arguments (default = \code{FALSE}; \code{TRUE} slows down
-    execution by 50 percent).
+    A vector of length Ntheta+1 [L].  Theta should be within [0,2 pi]
   }
   \item{full.output }{logical flag enabling a full return of the output
     (default = \code{FALSE}; \code{TRUE} slows down execution by 20 percent).
@@ -91,13 +87,13 @@ polar2cart (out, r, theta, x = NULL, y = NULL)
 \value{
   a list containing:
   \item{dC }{the rate of change of the concentration C due to transport,
-    defined in the centre of each grid cell, a Nr*Nphi matrix. [M/L3/T].
+    defined in the centre of each grid cell, a Nr*Nteta matrix. [M/L3/T].
   }
   \item{C.r.up }{concentration at the upstream interface in r-direction.
-    A vector of length Nphi [M/L3]. Only when \code{full.output = TRUE}.
+    A vector of length Nteta [M/L3]. Only when \code{full.output = TRUE}.
   }
   \item{C.r.down }{concentration at the downstream interface in r-direction.
-    A vector of length Nphi [M/L3]. Only when \code{full.output = TRUE}.
+    A vector of length Nteta [M/L3]. Only when \code{full.output = TRUE}.
   }
   \item{C.theta.up }{concentration at the the upstream interface in theta-direction.
     A vector of length Nr [M/L3].  Only when \code{full.output = TRUE}.
@@ -106,16 +102,16 @@ polar2cart (out, r, theta, x = NULL, y = NULL)
     A vector of length Nr [M/L3]. Only when \code{full.output = TRUE}.
   }
   \item{r.flux }{flux across the interfaces in x-direction of the grid cells.
-    A (Nr+1)*Nphi matrix  [M/L2/T]. Only when \code{full.output = TRUE}.
+    A (Nr+1)*Nteta matrix  [M/L2/T]. Only when \code{full.output = TRUE}.
   }
   \item{theta.flux }{flux across the interfaces in y-direction of the grid cells.
-    A Nr*(Nphi+1) matrix [M/L2/T].  Only when \code{full.output = TRUE}.
+    A Nr*(Nteta+1) matrix [M/L2/T].  Only when \code{full.output = TRUE}.
   }
   \item{flux.r.up }{flux across the upstream boundary in r-direction,
-    positive = INTO model domain. A vector of length Nphi [M/L2/T].
+    positive = INTO model domain. A vector of length Nteta [M/L2/T].
   }
   \item{flux.r.down }{flux across the downstream boundary in r-direction,
-    positive = OUT of model domain. A vector of length Nphi [M/L2/T].
+    positive = OUT of model domain. A vector of length Nteta [M/L2/T].
   }
   \item{flux.theta.up }{flux across the upstream boundary in theta-direction,
     positive = INTO model domain. A vector of length Nr [M/L2/T].
@@ -135,18 +131,18 @@ F        <- 100             # input flux [micromol cm-2 yr-1]
 D        <- 400             # mixing coefficient [cm2 yr-1]
 
 # Grid definition
-r.N   <- 4   # number of cells in r-direction
+r.N   <- 4     # number of cells in r-direction
 theta.N <- 6   # number of cells in theta-direction
-r.L <- 8   # domain size x-direction [cm]
-r    <- seq(0,r.L,len=r.N+1)             # cell size x-direction [cm]
-theta  <- seq(0,2*pi,len=theta.N+1)          # theta-direction - theta: from 0, 2pi
+r.L <- 8       # domain size r-direction [cm]
+r      <- seq(0,r.L,len=r.N+1)        # cell size r-direction [cm]
+theta  <- seq(0,2*pi,len=theta.N+1)   # theta-direction - theta: from 0, 2pi
  
 # Intial conditions 
-C <- matrix(nrow=r.N, ncol=theta.N, data=0, byrow=FALSE)
+C <- matrix(nrow=r.N, ncol=theta.N, data=0)
 
 # Boundary conditions: fixed concentration  
-C.r.up <- rep(1, times=theta.N)
-C.r.down <- rep(0, times=theta.N)
+C.r.up       <- rep(1, times=theta.N)
+C.r.down     <- rep(0, times=theta.N)
 C.theta.up   <- rep(1, times=r.N)
 C.theta.down <- rep(0, times=r.N)
 
@@ -220,11 +216,18 @@ image(cart)
 
   The \bold{boundary conditions} are either
   \itemize{
-    \item (1) fixed concentration
-    \item (2) fixed flux
+    \item (1) zero gradient
+    \item (2) fixed concentration
+    \item (3) fixed flux
+    \item (4) cyclic boundary
   }
 
-  This is also the order of priority. The fixed flux overrules the other.
+  This is also the order of priority. The cyclic boundary overrules the other.
+  If fixed concentration, fixed flux, and cyclicBnd are \code{NULL} then
+  the boundary is zero-gradient
+
+  A cyclic boundary condition has concentration and flux at upstream and 
+  downstream boundary the same.
   
   \code{polar2cart} maps the polar coordinates to cartesian coordinates
   
@@ -236,3 +239,10 @@ image(cart)
 
 \keyword{utilities}
 
+\seealso{
+  \code{\link{tran.cylindrical}}, \code{\link{tran.spherical}} 
+   for a discretisation of 3-D transport equations in cylindrical and 
+   spherical coordinates
+  
+  \code{\link{tran.1D}},   \code{\link{tran.2D}},  \code{\link{tran.3D}}
+}

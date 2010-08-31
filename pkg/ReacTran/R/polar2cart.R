@@ -5,6 +5,9 @@ mapxy <- function(x, y, x2, y2, u) {
   Nx <- length(x)
   Ny <- length(y)
 
+  if (min(x2) < min(x)) stop("'x' should embrace 'x2'")
+  if (min(y2) < min(y)) stop("'y' should embrace 'y2'")
+
   dx   <- c(diff(x),1)  # 1= for last value
   dy <- c(diff(y),1)
 
@@ -15,11 +18,13 @@ mapxy <- function(x, y, x2, y2, u) {
     stop("u and y not compatible")
 
   Transf <- function (x2,y2,u) {
-    u    <- rbind(c(u[1,1],u[1,]) , cbind(u[,1],u))
 
   # find embracing values : first interval
     ix <- findInterval(x2, x )
     iy <- findInterval(y2, y)
+
+#    ix <- pmax(ix, 1)
+#    iy <- pmax(iy, 1)
 
   # next interval
     ixp1 <- pmin(ix+1,Nx)
@@ -39,7 +44,8 @@ outer(x2, y2, FUN = Transf, u = u)
 }
 
 #mapxy(1:87, 1:61, seq(1,87,0.25), seq(1,61,0.25),volcano)->VOLCANO
-
+#IM <- matrix(nr=3,nc=3,c(1,1,1,1,2,1,1,1,1))
+#mapxy(1:3,1:3,seq(0,3,0.1),seq(0,3,0.1),IM)->im2
 
 ## =============================================================================
 ## From polar to cartesian coordinates
@@ -63,10 +69,10 @@ polar2cart <- function(out, r, theta, x = NULL, y = NULL)
   mintheta <- min(theta)
 
   # add leftmost boundary
-  r    <- c(r[1],   0.5*(r[-1]+r[-(Nr+1)]), r[Nr+1])
+  r      <- c(r[1],   0.5*(r[-1]+r[-(Nr+1)]), r[Nr+1])
   theta  <- c(theta[1], 0.5*(theta[-1]+theta[-(Np+1)]), theta[Np+1])
                                                 # check dimensions...
-  dr   <- c(diff(r),1)       # 1= for last value: no interpolation
+  dr     <- c(diff(r),1)       # 1= for last value: no interpolation
   dtheta <- c(diff(theta),1)
 
   if (is.null (x))

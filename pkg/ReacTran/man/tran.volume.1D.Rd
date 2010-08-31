@@ -236,6 +236,9 @@ legend ("bottomright",lty=1,col=c("black","red"),
 
 \seealso{
   \code{\link{tran.1D}}
+
+  \code{\link{advection.volume.1D}}, for more sophisticated advection schemes
+
 }
 
 \keyword{utilities}

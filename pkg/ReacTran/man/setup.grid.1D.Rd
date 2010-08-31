@@ -163,3 +163,10 @@ plot(GR)
 }
 \keyword{utilities}
 
+\seealso{
+  \code{\link{tran.1D}}, for a discretisation of the general transport equation in 1-D
+
+  \code{\link{setup.grid.2D}} for the creation of grids in 2-D
+
+  \code{\link{setup.prop.1D}}, for defining properties on the 1-D grid.
+}

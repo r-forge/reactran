@@ -345,6 +345,13 @@ filled.contour(y[,,n/2],color.palette=terrain.colors)
   This is also the order of priority. The zero gradient is the default,
   the fixed flux overrules all other.
 }  
+\seealso{
+  \code{\link{tran.cylindrical}}, \code{\link{tran.spherical}} 
+   for a discretisation of 3-D transport equations in cylindrical and 
+   spherical coordinates
+  
+  \code{\link{tran.1D}},   \code{\link{tran.2D}}
+}
 
 \keyword{utilities}
 

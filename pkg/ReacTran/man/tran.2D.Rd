@@ -423,5 +423,11 @@ outb <- ode.2D (y=y, func=Diff2Db, t=times, parms=NULL,
   the fixed flux overrules all other.
 }  
 
-\keyword{utilities}
 
+\seealso{
+  \code{\link{tran.polar}} for a discretisation of 2-D transport equations 
+  in polar coordinates
+  
+  \code{\link{tran.1D}},   \code{\link{tran.3D}}
+}
+\keyword{utilities}

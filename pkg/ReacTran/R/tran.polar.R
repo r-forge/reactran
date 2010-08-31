@@ -1,6 +1,6 @@
 
 ##==============================================================================
-## Diffusive transport in polar coordinates (x, theta)
+## Diffusive transport in polar coordinates (r, theta)
 ##==============================================================================
 
 tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL, 
@@ -15,7 +15,7 @@ tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL,
 
                         r=NULL, theta=NULL,
                         
-                        full.check = FALSE, full.output = FALSE )
+                        full.output = FALSE )
 											
 {
 # ------------------------------------------------------------------------------
@@ -40,14 +40,14 @@ tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL,
 
   dimC <- dim (C) 
   Type <- 2
-
+  
   if (max(theta)> 2*pi)
      stop ("theta should be < 2pi")
   if (min(theta)< 0)
      stop ("theta should be > 0 ")
   
   checkDim2(r, theta,"r, the grid in x-direction",
-                   "theta, the grid in theta-direction")
+                   "theta, the grid in theta-direction") 
   # central values
   Nr       <- dimC[1]
   r.c      <- 0.5*(r[-1]+r[-(Nr+1)])
@@ -75,7 +75,7 @@ tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL,
      if( length(flux.r.up) != 1 && length(flux.r.up) != Ntheta)
       stop ("'flux.r.up' should have length 1 or equal to ", Ntheta)
     } else if (!1 %in% cyclicBnd) 
-      stop ("'flux.r.up' OR 'C.r.up' should be specified")
+      C.r.up = C[1,]
 
     if (! is.null(C.r.down)) {
      if( length(C.r.down) != 1 && length(C.r.down) != Ntheta)
@@ -84,7 +84,7 @@ tran.polar <- function(C, C.r.up=NULL,    C.r.down=NULL,
      if(length(flux.r.down) != 1 && length(flux.r.down) != Ntheta)
       stop ("'flux.r.down' should have length 1 or equal to ", Ntheta)
     } else if (!1 %in% cyclicBnd)
-      stop ("'flux.r.down' OR 'C.r.down' should be specified")
+      C.r.down = C[Nr,]
 
     if (! is.null(C.theta.up)) {
      if ( length(C.theta.up) != 1 && length(C.theta.up) != Nr)

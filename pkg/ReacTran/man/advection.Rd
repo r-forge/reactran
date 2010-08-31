@@ -467,3 +467,6 @@ is accounted for).
 }
 \keyword{utilities}
 
+\seealso{
+  \code{\link{tran.1D}}, for a discretisation of the general transport equations
+}

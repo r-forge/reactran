@@ -1,20 +1,19 @@
 
-      subroutine advection(N,Y,dt,h,hint,v,Bcup,Bcdown,Yup,Ydown,              &
-     &                     VFint, VF, Aint, A, method,mode,dY, cu, it)
+      subroutine advection(N, Y, dt, h, hint, v, Bcup, Bcdown,              &
+     &       Yup, Ydown, VFint, VF, Aint, A, method, mode, dY, cu, it)
 
 c-----------------------------------------------------------------------------------------
 c based on the advection scheme in the GOTM model, code from 2006-11-06
-c fluxes are defined on the interfaces, in an upstream-biased way, according 
-c to a Lax-Wendroff scheme.
+c fluxes are defined on the interfaces, in an upstream-biased way.
 c slope-delimeters are applied to obtain monotonic and positive schemes
 c also in the presence of large gradients. 
-c there are 5 different slope delimeters; method =1: first-order upstream, 
+c there are 5 different slope delimeters; first-order upstream, 
 c 3rd order upstream-biased polynomial, 3rd order with superbee delimiter, 
 c 3rd order with MUSCL limiter
 c as described in Pietrzak 98
 
 c Karline: made changes to make it work for negative ww...
-c          added volume fraction, and surface area; is generally = 1.
+c          added volume fraction, surface area; these two properties will generally = 1.
 cc-----------------------------------------------------------------------------------------
 
       IMPLICIT NONE
@@ -22,21 +21,21 @@ c  number of vertical layers, time step
       INTEGER                  :: N
       DOUBLE PRECISION         :: dt
 
-c  layer thickness (m), distance from mid to mid
+c  layer thickness (m), distance from mid to mid of each layer
       DOUBLE PRECISION         :: h(N), hint(0:N)
 
-c  vertical advection speed 
+c  advection speed in the direction of the axis
       DOUBLE PRECISION         :: v(0:N), ww(0:N)  
 
-c  volume fraction and surface at interface and in middle
+c  volume fraction and surface at interface and in middle of layers
       DOUBLE PRECISION         :: VFint(0:N), Aint(0:N), VF(N), A(N)  
 
-c  type of upper and lower Boundary Condition  (1 and 2 used)
+c  type of upper and lower Boundary Condition (only 1 and 2 used in R)
       INTEGER                  :: Bcdown, Bcup
-      integer, parameter       :: Flux     =1
-      integer, parameter       :: Value    =2
-      integer, parameter       :: OneSided =3
-      integer, parameter       :: zeroDivergence =4
+      integer, parameter       :: Flux     = 1
+      integer, parameter       :: Value    = 2
+      integer, parameter       :: OneSided = 3
+      integer, parameter       :: zeroDivergence = 4
 
 c  value of upper and lower bnd conc
       DOUBLE PRECISION         :: Ydown, Yup
@@ -49,7 +48,7 @@ c  type of advection scheme, slope delimeters
       integer, parameter       :: Superbee =2
       integer, parameter       :: MUSCL    =1
 
-c  advection mode 0: non-conservative (e.g. water flow), 1: conservative, eg.g. sinking
+c  advection mode: 0= non-conservative (e.g.water flow), 1= conservative, e.g. sinking
       INTEGER                  :: mode
 
 c  concentration to be transported
@@ -59,6 +58,7 @@ c  rate of change due to advection
       DOUBLE PRECISION         :: dY(N)
 
       DOUBLE PRECISION         :: one6th=1.0d0/6.0d0
+c maximal number of iterations
       INTEGER, parameter       :: itmax=100
 
 c  LOCAL VARIABLES:
@@ -68,8 +68,7 @@ c  LOCAL VARIABLES:
       DOUBLE PRECISION         :: c,cmax
       DOUBLE PRECISION         :: cu(0:N)
 c-----------------------------------------------------------------------------------------
-
-c  initialize interface fluxes with zero
+c  initialize upstream interface fluxes with zero
       cu   = 0.d0
 
 c  initialize maximum Courant number
@@ -77,8 +76,8 @@ c  initialize maximum Courant number
 
 c  copy of current value of state variables 
       do k =1,N
-	      dy(k) = y(k)
-	    enddo
+         dy(k) = y(k)
+      enddo
 
 c  compute maximum Courant number; estimate nr of iterations 
       do k=0,N
@@ -98,18 +97,18 @@ c     spatial loop - karline : changed into 1:N
 c        positive speed 
            if (ww(k) .gt. 0.d0) then
 
-              c=ww(k)/dble(it)*dt/hint(k-1)             ! courant number
+              c=ww(k)/dble(it)*dt/hint(k-1)            ! courant number
 
               if (k .gt. 1) then
-                 Yu=Y(k-1)                              ! upstream value
+                 Yu=Y(k-1)                             ! upstream value
               else
                  Yu=Y(k)
               end if
               
-              Yc=Y(k  )                                 ! central value
+              Yc=Y(k  )                                ! central value
               
               if (k .lt. N) then
-                Yd=Y(k+1)                               ! downstream value
+                Yd=Y(k+1)                              ! downstream value
               else
                 Yd=Y(k)
               endif
@@ -142,7 +141,7 @@ c        negative speed
              if (abs(Yc-Yd) .gt. 1e-10) then           ! slope ratio
                r=(Yu-Yc)/(Yc-Yd)
              else
-               r=(Yu-Yc)*1.e10                         ! CHECK THIS: not -???
+               r=(Yu-Yc)*1.e10                          
              end if
 
            end if
@@ -165,7 +164,7 @@ c        the flux-factor phi
              case (MUSCL)
                limit=max(0.d0,min(2.*1.d0,2.0*r,0.5*(1.d0+r)))
              case default
-c               call rerror( 'unkown advection method')
+c               call rerror( 'unkown advection method')  ! should not happen
            end select
 
 c        compute the limited flux KARLINE: changed for negative ww(k) !
@@ -204,7 +203,7 @@ c       upstream boundary conditions
           case (flux)
             cu(0) =   Yup                 ! flux into the domain is positive
           case (value)
-            if(ww(0) .gt. 0.d0) then      ! Karline: CHECK!
+            if(ww(0) .gt. 0.d0) then       
               cu(0) =  ww(0)*Yup
             else
               cu(0) =  ww(0)*Y(1)
@@ -240,8 +239,8 @@ c     the advection step
 
 c     rate of change due to advection 
       do k =1,N
-	      dy(k) = (y(k)-dy(k))/dt
-	    enddo
+            dy(k) = (y(k)-dy(k))/dt
+          enddo
 
 c Still to do: integrate fluxes in time (now cu = cu of last step )
 c            flux = 0. ! at start
@@ -261,8 +260,8 @@ c             flux(k)=flux(k)+1.d0/dble(it)*dt*cu(k)
 
 
 
-      subroutine advectvol(N,Y,dt,V,Vint,flow,Bcup,Bcdown,Yup,Ydown,              &
-     &                     method,mode,dY, cu, it)
+      subroutine advectvol(N, Y, dt, V, Vint, flow, Bcup, Bcdown,           &
+     &                     Yup, Ydown,  method,mode,dY, cu, it)
 
 c-----------------------------------------------------------------------------------------
 c Similar as above, but for volumetric transport:
@@ -328,8 +327,8 @@ c  initialize maximum Courant number
 
 c  copy of current value of state variables 
       do k =1,N
-	      dy(k) = y(k)
-	    enddo
+            dy(k) = y(k)
+          enddo
 
 c  compute maximum Courant number; estimate nr of iterations 
       do k=0,N
@@ -489,8 +488,8 @@ c     the advection step
 
 c     rate of change due to advection 
       do k =1,N
-	      dy(k) = (y(k)-dy(k))/dt
-	    enddo
+            dy(k) = (y(k)-dy(k))/dt
+          enddo
 
 c Still to do: integrate fluxes in time (now cu = cu of last step )
 c            flux = 0. ! at start
