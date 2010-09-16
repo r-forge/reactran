@@ -1,0 +1,12 @@
+inst/doc/.*\.log 
+inst/doc/.*\.blg 
+inst/doc/.*\.out 
+inst/doc/.*\.aux 
+inst/doc/.*\.bak 
+.*\.dll
+.*\.so
+.*\.o
+.*\.rc
+.*\.d
+Changes.txt
+todo.r
