@@ -31,7 +31,7 @@ advection.1D <- function (C, C.up = C[1], C.down = C[length(C)],
   # timestep this works only for latest version of deSolve  !
   dt <- timestep()
   if (is.nan(dt)) dt <- 0.001
-  if (dt == 0)    dt <- 0.001
+  if (dt < 0.001) dt <- 0.001
   if (dt > 1e30)  dt <- 0.001
 
   # velocity, grid sizes, volume fractions, surface areas

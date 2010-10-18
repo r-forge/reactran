@@ -176,7 +176,7 @@ times <- 0:300   # 3 times out and in
 # model solution     #
 #--------------------#
 
-pm   <- par(mfrow=c(3,3))
+pm   <- par(mfrow=c(2,2))
 
 ## simple upstream differencing, first using euler - explicit
 out <- euler(y=y, times=times, func=model, parms = 0, 
@@ -211,6 +211,9 @@ plot(out4[1,-1],type="l",col="red",
   ylab="y", xlab="x", main = "muscl, euler")
 lines(out4[nrow(out4),2:(1+n)])
 
+
+
+\dontrun{
 ## third order TVD, quickest limiter
 out5 <- euler(y=y, times=times, func=model, parms = 0,  
   adv.method = "quick")
@@ -252,7 +255,7 @@ out6 <- ode.1D(y=y, times=times, func=model, parms = 0, nspec=1,
 plot(out6[1,-1],type="l",col="red", 
   ylab="y", xlab="x", main = "muscl, reversed velocity")
 lines(out6[nrow(out6),2:(1+n)])
-
+}
 
 par(mfrow=pm)
 
