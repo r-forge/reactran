@@ -125,8 +125,6 @@ advection.volume.1D(C, C.up = C[1], C.down = C[length(C)],
   \item{flux.down }{flux across the downstream boundary, positive = OUT of
     model domain. One value [M/L2/T] - only for \code{advection.1D}.
   }
-  \item{it }{number of split time iterations that were necessary,
-  }
   \item{adv.F }{advective mass flow across at the interface of each grid cell.
     A vector of length N+1 [M/T] - only for \code{advection.volume.1D}.
   }
