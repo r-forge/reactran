@@ -29,7 +29,7 @@ advection.1D <- function (C, C.up = C[1], C.down = C[length(C)],
   }
 
   # timestep this works only for latest version of deSolve  !
-  dt <- timestep()
+  dt <- timestep(prev=FALSE)
 #  print(dt)
   if (is.nan(dt)) dt <- 0.001
   if (dt < 1e-30) dt <- 0.001   # if dt is = 0 or ~0
@@ -117,7 +117,7 @@ advection.volume.1D <- function (C, C.up = C[1], C.down = C[length(C)],
   }
 
   # timestep - this works only for latest version of deSolve  !
-  dt <- timestep()
+  dt <- timestep(prev = FALSE)
   if (dt == 0) dt <- 0.001
   if (dt > 1e30) dt <- 0.001
   
