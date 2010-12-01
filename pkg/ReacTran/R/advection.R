@@ -1,6 +1,6 @@
 advection.1D <- function (C, C.up = C[1], C.down = C[length(C)],
                        flux.up = NULL, flux.down=NULL,
-                       v, VF=1, A =1,  dx,
+                       v, VF=1, A =1,  dx, dt.default = 1,
                        adv.method = c("muscl","super","quick","p3","up"),
                        full.check = FALSE) {
 
@@ -31,9 +31,9 @@ advection.1D <- function (C, C.up = C[1], C.down = C[length(C)],
   # timestep this works only for latest version of deSolve  !
   dt <- timestep(prev=FALSE)
 #  print(dt)
-  if (is.nan(dt)) dt <- 0.001
-  if (dt < 1e-30) dt <- 0.001   # if dt is = 0 or ~0
-  if (dt > 1e30)  dt <- 0.001
+  if (is.nan(dt)) dt <- dt.default
+  if (dt < 1e-30) dt <- dt.default   # if dt is = 0 or ~0
+  if (dt > 1e30)  dt <- dt.default
 
   # velocity, grid sizes, volume fractions, surface areas
   v     <- rep(v, length.out = n+1)
@@ -89,7 +89,7 @@ advection.1D <- function (C, C.up = C[1], C.down = C[length(C)],
 
 advection.volume.1D <- function (C, C.up = C[1], C.down = C[length(C)],
                        F.up = NULL, F.down=NULL,
-                       flow, V,
+                       flow, V, dt.default = 1,
                        adv.method = c("muscl","super","quick","p3","up"),
                        full.check = FALSE) {
 
@@ -118,8 +118,8 @@ advection.volume.1D <- function (C, C.up = C[1], C.down = C[length(C)],
 
   # timestep - this works only for latest version of deSolve  !
   dt <- timestep(prev = FALSE)
-  if (dt == 0) dt <- 0.001
-  if (dt > 1e30) dt <- 0.001
+  if (dt == 0)   dt <- dt.default
+  if (dt > 1e30) dt <- dt.default
   
   # velocity, grid sizes, volume fractions, surface areas
   flow  <- rep(flow, length.out = n+1)

@@ -37,12 +37,12 @@
 \usage{
 advection.1D(C, C.up = C[1], C.down = C[length(C)],
   flux.up = NULL, flux.down = NULL, v, VF = 1, A = 1, dx, 
-  adv.method = c("muscl", "super", "quick", "p3", "up"), 
+  dt.default = 1, adv.method = c("muscl", "super", "quick", "p3", "up"),
   full.check = FALSE)
 
 advection.volume.1D(C, C.up = C[1], C.down = C[length(C)],
   F.up = NULL, F.down = NULL, flow, V, 
-  adv.method = c("muscl", "super", "quick", "p3", "up"), 
+  dt.default = 1, adv.method = c("muscl", "super", "quick", "p3", "up"),
   full.check = FALSE)
 }
 
@@ -102,6 +102,9 @@ advection.volume.1D(C, C.up = C[1], C.down = C[length(C)],
     cells). One value, a vector of length N, or a \code{1D grid} list containing
     at least the elements
     \code{dx} and \code{dx.aux} (see \code{\link{setup.grid.1D}}) [L].
+  }
+  \item{dt.default }{timestep to be used, if it cannot be estimated (e.g.
+    when calculating steady-state conditions.
   }
   \item{V }{volume of cells. One value, or a vector of length N [L^3].
   }
@@ -312,7 +315,7 @@ colSums(MASS)
 ## use of advection.volume.1D
 ## =============================================================================
 
-Sink <- function (t, y, parms) {
+Sink <- function (t, y, parms, ...) {
   C1 <- y[1:N]
   C2 <- y[(N+1):(2*N)]
   C3 <- y[(2*N+1):(3*N)]
@@ -321,7 +324,7 @@ Sink <- function (t, y, parms) {
   # upstream can be implemented in two ways:
  
   dC1  <- advection.1D(C1, v = sink, dx = dx, 
-           C.up = 100, adv.method = "up")$dC - decay*C1
+           C.up = 100, adv.method = "up", ...)$dC - decay*C1
 
 # same, using tran.1D  
 #  dC1  <- tran.1D(C1, v = sink, dx = dx, 
@@ -329,11 +332,11 @@ Sink <- function (t, y, parms) {
 #           decay*C1
 
   dC2  <- advection.1D(C2, v = sink, dx = dx, 
-        C.up = 100, adv.method = "p3")$dC -
+        C.up = 100, adv.method = "p3", ...)$dC -
            decay*C2
 
   dC3  <- advection.1D(C3, v = sink, dx = dx, 
-        C.up = 100, adv.method = "muscl")$dC -
+        C.up = 100, adv.method = "muscl", ...)$dC -
            decay*C3
 
   list(c(dC1, dC2, dC3))
