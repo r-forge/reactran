@@ -966,7 +966,7 @@ irrigation model, after 20 time units - see text for \R-code}
 \end{figure}
 It is simple to plot the steady-state solution:
 <<label=twodst,include=FALSE>>=
-image (std, main = "steady-state", add.legend = TRUE)
+image (std, main = "steady-state", legend = TRUE)
 @
 \setkeys{Gin}{width=0.4\textwidth}
 \begin{figure}

@@ -88,7 +88,7 @@ c  compute maximum Courant number; estimate nr of iterations
 
       if (cmax . GT. 1) then 
         it =  min(itmax,int(cmax)+1)   ! WAS: min(itmax,int(cmax)+1)
-   	    it = max(1,it)
+          it = max(1,it)
       else 
         it = 1
       endif   
