@@ -100,11 +100,11 @@ tran.1D(C, C.up = C[1], C.down = C[length(C)],
   \item{C.down }{concentration at the downstream interface. One value [M/L3]
     only when (\code{full.output} = \code{TRUE})
   }
-  \item{adv.flux }{advective flux across at the interface of each grid cell.
+  \item{dif.flux }{diffusive flux across at the interface of each grid cell.
     A vector of length N+1 [M/L2/T]
     only when (\code{full.output} = \code{TRUE})
   }
-  \item{dif.flux }{diffusive flux across at the interface of each grid cell.
+  \item{adv.flux }{advective flux across at the interface of each grid cell.
     A vector of length N+1 [M/L2/T]
     only when (\code{full.output} = \code{TRUE})
   }
