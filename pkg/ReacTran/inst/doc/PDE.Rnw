@@ -401,7 +401,7 @@ matplot.1D(out, which = "u", subset = time %in% seq(0, 50, by = 10),
    type = "l", col = c("black", rep("darkgrey", 5)), lwd = 2,
    grid = x, xlim = c(-50,50))
 legend("topright", lty = 1:6, lwd = 2, col = c("black", rep("darkgrey", 5)), 
-       legend = paste("t = ", times[iout]))
+       legend = paste("t = ",seq(0, 50, by = 10)))
 @
 \setkeys{Gin}{width=0.6\textwidth}
 \begin{figure}[h]
