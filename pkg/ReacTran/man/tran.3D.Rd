@@ -33,7 +33,7 @@ tran.3D (C, C.x.up = C[1,,], C.x.down = C[dim(C)[1],,],
 
 \arguments{
   \item{C }{concentration, expressed per unit volume, defined at the centre
-    of each grid cell; Nx*Ny*Nz matrix [M/L3].
+    of each grid cell; Nx*Ny*Nz array [M/L3].
   }
   \item{C.x.up }{concentration at upstream boundary in x-direction;
     matrix of dimensions Ny*Nz [M/L3].
