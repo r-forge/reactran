@@ -41,7 +41,7 @@ The Netherlands
 \Plainauthor{Karline Soetaert and Filip Meysman}
 
 \Abstract{
-  \R-package \rt \citep{ReacTran} contains functions to solve reactive-transport equations, as used e.g. in the environmental sciences. 
+  \R-package \rt \citep{ReacTran_paper} contains functions to solve reactive-transport equations, as used e.g. in the environmental sciences. 
   
   Essentially, it 
 \begin{enumerate}

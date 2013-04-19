@@ -46,7 +46,7 @@ The Netherlands
 \Plainauthor{Karline Soetaert, and Filip Meysman}
 
 \Abstract{
-  \R package \rt \citep{ReacTran} contains functions for creating reactive-
+  \R package \rt \citep{ReacTran_paper} contains functions for creating reactive-
   transport models in \R.
 }
 

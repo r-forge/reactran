@@ -119,12 +119,12 @@ tran.volume.2D <- function(C,
 ## check input of volumes
     if (any(V <= 0))
     	stop("error: the volumes should always be positive")
-    if (nrow(V) != Nr || ncol(V) != Nc)
+    if (nrow(V) != Nx || ncol(V) != Ny)
     	stop("error: the dimension of 'V' should be = dimension of 'C'")
 
 ## If mass should be conserved...
     if (masscons) {
-    if (nrow(C.z) != Nr || ncol(C.z) != Nc)
+    if (nrow(C.z) != Nx || ncol(C.z) != Ny)
     	stop("error: the dimension of 'C.z' should be = dimension of 'C' if 'masscons' = TRUE")
    }
 ## check input of AFDW.grid
