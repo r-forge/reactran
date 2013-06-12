@@ -52,7 +52,8 @@ tran.volume.3D(C,  C.x.up = C[1, , ], C.x.down = C[dim(C)[1], , ],
                Disp.grid = NULL, 
                Disp.x = NULL, Disp.y = Disp.x, Disp.z = Disp.x,      
                flow.grid = NULL, flow.x = 0, flow.y = 0, flow.z = 0, 
-               AFDW.grid = NULL, AFDW.x = 1, AFDW.y = AFDW.x, AFDW.z = AFDW.x,                 
+               AFDW.grid = NULL, AFDW.x = 1, AFDW.y = AFDW.x, 
+               AFDW.z = AFDW.x,                 
                V = NULL, full.check = FALSE, full.output = FALSE) 
 }
 
