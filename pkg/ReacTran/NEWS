@@ -8,3 +8,4 @@ Version 1.4.1 (Karline)
  o removed files jss.bst, jss.cls from inst/doc
  o bug fixed in FORTRAN routine diffcyl At line 683 of file tran3D.f
     Dz(J)  => D_z(K) 
+ o overruled warning in rep(NULL,   
