@@ -295,7 +295,7 @@ C First diffusion internal cells
         DO J = 1, Ntet
           DO K = 2, Nphi
             IF(rc(I) * sin(tet(J)) .NE. 0.D0) THEN
-              Flux(I,J,K) = -D_phi(J)*(C(I,J,K)-C(I,J,K-1))                      &
+              Flux(I,J,K) = -D_phi(K)*(C(I,J,K)-C(I,J,K-1))                      &
      &                           /dphiaux(K)  /rc(I)/sin(tet(j))  
             ELSE
               Flux(I,J,K) = 0.D0
