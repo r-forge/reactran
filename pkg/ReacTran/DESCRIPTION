@@ -1,10 +1,11 @@
 Package: ReacTran
-Version: 1.4.2
+Version: 1.4.3
 Title: Reactive transport modelling in 1D, 2D and 3D
 Author: Karline Soetaert <karline.soetaert@nioz.nl>,
   Filip Meysman <filip.meysman@nioz.nl>
 Maintainer: Karline Soetaert <karline.soetaert@nioz.nl>
 Depends: R (>= 2.10), rootSolve, deSolve, shape
+Imports: stats, graphics
 Description: Routines for developing models that describe reaction and advective-diffusive transport in one, two or three dimensions.
   Includes transport routines in porous media, in estuaries, and in bodies with variable shape.
 License: GPL (>= 3)
