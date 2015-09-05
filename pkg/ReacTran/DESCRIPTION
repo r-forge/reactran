@@ -1,6 +1,6 @@
 Package: ReacTran
 Version: 1.4.3
-Title: Reactive Transport Modelling in 1D, 2D and 3D
+Title: Reactive Transport Modelling in 1d, 2d and 3d
 Author: Karline Soetaert <karline.soetaert@nioz.nl>,
   Filip Meysman <filip.meysman@nioz.nl>
 Maintainer: Karline Soetaert <karline.soetaert@nioz.nl>
