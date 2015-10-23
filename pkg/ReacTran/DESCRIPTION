@@ -10,4 +10,3 @@ Description: Routines for developing models that describe reaction and advective
   Includes transport routines in porous media, in estuaries, and in bodies with variable shape.
 License: GPL (>= 3)
 LazyData: yes
-Packaged: Fri Sep 12 12:44:06 2008; karlines
