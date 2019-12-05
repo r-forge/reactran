@@ -250,59 +250,31 @@ tran.3D <- function(C,
 
 
   if (full.check) {
+# A function to test dimensions
+    TestDims <- function(var, N1, N2, varname, dimname)  {
+     if (is.null(var)) return
+     if (length(var) == 1) return
+     if (any(dim(var) - c(N1,N2) !=0))
+        stop("error: ", varname, " should be of length 1 or a matrix with dim ", dimname)
+    }   
+
 
 ## check dimensions of input concentrations
 
-    if (!is.null(C.x.up)) {
-      if (!((length(C.x.up)==1) || (sum(abs(dim(C.x.up) - c(Ny,Nz)))==0)))
-        stop("error: C.x.up should be of length 1 or a matrix with dim Ny, Nz")
-    }
-    if (!is.null(C.x.down)) {
-      if (!((length(C.x.down)==1) || (sum(abs(dim(C.x.down) - c(Ny,Nz)))==0)))
-        stop("error: C.x.down should be of length 1 or a matrix with dim Ny, Nz")
-    }
-    if (!is.null(C.y.up)) {
-      if (!((length(C.y.up)==1) || (sum(abs(dim(C.y.up) - c(Nx,Nz)))==0)))
-        stop("error: C.y.up should be of length 1 or a matrix with dim Nx, Nz")
-    }
-    if (!is.null(C.y.down)) {
-      if (!((length(C.y.down)==1) || (sum(abs(dim(C.y.down) - c(Nx,Nz)))==0)))
-        stop("error: C.y.down should be of length 1 or a matrix with dim Nx, Nz")
-    }
-    if (!is.null(C.z.up)) {
-      if (!((length(C.z.up)==1) || (sum(abs(dim(C.z.up) - c(Nx,Ny)))==0)))
-        stop("error: C.z.up should be of length 1 or a matrix with dim Nx, Ny")
-    }
-    if (!is.null(C.z.down)) {
-      if (!((length(C.z.down)==1) || (sum(abs(dim(C.z.down) - c(Nx,Ny)))==0)))
-        stop("error: C.z.down should be of length 1 or a matrix with dim Nx, Ny")
-    }
+    TestDims(C.x.up,   Ny, Nz, "C.x.up", "Ny, Nz")
+    TestDims(C.x.down, Ny, Nz, "C.x.down", "Ny, Nz")
+    TestDims(C.y.up,   Nx, Nz, "C.y.up", "Nx, Nz")
+    TestDims(C.y.down, Nx, Nz, "C.y.down", "Nx, Nz")
+    TestDims(C.z.up,   Nx, Ny, "C.z.up", "Nx, Ny")
+    TestDims(C.z.down, Nx, Ny, "C.z.down", "Nx, Ny")
 
 # check dimensions of input fluxes
-    if (!is.null(flux.x.up)) {
-      if (!((length(flux.x.up)==1) || (sum(abs(dim(flux.x.up) - c(Ny,Nz)))!=0)))
-        stop("error: flux.x.up should be of length 1 or a matrix with dim Ny, Nz")
-    }
-    if (!is.null(flux.x.down)) {
-      if (!((length(flux.x.down)==1) || (sum(abs(dim(flux.x.down) - c(Ny,Nz)))!=0)))
-        stop("error: flux.x.down should be of length 1 or a matrix with dim Ny, Nz")
-    }
-    if (!is.null(flux.y.up)) {
-      if (!((length(flux.y.up)==1) || (sum(abs(dim(flux.y.up) - c(Nx,Nz)))!=0)))
-        stop("error: flux.y.up should be of length 1 or a matrix with dim Nx, Nz")
-    }
-    if (!is.null(flux.y.down)) {
-      if (!((length(flux.y.down)==1) || (sum(abs(dim(flux.y.down) - c(Nx,Nz)))!=0)))
-        stop("error: flux.y.down should be of length 1 or a matrix with dim Nx, Nz")
-    }
-    if (!is.null(flux.z.up)) {
-      if (!((length(flux.z.up)==1) || (sum(abs(dim(flux.z.up) - c(Nx,Ny)))!=0)))
-        stop("error: flux.z.up should be of length 1 or a matrix with dim Nx, Ny")
-    }
-    if (!is.null(flux.z.down)) {
-      if (!((length(flux.z.down)==1) || (sum(abs(dim(flux.z.down) - c(Nx,Ny)))!=0)))
-        stop("error: flux.z.down should be of length 1 or a matrix with dim Nx, Ny")
-    }
+    TestDims(flux.x.up,   Ny, Nz, "flux.x.up", "Ny, Nz")
+    TestDims(flux.x.down, Ny, Nz, "flux.x.down", "Ny, Nz")
+    TestDims(flux.y.up,   Nx, Nz, "flux.y.up", "Nx, Nz")
+    TestDims(flux.y.down, Nx, Nz, "flux.y.down", "Nx, Nz")
+    TestDims(flux.z.up,   Nx, Ny, "flux.z.up", "Nx, Ny")
+    TestDims(flux.z.down, Nx, Ny, "flux.z.down", "Nx, Ny")
 
 ## check input of grid
 
