@@ -37,7 +37,7 @@ tran.volume.2D <- function(C,
       if (sum(abs(dim(G.x) - c(Nx+1,Ny)))!=0)
         stop (paste("error: ",Name,".x matrix not of correct (Nx+1) Ny dimensions", del=""))
       G.grid$x.int <- G.x
-    } else if (class(G.x)=="prop.1D") {
+    } else if (inherits(G.x, "prop.1D")) {
       G.grid$x.int <- matrix(data=G.x$int,nrow=(Nx+1),ncol=Ny)
     } else if (length(G.x) == 1) {
       G.grid$x.int <- matrix(data=G.x,nrow=(Nx+1),ncol=Ny)
@@ -51,7 +51,7 @@ tran.volume.2D <- function(C,
       if (sum(abs(dim(G.y) - c(Nx,Ny+1)))!=0)
         stop (paste("error: ",Name,".y matrix not of correct Nx(Ny+1)dimensions", del=""))
       G.grid$y.int <- G.y
-    } else if (class(G.y)=="prop.1D") {
+    } else if (inherits(G.y, "prop.1D")) {
       G.grid$y.int <- t(matrix(data=G.y$int,ncol=Nx,nrow=(Ny+1)))     #Karline: changed 007/2011
     } else if (length(G.y) == 1) {
       G.grid$y.int <- matrix(data=G.y,nrow=Nx,ncol=(Ny+1))

@@ -42,7 +42,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
       dy    = matrix(nrow=Nx, ncol=Ny, data = DY, byrow=TRUE),  
       dy.aux= matrix(nrow=Nx, ncol=Ny+1, data = DYaux, byrow=TRUE)
                  )
-   } else if (class(grid) !="grid.2D") {
+   } else if (!inherits(grid, "grid.2D")) {
    # KS: changed the next statement, -> everywhere dx, dy is a MATRIX
     if (length(grid$dx) != Nx*Ny)         
        grid$dx <- matrix(nrow=Nx, ncol=Ny, grid$dx)
@@ -70,7 +70,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
         stop (paste("error: ",Name,".x matrix not of correct (Nx+1) Ny dimensions", del=""))
       G.grid$x.int <- G.x
       G.grid$x.mid <- 0.5*(G.x[1:Nx,]+G.x[2:(Nx+1),])
-    } else if (class(G.x)=="prop.1D") {
+    } else if (inherits(G.x, "prop.1D")) {
       G.grid$x.int <- matrix(data=G.x$int,nrow=(Nx+1),ncol=Ny)
       G.grid$x.mid <- matrix(data=G.x$mid, nrow=Nx, ncol=Ny)
     } else if (length(G.x) == 1) {
@@ -89,7 +89,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
         stop (paste("error: ",Name,".y matrix not of correct Nx(Ny+1)dimensions", del=""))
       G.grid$y.int <- G.y
       G.grid$y.mid <- 0.5*(G.y[,1:Ny]+G.y[,2:(Ny+1)])
-    } else if (class(G.y)=="prop.1D") {
+    } else if (inherits(G.y, "prop.1D")) {
       G.grid$y.int <- matrix(data=G.y$int,nrow=Nx,ncol=(Ny+1))
       G.grid$y.mid <- matrix(data=G.y$mid, nrow=Nx, ncol=Ny)
     } else if (length(G.y) == 1) {
@@ -125,7 +125,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
       if (sum(abs(dim(G.x) - c(Nx+1,Ny)))!=0)
         stop (paste("error: ",Name,".x matrix not of correct (Nx+1) Ny dimensions", del=""))
       G.grid$x.int <- G.x
-    } else if (class(G.x)=="prop.1D") {
+    } else if (inherits(G.x, "prop.1D")) {
       G.grid$x.int <- matrix(data=G.x$int,nrow=(Nx+1),ncol=Ny)
     } else if (length(G.x) == 1) {
       G.grid$x.int <- matrix(data=G.x,nrow=(Nx+1),ncol=Ny)
@@ -139,7 +139,7 @@ tran.2D <- function(C, C.x.up=C[1,], C.x.down=C[nrow(C),],
       if (sum(abs(dim(G.y) - c(Nx,Ny+1)))!=0)
         stop (paste("error: ",Name,".y matrix not of correct Nx(Ny+1)dimensions", del=""))
       G.grid$y.int <- G.y
-    } else if (class(G.y)=="prop.1D") {
+    } else if (inherits(G.y, "prop.1D")) {
       G.grid$y.int <- t(matrix(data=G.y$int,ncol=Nx,nrow=(Ny+1)))     #Karline: changed 007/2011
     } else if (length(G.y) == 1) {
       G.grid$y.int <- matrix(data=G.y,nrow=Nx,ncol=(Ny+1))
